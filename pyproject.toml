@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "diary-coach"
+version = "0.1.0"
+description = "Multi-agent coaching system with conversation quality evaluation"
+authors = [{name = "Michael Haase"}]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "anthropic>=0.7.0",
+    "pydantic>=2.0.0",
+    "redis>=4.0.0",
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest-cov",
+    "black",
+    "isort",
+    "flake8",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+addopts = "-v --tb=short"
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+
+[tool.isort]
+profile = "black"
