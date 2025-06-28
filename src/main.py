@@ -1,56 +1,76 @@
-"""
-Main entry point for the Diary Coach system.
-
-This module provides the command-line interface and application startup logic
-for the multi-agent coaching system.
-"""
+"""Main entry point for the diary coach system."""
 
 import asyncio
-import click
-from rich.console import Console
-from rich.panel import Panel
+import os
+from pathlib import Path
+from dotenv import load_dotenv
 
-console = Console()
+from src.services.llm_service import AnthropicService
+from src.agents.coach_agent import DiaryCoach
+from src.interface.cli import DiaryCoachCLI
+from src.events.bus import EventBus
+from src.persistence.conversation_storage import ConversationStorage
 
 
-@click.command()
-@click.option('--mode', default='text', help='Interaction mode: text or voice')
-@click.option('--debug', is_flag=True, help='Enable debug logging')
-def main(mode: str, debug: bool):
-    """Start the Diary Coach multi-agent coaching system."""
+async def create_diary_coach_system():
+    """Create and initialize the complete diary coach system."""
+    # Load environment variables
+    load_dotenv()
     
-    console.print(Panel.fit(
-        "[bold blue]Diary Coach[/bold blue]\n"
-        "Multi-Agent Coaching System\n"
-        f"Mode: {mode.upper()}",
-        title="🤖 AI Coach"
-    ))
+    # Get API key
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+    if not api_key:
+        raise ValueError("ANTHROPIC_API_KEY environment variable not set")
     
-    if mode == 'text':
-        console.print("[green]Starting text-based coaching session...[/green]")
-        # TODO: Initialize text-based coaching interface
-        console.print("[yellow]Implementation coming in Lesson 1![/yellow]")
-    elif mode == 'voice':
-        console.print("[yellow]Voice mode will be available in Phase 4[/yellow]")
-    else:
-        console.print(f"[red]Unknown mode: {mode}[/red]")
-        return
+    # Create LLM service
+    llm_service = AnthropicService(
+        api_key=api_key,
+        model=os.getenv("COACH_MODEL", "claude-3-5-sonnet-20241022")
+    )
     
-    console.print("[dim]Press Ctrl+C to exit[/dim]")
+    # Create coach agent
+    coach = DiaryCoach(llm_service=llm_service)
     
+    # Create event bus
+    event_bus = EventBus()
+    
+    # Create CLI interface
+    cli = DiaryCoachCLI(coach=coach, event_bus=event_bus)
+    
+    # Create conversation storage
+    storage_path = Path.cwd() / "conversations"
+    conversation_storage = ConversationStorage(base_path=storage_path)
+    
+    return {
+        "llm_service": llm_service,
+        "coach": coach,
+        "cli": cli,
+        "event_bus": event_bus,
+        "conversation_storage": conversation_storage
+    }
+
+
+async def main():
+    """Main entry point for running the diary coach."""
     try:
-        # Keep the application running
-        asyncio.run(run_coaching_session())
-    except KeyboardInterrupt:
-        console.print("\n[blue]Goodbye! Remember to reflect on your day.[/blue]")
-
-
-async def run_coaching_session():
-    """Run the main coaching session loop."""
-    # TODO: Implement coaching session logic
-    await asyncio.sleep(0.1)  # Placeholder
-    console.print("[dim]Coaching session logic not yet implemented[/dim]")
+        # Initialize system
+        system = await create_diary_coach_system()
+        cli = system["cli"]
+        
+        # Run the CLI
+        await cli.run()
+        
+    except ValueError as e:
+        print(f"Configuration error: {e}")
+        print("Please set ANTHROPIC_API_KEY in your .env file")
+        return 1
+    except Exception as e:
+        print(f"Error: {e}")
+        return 1
+    
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    exit_code = asyncio.run(main())
+    exit(exit_code)
