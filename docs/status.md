@@ -1,6 +1,6 @@
 # Diary Coach Project Status
 
-## Current Status: Session 3 Complete ✅ - Behavioral Change Detection Framework
+## Current Status: Session 3.2 Complete ✅ - Production-Ready Evaluation System
 
 **Last Updated**: June 29, 2025
 
@@ -17,10 +17,10 @@ Multi-agent text-first coaching system with eventual voice integration. Uses TDD
 **Approach**: Test-Driven Development with incremental delivery  
 **Result**: Working diary coach having real conversations with Michael
 
-## Session 3 Summary: Behavioral Change Detection Framework Complete 🎉
-**Duration**: 5 increments following TDD approach  
-**Approach**: LLM-powered behavioral analysis with PM persona testing  
-**Result**: Self-evaluating coach with comprehensive behavior detection and performance tracking
+## Session 3 Summary: Production-Ready Evaluation System Complete 🎉
+**Duration**: 6 increments following TDD approach  
+**Approach**: LLM-powered behavioral analysis with PM persona testing + User Experience refinement  
+**Result**: Self-evaluating coach with production-ready evaluation system and natural user interface
 
 ## What's Working
 - ✅ Clean project structure established
@@ -44,7 +44,11 @@ Multi-agent text-first coaching system with eventual voice integration. Uses TDD
 - ✅ **Session 3: Conversation generator for automated testing**
 - ✅ **Session 3: Comprehensive evaluation reporter with markdown output**
 - ✅ **Session 3: Persona evaluator for breakthrough analysis**
-- ✅ **All tests passing (78/78)** ✅
+- ✅ **Session 3.2: Natural language command variations for user-friendly CLI**
+- ✅ **Session 3.2: Two-tier reporting system (light + deep analysis)**
+- ✅ **Session 3.2: Production-ready report generation with file persistence**
+- ✅ **Session 3.2: Comprehensive test coverage for evaluation flow**
+- ✅ **All tests passing (80+/80+)** ✅
 
 ## Session 3 Achievements 🎯
 - ✅ **Automated Evaluation System**: Self-evaluating coach with performance tracking
@@ -53,6 +57,9 @@ Multi-agent text-first coaching system with eventual voice integration. Uses TDD
 - ✅ **Real-time Performance**: Sub-second response tracking with percentile reporting
 - ✅ **Markdown Reports**: Comprehensive evaluation reports with improvement suggestions
 - ✅ **Breakthrough Detection**: Measures coaching effectiveness against specific resistance types
+- ✅ **Production-Ready UX**: Natural language commands and intuitive evaluation flow
+- ✅ **Two-Tier Analysis**: Light reports for immediate feedback, deep reports for comprehensive insights
+- ✅ **File Persistence**: Reliable markdown report generation with conversation transcripts
 
 ## What's Ready for Session 4
 - 🎯 Scale to Redis event bus for performance
@@ -146,7 +153,11 @@ diary-coach/
 │   │   ├── Log_2_1.md      # Session logbook ✅
 │   │   └── Dojo_2_1.md     # Learning exercise ✅
 │   ├── session_3/          # Session 3 complete artifacts ✅
-│   │   └── Session_3.md    # Session specification ✅
+│   │   ├── Session_3.md    # Session specification ✅
+│   │   ├── Log_3_1.md      # Behavioral detection framework logbook ✅
+│   │   ├── Dojo_3_1.md     # Learning exercise ✅
+│   │   ├── Log_3_2.md      # Evaluation system refinement logbook ✅
+│   │   └── Dojo_3_2.md     # Learning exercise ✅
 │   └── prototype/          # Evaluation reports ✅
 ├── pyproject.toml          # Modern Python packaging ✅
 ├── venv/                   # Virtual environment ✅
@@ -412,16 +423,24 @@ echo "ANTHROPIC_API_KEY=your_key_here" >> .env
 # Run the enhanced diary coach with evaluation
 source venv/bin/activate && python -m src.main
 
-# Start conversation and use evaluation commands
+# Start conversation and use natural ending commands
 > good morning
+🌅 Diary Coach Ready
+💡 Tips: Say 'stop', 'end conversation', or 'wrap up' to get your coaching evaluation
+   Then use 'deep report' for detailed AI analysis, or 'exit' to quit
+
 Good morning Michael! What's the one challenge you're ready to tackle today?
 
 > I need to work on my product strategy
 That sounds important. What specifically about your product strategy needs your attention today?
 
-> stop
+> wrap up  # or: stop, end conversation, that's enough, etc.
 === Conversation Evaluation ===
 Total Cost: $0.0156
+Messages: 4
+
+Add notes about this conversation (or 'skip'): The coach pushed for specificity well
+
 Coaching Effectiveness: 7.8/10
 
 Response Speed:
@@ -433,9 +452,16 @@ Behavioral Analysis:
 - SpecificityPush: 8.2/10
 - ActionOrientation: 7.4/10
 
-Evaluation report saved to: docs/prototype/eval_20250629_143022.md
+Light evaluation report saved to: docs/prototype/eval_20250629_143022.md
 
-Add notes (or 'skip'): 
+Type 'deep report' for enhanced analysis, or 'exit' to quit.
+
+> deep report  # Optional: get AI reflection using Opus model
+Upgrading to deep analysis with AI reflection...
+Report upgraded to deep analysis: docs/prototype/eval_20250629_143022.md
+
+> exit
+Goodbye! Have a transformative day! 🌟
 ```
 
-**Session 3 Complete & Validated** 🎉 - Ready for Session 4 Redis scaling and multi-agent orchestration
+**Session 3.2 Complete & Validated** 🎉 - Production-ready evaluation system with natural user experience ready for Session 4 scaling

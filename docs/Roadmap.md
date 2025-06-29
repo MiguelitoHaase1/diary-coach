@@ -63,8 +63,7 @@ Build a multi-agent coaching system using Test-Driven Development (TDD) with Red
 **Topics**:
 - **Live Coach Analysis**: Evaluate your prototype's current coaching behaviors
 - **Weakness Identification**: Find where your coach fails to push for specificity
-- **A/B Testing Framework**: Compare prompt variations systematically
-- **Simulated User Framework**: Test your coach against resistant personas
+- **Simulated User Framework**: Test your coach against personas
 - **Improvement Tracking**: Dashboard showing coach evolution over time
 
 **Key Deliverables**:

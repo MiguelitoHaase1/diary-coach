@@ -291,3 +291,78 @@ Always use .env files for secrets and keys. Never commit them to version control
 5. **Document Progress**: Update relevant docs after each increment.
 6. **Report**: After each naturally ending session, propose to create the two reports (logbook and dojo).
 7. **Commit**: Commit to Github repo with clear, descriptive messages.
+
+---
+
+## Special Actions
+
+### Push Changes Action
+
+When the user asks to "push changes" or complete a session, perform these steps in order:
+
+1. **Create Session Documentation**:
+   ```bash
+   # Create/update session log
+   touch docs/session_x/Log_x_y.md
+   
+   # Create/update session dojo
+   touch docs/session_x/Dojo_x_y.md
+   ```
+
+2. **Update Project Status**:
+   - Update `docs/status.md` with current project state
+   - Update `README.md` with latest features and instructions
+   - Update `docs/roadmap.md` if scope or direction changed
+
+3. **Commit and Push**:
+   ```bash
+   # Check current state
+   git status
+   git diff
+   
+   # Add all changes
+   git add .
+   
+   # Create descriptive commit message
+   git commit -m "feat(session-x): Complete [session description]
+   
+   - Added [key feature 1]
+   - Implemented [key feature 2]  
+   - Fixed [important bug]
+   - Updated documentation and status
+   
+   🤖 Generated with Claude Code
+   
+   Co-Authored-By: Claude <noreply@anthropic.com>"
+   
+   # Push to GitHub
+   git push origin main
+   ```
+
+4. **Verify Completion**:
+   ```bash
+   # Confirm push succeeded
+   git status
+   git log --oneline -3
+   ```
+
+**Use this action** when:
+- User requests to "push changes", "commit and push", or "complete session"
+- Major session milestone is reached
+- Documentation needs to be synchronized with code changes
+- Ready to share progress with collaborators
+
+**Action Template**:
+```
+> push changes
+
+I'll complete the session documentation and push changes to GitHub:
+
+1. ✅ Created session log: docs/session_x/Log_x_y.md
+2. ✅ Created session dojo: docs/session_x/Dojo_x_y.md  
+3. ✅ Updated docs/status.md with current progress
+4. ✅ Updated README.md with latest features
+5. ✅ Committed and pushed to GitHub
+
+Session x.y complete and synchronized! 🎉
+```

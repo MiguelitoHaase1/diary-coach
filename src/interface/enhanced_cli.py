@@ -45,10 +45,16 @@ class EnhancedCLI(DiaryCoachCLI):
         Returns:
             Coach response text, or None if user wants to exit
         """
-        # Check for special commands
-        if user_input.lower().strip() == "stop":
+        # Check for stop/evaluation commands with multiple variations
+        stop_commands = [
+            "stop", "stop here", "end conversation", "go to report", 
+            "generate report", "evaluate", "evaluation", "finish", 
+            "end session", "wrap up", "that's enough"
+        ]
+        
+        if any(user_input.lower().strip() == cmd for cmd in stop_commands):
             await self._handle_stop_command()
-            return None
+            return "Light evaluation report generated. Type 'deep report' for detailed analysis or 'exit' to quit."
         
         if user_input.lower().strip() == "report":
             await self._handle_report_command()
@@ -56,7 +62,18 @@ class EnhancedCLI(DiaryCoachCLI):
         
         # Check for exit commands
         if user_input.lower().strip() in ["exit", "quit"]:
+            print("Goodbye! Have a transformative day! 🌟")
             return None
+        
+        # Check for deep report commands with variations
+        deep_report_commands = [
+            "deep report", "detailed report", "enhanced report", 
+            "deep analysis", "full report", "comprehensive report"
+        ]
+        
+        if any(user_input.lower().strip() == cmd for cmd in deep_report_commands):
+            await self._handle_deep_report_command()
+            return "Deep evaluation report generated."
         
         try:
             # Track performance
@@ -101,16 +118,24 @@ class EnhancedCLI(DiaryCoachCLI):
         if not self.conversation_history:
             print("No conversation to evaluate.")
             return
-            
-        # Generate full evaluation report
-        await self._generate_full_evaluation()
         
-        # Display evaluation summary
+        # Display evaluation summary first
         print("\n=== Conversation Evaluation ===")
         print(f"Total Cost: ${self.get_session_cost():.4f}")
+        print(f"Messages: {len(self.conversation_history)}")
+        
+        # Collect user notes
+        print("\nAdd notes about this conversation (or 'skip'): ", end="")
+        user_notes = await self._get_input("")
+        
+        if user_notes.lower().strip() == "skip":
+            user_notes = "No notes provided"
+        
+        # Generate light evaluation report immediately
+        await self._generate_light_evaluation(user_notes)
         
         if self.current_eval:
-            print(f"Coaching Effectiveness: {self.current_eval.overall_score * 10:.1f}/10")
+            print(f"\nCoaching Effectiveness: {self.current_eval.overall_score * 10:.1f}/10")
             
             print(f"\nResponse Speed:")
             print(f"- Median: {self.performance_tracker.get_median():.0f}ms")
@@ -120,10 +145,12 @@ class EnhancedCLI(DiaryCoachCLI):
             print(f"\nBehavioral Analysis:")
             for score in self.current_eval.behavioral_scores:
                 print(f"- {score.analyzer_name}: {score.value * 10:.1f}/10")
+            
+            # Store the report file path for potential deep report upgrade
+            if hasattr(self.current_eval, 'report_file_path'):
+                print(f"\nLight report saved to: {self.current_eval.report_file_path}")
         
-        print("\nAdd notes (or 'skip'): ", end="")
-        # In a real implementation, we'd capture user notes here
-        # For now, just print the prompt
+        print("\nType 'deep report' for enhanced analysis, or 'exit' to quit.")
     
     async def _handle_report_command(self) -> None:
         """Handle report command to display evaluation."""
@@ -136,8 +163,8 @@ class EnhancedCLI(DiaryCoachCLI):
         print(f"Session Cost: ${self.get_session_cost():.4f}")
         print(f"Performance: {self.performance_tracker.get_median():.0f}ms median")
     
-    async def _generate_full_evaluation(self) -> None:
-        """Generate full evaluation using behavioral analyzers."""
+    async def _generate_light_evaluation(self, user_notes: str) -> None:
+        """Generate light evaluation using Haiku model."""
         from src.evaluation.generator import GeneratedConversation
         
         # Convert conversation history to GeneratedConversation format
@@ -157,11 +184,11 @@ class EnhancedCLI(DiaryCoachCLI):
             "responses_under_1s_percentage": self.performance_tracker.percentage_under_threshold(1000)
         }
         
-        # Generate evaluation report
+        # Generate light evaluation report
         try:
-            self.current_eval = await self.evaluation_reporter.generate_report(
+            self.current_eval = await self.evaluation_reporter.generate_light_report(
                 conversation=conversation,
-                user_notes="Real conversation session",
+                user_notes=user_notes,
                 analyzers=self.analyzers,
                 performance_data=performance_data
             )
@@ -170,10 +197,89 @@ class EnhancedCLI(DiaryCoachCLI):
             report_filename = f"eval_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
             report_path = f"docs/prototype/{report_filename}"
             self.current_eval.save_as_markdown(report_path)
-            print(f"\nEvaluation report saved to: {report_path}")
+            
+            # Store the report file path for potential upgrade to deep report
+            self.current_eval.report_file_path = report_path
+            
+            print(f"\nLight evaluation report saved to: {report_path}")
             
         except Exception as e:
             print(f"Error generating evaluation: {e}")
+            # Fallback to simple evaluation
+            await self._generate_simple_evaluation()
+    
+    async def _handle_deep_report_command(self) -> None:
+        """Handle deep report command for detailed analysis."""
+        if not self.conversation_history:
+            print("No conversation history to evaluate.")
+            return
+        
+        if not self.current_eval or not hasattr(self.current_eval, 'report_file_path'):
+            print("No existing report found. Please run 'stop' command first.")
+            return
+        
+        print("\nUpgrading to deep analysis with AI reflection...")
+        
+        # Use existing user notes or collect new ones
+        existing_notes = getattr(self.current_eval, 'user_notes', 'No notes provided')
+        print(f"\nExisting notes: {existing_notes}")
+        print("Add additional notes for deep analysis (or 'skip' to use existing): ", end="")
+        additional_notes = await self._get_input("")
+        
+        if additional_notes.lower().strip() != "skip":
+            user_notes = f"{existing_notes}\n\nAdditional notes: {additional_notes}"
+        else:
+            user_notes = existing_notes
+        
+        # Generate deep evaluation report and update existing file
+        await self._generate_deep_evaluation(user_notes, upgrade_existing=True)
+    
+    async def _generate_deep_evaluation(self, user_notes: str, upgrade_existing: bool = False) -> None:
+        """Generate deep evaluation using Opus model."""
+        from src.evaluation.generator import GeneratedConversation
+        
+        # Convert conversation history to GeneratedConversation format
+        conversation = GeneratedConversation(
+            messages=self.conversation_history,
+            persona_type="Real User",  # Real user, not a persona
+            scenario="CLI Session",
+            timestamp=datetime.now(),
+            final_resistance_level=0.5,  # Unknown for real user
+            breakthrough_achieved=False  # Unknown for real user
+        )
+        
+        # Prepare performance data
+        performance_data = {
+            "response_times_ms": self.performance_tracker.response_times,
+            "percentile_80": self.performance_tracker.get_percentile(80),
+            "responses_under_1s_percentage": self.performance_tracker.percentage_under_threshold(1000)
+        }
+        
+        # Generate deep evaluation report
+        try:
+            deep_eval = await self.evaluation_reporter.generate_deep_report(
+                conversation=conversation,
+                user_notes=user_notes,
+                analyzers=self.analyzers,
+                performance_data=performance_data
+            )
+            
+            if upgrade_existing and hasattr(self.current_eval, 'report_file_path'):
+                # Upgrade existing report file
+                report_path = self.current_eval.report_file_path
+                deep_eval.save_as_markdown(report_path)
+                print(f"\nReport upgraded to deep analysis: {report_path}")
+            else:
+                # Save new deep report
+                report_filename = f"eval_deep_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+                report_path = f"docs/prototype/{report_filename}"
+                deep_eval.save_as_markdown(report_path)
+                print(f"\nDeep evaluation report saved to: {report_path}")
+            
+            self.current_eval = deep_eval
+            
+        except Exception as e:
+            print(f"Error generating deep evaluation: {e}")
             # Fallback to simple evaluation
             await self._generate_simple_evaluation()
     
@@ -216,7 +322,10 @@ class EnhancedCLI(DiaryCoachCLI):
     
     async def run(self) -> None:
         """Run the interactive CLI loop without per-message cost display."""
-        print("🌅 Diary Coach Ready (type 'stop' for evaluation, 'exit' to quit)")
+        print("🌅 Diary Coach Ready")
+        print("💡 Tips: Say 'stop', 'end conversation', or 'wrap up' to get your coaching evaluation")
+        print("   Then use 'deep report' for detailed AI analysis, or 'exit' to quit")
+        print()
         
         while self.running:
             try:
@@ -230,9 +339,7 @@ class EnhancedCLI(DiaryCoachCLI):
                 response = await self.process_input(user_input)
                 
                 if response is None:
-                    # User wants to exit or stop
-                    if user_input.lower().strip() in ["exit", "quit"]:
-                        print("Goodbye! Have a transformative day! 🌟")
+                    # User wants to exit - break out of loop
                     break
                 
                 # Display response (no cost display per message)

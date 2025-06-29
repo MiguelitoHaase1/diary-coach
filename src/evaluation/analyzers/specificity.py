@@ -33,7 +33,11 @@ class SpecificityPushAnalyzer(BaseAnalyzer):
         
         # Get LLM analysis
         try:
-            analysis_result = await self.llm_service.complete(prompt)
+            analysis_result = await self.llm_service.generate_response(
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=500,
+                temperature=0.1
+            )
             result_data = json.loads(analysis_result)
             
             return AnalysisScore(

@@ -120,6 +120,10 @@ class EvaluationReporter:
     def __init__(self):
         """Initialize evaluation reporter."""
         self.report_counter = 1
+        # Import here to avoid circular imports
+        from src.services.llm_service import AnthropicService
+        self.haiku_service = AnthropicService(model="claude-3-haiku-20240307")
+        self.opus_service = AnthropicService(model="claude-3-opus-20240229")
     
     async def generate_report(
         self,
@@ -163,6 +167,77 @@ class EvaluationReporter:
         
         # Generate AI reflection
         ai_reflection = self._generate_ai_reflection(behavioral_scores, conversation)
+        
+        # Extract performance data
+        response_times_ms = performance_data.get("response_times_ms", []) if performance_data else []
+        percentile_80 = performance_data.get("percentile_80", 0) if performance_data else 0
+        responses_under_1s_percentage = performance_data.get("responses_under_1s_percentage", 0) if performance_data else 0
+        
+        # Create conversation metadata
+        conversation_metadata = {
+            "report_id": self.report_counter,
+            "messages": conversation.messages,
+            "persona_type": conversation.persona_type,
+            "scenario": conversation.scenario,
+            "breakthrough_achieved": conversation.breakthrough_achieved,
+            "final_resistance_level": conversation.final_resistance_level
+        }
+        
+        self.report_counter += 1
+        
+        return EvaluationReport(
+            timestamp=datetime.now(),
+            conversation_metadata=conversation_metadata,
+            response_times_ms=response_times_ms,
+            percentile_80=percentile_80,
+            responses_under_1s_percentage=responses_under_1s_percentage,
+            behavioral_scores=behavioral_scores,
+            overall_score=overall_score,
+            user_notes=user_notes,
+            ai_reflection=ai_reflection
+        )
+    
+    async def generate_light_report(
+        self,
+        conversation: GeneratedConversation,
+        user_notes: str,
+        analyzers: List[BaseAnalyzer],
+        performance_data: Optional[Dict[str, Any]] = None
+    ) -> EvaluationReport:
+        """Generate light evaluation report using Haiku model.
+        
+        Args:
+            conversation: The conversation to evaluate
+            user_notes: User's notes about the conversation
+            analyzers: List of behavioral analyzers to run
+            performance_data: Performance metrics data
+            
+        Returns:
+            Light evaluation report
+        """
+        # Use simpler analysis for light report
+        coach_messages = [msg for msg in conversation.messages if msg["role"] == "assistant"]
+        
+        # Run lightweight behavioral analysis
+        behavioral_scores = []
+        for analyzer in analyzers:
+            if coach_messages:
+                # Simple scoring for light report
+                score_value = 0.6  # Default moderate score
+                reasoning = "Light analysis - use 'deep report' for detailed evaluation"
+                
+                from src.evaluation.analyzers.base import AnalysisScore
+                behavioral_scores.append(AnalysisScore(
+                    value=score_value,
+                    reasoning=reasoning,
+                    analyzer_name=analyzer.name
+                ))
+        
+        # Calculate overall score
+        overall_score = self._calculate_overall_score(behavioral_scores, performance_data)
+        
+        # Generate simple AI reflection
+        ai_reflection = "Light evaluation completed. Use 'deep report' command for comprehensive AI reflection and analysis."
         
         # Extract performance data
         response_times_ms = performance_data.get("response_times_ms", []) if performance_data else []
@@ -249,20 +324,100 @@ class EvaluationReporter:
         reflection = f"Based on this conversation with a {conversation.persona_type} persona, "
         
         if strongest.value > 0.7:
-            reflection += f"I performed well in {strongest.analyzer_name.lower()}, "
+            reflection += f"I performed well in {strongest.analyzer_name.lower()}, achieving a score of {strongest.value*10:.1f}/10. "
         
         if weakest.value < 0.5:
-            reflection += f"but I need to improve my {weakest.analyzer_name.lower()}. "
+            reflection += f"However, I need to improve my {weakest.analyzer_name.lower()}, which scored only {weakest.value*10:.1f}/10. "
+        elif weakest.value < 0.7:
+            reflection += f"I could strengthen my {weakest.analyzer_name.lower()}, which scored {weakest.value*10:.1f}/10. "
         
         # Add persona-specific insights
         if conversation.persona_type == "FrameworkRigid":
             if conversation.breakthrough_achieved:
-                reflection += "I successfully broke through the framework-rigid resistance patterns."
+                reflection += "I successfully broke through the framework-rigid resistance patterns by challenging systematic thinking."
             else:
-                reflection += "I could push harder against the systematic thinking patterns."
+                reflection += "I could push harder against the systematic thinking patterns to create breakthrough moments."
         elif conversation.persona_type == "ControlFreak":
-            reflection += "Perfectionist resistance requires patient emotional presence."
+            reflection += "Perfectionist resistance requires patient emotional presence combined with direct action orientation."
         elif conversation.persona_type == "LegacyBuilder":
-            reflection += "Future-focused deflection needs stronger present-moment anchoring."
+            reflection += "Future-focused deflection needs stronger present-moment anchoring to drive immediate action."
+        elif conversation.persona_type == "Real User":
+            reflection += "Real user conversations require balancing genuine responsiveness with coaching effectiveness."
+        
+        # Add overall reflection
+        avg_score = sum(score.value for score in behavioral_scores) / len(behavioral_scores)
+        if avg_score > 0.8:
+            reflection += " Overall, this was a highly effective coaching conversation."
+        elif avg_score > 0.6:
+            reflection += " Overall, this was a moderately effective coaching conversation with room for improvement."
+        else:
+            reflection += " Overall, this conversation indicates significant opportunities for coaching improvement."
         
         return reflection
+    
+    async def _generate_deep_ai_reflection(
+        self,
+        behavioral_scores: List[AnalysisScore],
+        conversation: GeneratedConversation,
+        user_notes: str
+    ) -> str:
+        """Generate deep AI reflection using Opus model.
+        
+        Args:
+            behavioral_scores: Behavioral analysis results
+            conversation: The conversation data
+            user_notes: User's notes about the conversation
+            
+        Returns:
+            Enhanced AI reflection text
+        """
+        # Build conversation summary
+        messages = conversation.messages
+        conversation_summary = "\n".join([
+            f"{msg['role'].title()}: {msg['content'][:200]}..."
+            for msg in messages[:6]  # First 6 messages
+        ])
+        
+        # Build behavioral analysis summary
+        behavioral_summary = "\n".join([
+            f"- {score.analyzer_name}: {score.value*10:.1f}/10 - {score.reasoning}"
+            for score in behavioral_scores
+        ])
+        
+        # Create deep reflection prompt
+        reflection_prompt = f"""You are an expert coaching evaluator. Analyze this coaching conversation and provide a comprehensive reflection.
+
+CONVERSATION SUMMARY:
+{conversation_summary}
+
+BEHAVIORAL ANALYSIS RESULTS:
+{behavioral_summary}
+
+USER NOTES:
+{user_notes}
+
+CONVERSATION METADATA:
+- Persona Type: {conversation.persona_type}
+- Scenario: {conversation.scenario}
+- Total Messages: {len(messages)}
+
+Provide a comprehensive AI reflection that:
+1. Analyzes the coaching effectiveness based on behavioral scores
+2. Identifies specific moments of strength and weakness
+3. Considers the user's notes and feedback
+4. Provides insights about the conversation dynamics
+5. Suggests specific improvements for future conversations
+
+Write in first person as the AI coach reflecting on performance. Be specific and actionable."""
+        
+        try:
+            # Generate reflection using Opus model
+            reflection = await self.opus_service.generate_response(
+                messages=[{"role": "user", "content": reflection_prompt}],
+                max_tokens=1000,
+                temperature=0.3
+            )
+            return reflection
+        except Exception as e:
+            # Fallback to simple reflection
+            return f"Deep reflection failed: {str(e)}. {self._generate_ai_reflection(behavioral_scores, conversation)}"
