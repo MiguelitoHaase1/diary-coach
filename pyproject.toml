@@ -38,3 +38,9 @@ target-version = ['py39']
 
 [tool.isort]
 profile = "black"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"

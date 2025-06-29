@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 from src.services.llm_service import AnthropicService
 from src.agents.coach_agent import DiaryCoach
-from src.interface.cli import DiaryCoachCLI
+from src.interface.enhanced_cli import EnhancedCLI
 from src.events.bus import EventBus
 from src.persistence.conversation_storage import ConversationStorage
 
@@ -35,7 +35,7 @@ async def create_diary_coach_system():
     event_bus = EventBus()
     
     # Create CLI interface
-    cli = DiaryCoachCLI(coach=coach, event_bus=event_bus)
+    cli = EnhancedCLI(coach=coach, event_bus=event_bus)
     
     # Create conversation storage
     storage_path = Path.cwd() / "conversations"
