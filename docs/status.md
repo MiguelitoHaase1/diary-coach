@@ -400,114 +400,70 @@ Quality Evaluation → Dual-Track Stream Buffer → Insights Generation
 - ✅ **Graceful degradation** when individual handlers fail
 - ✅ **System stability** maintained despite processing errors
 
-### **Production-Ready Validation**
-These integration tests prove Session 1 architecture can handle:
-- **Multi-user concurrent conversations**
-- **Real-time response generation and evaluation**
-- **Fault-tolerant operation under error conditions**
-- **Scalable event-driven communication patterns**
+## Running the Current System
 
-## Session 2 Success Metrics Achievement
-
-### Must Have (Core Prototype) ✅
-- ✅ Complete morning ritual conversation working
-- ✅ Complete evening ritual conversation working  
-- ✅ Coach maintains session context
-- ✅ All conversations can be saved as JSON
-- ✅ Total cost tracking per conversation
-
-### Should Have (Quality) ✅
-- ✅ Responses follow style guide (no bullets, <6 lines)
-- ✅ Only one question per response
-- ✅ Evening references morning discussion
-- ✅ Response time < 3 seconds (when API responsive)
-- ✅ Basic quality score capability (through metadata)
-
-## Running the System
+### Session 4: Morning Coach with Deep Thoughts
 
 ```bash
 # Ensure API key is set in .env file
 echo "ANTHROPIC_API_KEY=your_key_here" >> .env
 
-# Run the diary coach
+# Run the morning coach with Deep Thoughts capability
 source venv/bin/activate && python -m src.main
 
-# Start conversation
-> good morning
-Good morning Michael! What's the one challenge you're ready to tackle today?
-```
-
-## Session 3 Success Metrics Achievement
-
-### Must Complete (Core Framework) ✅
-- ✅ Enhanced CLI with evaluation reports and performance tracking
-- ✅ 4 behavioral analyzers using LLM analysis
-- ✅ 3 PM personas (framework rigid, control freak, legacy builder)  
-- ✅ 20+ real conversations generated and analyzed
-- ✅ Evaluation report generator with markdown output
-- ✅ Response time tracking with 80th percentile reporting
-- ✅ User notes capture and AI reflection system
-- ✅ All tests passing with mocked LLM calls
-
-### Should Complete (Quality Features) ✅
-- ✅ Persona resistance pattern identification
-- ✅ Breakthrough detection in conversations
-- ✅ Performance optimization insights
-- ✅ Coaching move effectiveness library
-
-### Stretch Goals (Advanced Features) ✅
-- ✅ Real-time performance monitoring
-- ✅ Persona evolution during conversations
-- ✅ Coaching strategy recommendations based on persona type
-
-## Running the Enhanced System
-
-```bash
-# Ensure API key is set in .env file
-echo "ANTHROPIC_API_KEY=your_key_here" >> .env
-
-# Run the enhanced diary coach with evaluation
-source venv/bin/activate && python -m src.main
-
-# Start conversation and use natural ending commands
+# Morning conversation experience (6:00 AM - 11:59 AM)
 > good morning
 🌅 Diary Coach Ready
 💡 Tips: Say 'stop', 'end conversation', or 'wrap up' to get your coaching evaluation
    Then use 'deep report' for detailed AI analysis, or 'exit' to quit
 
-Good morning Michael! What's the one challenge you're ready to tackle today?
+Good morning Michael! What dragon are you most excited to slay today?
 
-> I need to work on my product strategy
-That sounds important. What specifically about your product strategy needs your attention today?
+> I need to organize my files today
+Is organizing files really the biggest lever you could pull today? What core value do you want to fight for?
 
-> wrap up  # or: stop, end conversation, that's enough, etc.
+> I want to fight for clarity and focus
+That's a powerful value to champion! Tell me more about what clarity means to you in this context.
+
+> stop  # Get evaluation summary
 === Conversation Evaluation ===
-Total Cost: $0.0156
-Messages: 4
+Total Cost: $0.0087
+Messages: 6
 
-Add notes about this conversation (or 'skip'): The coach pushed for specificity well
+Add notes about this conversation (or 'skip'): Coach challenged my initial choice well
 
-Coaching Effectiveness: 7.8/10
+Coaching Effectiveness: 8.1/10
 
 Response Speed:
-- Median: 847ms
-- 80th percentile: 923ms ✅  
-- Under 1s: 85% ✅
+- Median: 724ms
+- 80th percentile: 891ms ✅  
+- Under 1s: 100% ✅
 
 Behavioral Analysis:
-- SpecificityPush: 8.2/10
-- ActionOrientation: 7.4/10
+- ProblemSelection: 8.5/10
+- ThinkingPivot: 7.8/10
+- ExcitementBuilder: 8.2/10
+- SpecificityPush: 7.9/10
 
-Light evaluation report saved to: docs/prototype/eval_20250629_143022.md
+Type 'deep report' to generate Deep Thoughts + evaluation files, or 'exit' to quit.
 
-Type 'deep report' for enhanced analysis, or 'exit' to quit.
+> deep report  # Generate pinneable insights + cost-optimized evaluation
+📝 Generating Deep Thoughts report (Opus)...
+✅ Deep Thoughts saved to: docs/prototype/DeepThoughts/DeepThoughts_20250701_0930.md
+📋 Generating evaluation report (Sonnet)...
+✅ Evaluation saved to: docs/prototype/Evals/Eval_20250701_0930.md
 
-> deep report  # Optional: get AI reflection using Opus model
-Upgrading to deep analysis with AI reflection...
-Report upgraded to deep analysis: docs/prototype/eval_20250629_143022.md
+🎉 Deep report complete!
 
 > exit
 Goodbye! Have a transformative day! 🌟
 ```
 
-**Session 3.3 Complete & Validated** 🎉 - Critical bug fixes ensure deep reporting works reliably, system fully production-ready for Session 4 scaling
+### Key Session 4 Features:
+- **Morning Specialization**: Time-aware coaching (6:00 AM - 11:59 AM)
+- **Deep Thoughts**: Pinneable insights you'll want to revisit during the day
+- **Cost Optimization**: 50% reduction using Sonnet for evaluations
+- **Smart File Generation**: Only creates files when you request "deep report"
+- **Concise Evaluations**: Scannable reports with emoji status indicators
+
+**System Status**: Production-ready with morning excellence and cost-optimized Deep Thoughts generation 🎉
