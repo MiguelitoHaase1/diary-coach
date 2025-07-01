@@ -77,6 +77,13 @@ class EvaluationReport:
         for suggestion in suggestions:
             markdown += f"- {suggestion}\n"
         
+        # Add conversation transcript
+        markdown += "\n## Conversation Transcript\n\n"
+        messages = self.conversation_metadata.get("messages", [])
+        for msg in messages:
+            role = "**Coach**" if msg["role"] == "assistant" else "**User**"
+            markdown += f"{role}: {msg['content']}\n\n"
+        
         return markdown
     
     def save_as_markdown(self, file_path: str) -> None:
@@ -354,6 +361,78 @@ class EvaluationReporter:
             reflection += " Overall, this conversation indicates significant opportunities for coaching improvement."
         
         return reflection
+    
+    async def generate_deep_report(
+        self,
+        conversation: GeneratedConversation,
+        user_notes: str,
+        analyzers: List[BaseAnalyzer],
+        performance_data: Optional[Dict[str, Any]] = None
+    ) -> EvaluationReport:
+        """Generate deep evaluation report using Opus model for enhanced analysis.
+        
+        Args:
+            conversation: The conversation to evaluate
+            user_notes: User's notes about the conversation
+            analyzers: List of behavioral analyzers to run
+            performance_data: Performance metrics data
+            
+        Returns:
+            Deep evaluation report with enhanced AI reflection
+        """
+        # Extract coach responses for analysis
+        coach_messages = [msg for msg in conversation.messages if msg["role"] == "assistant"]
+        user_messages = [msg for msg in conversation.messages if msg["role"] == "user"]
+        
+        # Run behavioral analysis
+        behavioral_scores = []
+        for analyzer in analyzers:
+            for i, coach_msg in enumerate(coach_messages):
+                # Build context from previous messages
+                context = []
+                for j in range(max(0, i*2-2), i*2+1):  # Get previous user messages
+                    if j < len(user_messages):
+                        context.append(f"User: {user_messages[j]['content']}")
+                
+                # Analyze this coach response
+                score = await analyzer.analyze(coach_msg["content"], context)
+                behavioral_scores.append(score)
+                break  # Just analyze first response per analyzer for now
+        
+        # Calculate overall effectiveness score
+        overall_score = self._calculate_overall_score(behavioral_scores, performance_data)
+        
+        # Generate deep AI reflection using Opus model
+        ai_reflection = await self._generate_deep_ai_reflection(behavioral_scores, conversation, user_notes)
+        
+        # Extract performance data
+        response_times_ms = performance_data.get("response_times_ms", []) if performance_data else []
+        percentile_80 = performance_data.get("percentile_80", 0) if performance_data else 0
+        responses_under_1s_percentage = performance_data.get("responses_under_1s_percentage", 0) if performance_data else 0
+        
+        # Create conversation metadata
+        conversation_metadata = {
+            "report_id": self.report_counter,
+            "messages": conversation.messages,
+            "persona_type": conversation.persona_type,
+            "scenario": conversation.scenario,
+            "breakthrough_achieved": conversation.breakthrough_achieved,
+            "final_resistance_level": conversation.final_resistance_level
+        }
+        
+        self.report_counter += 1
+        
+        return EvaluationReport(
+            timestamp=datetime.now(),
+            conversation_metadata=conversation_metadata,
+            response_times_ms=response_times_ms,
+            percentile_80=percentile_80,
+            responses_under_1s_percentage=responses_under_1s_percentage,
+            behavioral_scores=behavioral_scores,
+            overall_score=overall_score,
+            user_notes=user_notes,
+            ai_reflection=ai_reflection
+        )
     
     async def _generate_deep_ai_reflection(
         self,

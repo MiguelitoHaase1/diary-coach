@@ -182,4 +182,9 @@ Build a sophisticated coaching system that:
 
 ---
 
-**Ready to start coaching?** Run `source venv/bin/activate && python -m src.main` and begin your conversation!
+**Ready to start coaching?** Run `source venv/bin/activate && python -m src.main` and experience:
+
+- **Morning Coach Excellence**: Time-aware coaching with specialized morning prompts
+- **Deep Thoughts Reports**: Pinneable insights generated with Claude Opus 
+- **Smart Evaluation**: Cost-optimized analysis using the right model for each task
+- **Natural Commands**: Say "stop" for evaluation, "deep report" for comprehensive insights

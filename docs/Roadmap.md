@@ -1,12 +1,12 @@
-# Multi-Agent Diary Coach Lesson Plan: Text-First TDD with Redis & LangChain (Prototype-Driven Evolution)
+# Multi-Agent Diary Coach Lesson Plan: Personal Experience-First Development
 
 ## Executive Summary
 
-Build a multi-agent coaching system using Test-Driven Development (TDD) with Redis Pub/Sub for event-driven architecture. uild a working prototype early (Session 2), then evolve it through data-driven improvements in each subsequent session. The system features morning goal-setting and evening reflection coaches with a "supportive yet skeptical" personality, eventually adding dual-track processing where Sonnet maintains conversation flow while Opus provides deep insights asynchronously.
+Build a multi-agent coaching system prioritizing personal experience and voice interaction before production hardening. Start with a working prototype (Session 2), enhance with personal context (Session 5), add intelligent routing and memory (Sessions 6-7), then revolutionize with voice (Sessions 9-11). Production features come last after core experience is perfected.
 
-**Tech Stack**: Anthropic SDK (Sonnet + Opus), Redis Pub/Sub, pytest + LangChain, FastAPI (later phases)
+**Tech Stack**: Anthropic SDK (Sonnet + Opus), Personal Context Files (Markdown), pytest + LangChain, LiveKit (voice), Redis Pub/Sub (later phases), FastAPI (later phases)
 
-## Phase 1: Foundation and Early Prototype (12-14 hours)
+## Phase 1: Intelligent Personal Experience (19-21 hours)
 
 ### Session 1: Project Setup and TDD Infrastructure (2-3 hours) ✅
 
@@ -15,20 +15,20 @@ Build a multi-agent coaching system using Test-Driven Development (TDD) with Red
 **Topics**:
 - Project structure with proper Python packaging
 - pytest configuration and fixtures
-- Redis Pub/Sub basics with simple event bus implementation
+- In-memory event bus basics with simple implementation
 - Write your first conversation quality test
 - Add async stream buffer for dual-track support
 
 **Key Deliverables**:
 - Working pytest setup
-- Basic Redis event bus (subscribe/publish)
+- Basic in-memory event bus (subscribe/publish)
 - Simple response relevance metric
 - Project skeleton with clear separation of concerns
 - Stream buffer for conversation + insights
 
-### Session 2: Minimal Working Prototype - Real Conversations Now! (4-5 hours) 🆕
+### Session 2: Minimal Working Prototype - Real Conversations Now! (4-5 hours) ✅
 
-**Goal**: Build a minimal but fully functional coaching conversation system. Connect Session 1 infrastructure to the Anthropic API and create your first working coach agent that can have real conversations.
+**Goal**: Build a minimal but fully functional coaching conversation system
 
 **Topics**:
 - Anthropic SDK integration with async wrapper
@@ -44,281 +44,242 @@ Build a multi-agent coaching system using Test-Driven Development (TDD) with Red
 - CLI for live conversation testing
 - Complete conversation flow from user input to coach response
 
-**Learning Focus**:
-- Apply prompt engineering skills to create coach personality
-- See event-driven architecture in action
-- Practice async Python with real API calls
-- Understand token usage and costs
-
-### Session 3: Behavioral Change Detection Framework (3-4 hours)
+### Session 3: Behavioral Change Detection Framework (3-4 hours) ✅
 
 **Goal**: Build automated evaluation framework that measures your real coach's transformative potential
 
-**Prototype Evolution Approach**:
-1. **Baseline Measurement**: Generate 20+ conversations with your current coach
-2. **Metric Development**: Build metrics based on observed weaknesses
-3. **Prompt Refinement**: Use metrics to guide prompt improvements
-4. **Impact Validation**: Measure improvement in transformation potential
-
 **Topics**:
-- **Live Coach Analysis**: Evaluate your prototype's current coaching behaviors
-- **Weakness Identification**: Find where your coach fails to push for specificity
-- **Simulated User Framework**: Test your coach against personas
-- **Improvement Tracking**: Dashboard showing coach evolution over time
+- Live Coach Analysis: Evaluate your prototype's current coaching behaviors
+- Weakness Identification: Find where your coach fails to push for specificity
+- Simulated User Framework: Test your coach against personas
+- Improvement Tracking: Dashboard showing coach evolution over time
 
 **Key Deliverables**:
-- **Baseline Performance Report**: Current coach scores across all metrics
-- **Conversation Corpus**: 20+ real conversations with your prototype
-- **Evaluation Dashboard**: Live metrics for your coaching system
-- **Refined Coach v2**: Improved prompt based on metric feedback
-- **Before/After Comparison**: Quantified improvement data
+- Baseline Performance Report: Current coach scores across all metrics
+- Conversation Corpus: 20+ real conversations with your prototype
+- Evaluation Dashboard: Live metrics for your coaching system
+- Refined Coach v2: Improved prompt based on metric feedback
+- Before/After Comparison: Quantified improvement data
 
-### Session 4: Event-Driven Architecture Enhancement (2-3 hours)
+### Session 4: Morning Coach Excellence (4-5 hours)
 
-**Goal**: Scale your working prototype from in-memory to production-ready Redis
-
-**Prototype Evolution Approach**:
-1. **Performance Baseline**: Measure current system latency and throughput
-2. **Redis Migration**: Swap in-memory bus for Redis with zero downtime
-3. **Load Testing**: Stress test with multiple concurrent conversations
-4. **Monitoring Addition**: Add event flow visualization for debugging
+**Goal**: Transform generic coach into specialized morning experience with Deep Thoughts insights
 
 **Topics**:
-- **Live System Migration**: Move your working coach to Redis events
-- **Event Replay System**: Record and replay conversations for testing
-- **Performance Monitoring**: Track latency from user input to coach response
-- **Error Recovery Testing**: Ensure your coach survives Redis failures
-- **Event Pattern Analysis**: Discover common conversation flows
+- Morning Coach Specialization: Extract the good evening parts
+- Deep Thoughts Revolution: Replace the deep evaluation report with a deep think report markdown that makes user think a bit more (give summary of conversation to describe the problem to solve and approach, fact check a few things from conversation, and be a devil's advocate on the approach using Columbo's "just one more thing" phrasing). This should be a report, user wants to pin and read several times during the day.
+- Morning-Specific Evals: Pick right problem, get around the problem looking for alternative options,  excitement generation, actionability
+- Deep Thoughts evals: Succinct summary, good devil's advocate phrasing, and getting the user well underway on actual solving the problem by giving hints.
 
 **Key Deliverables**:
-- **Redis-Powered Coach**: Your prototype running on production infrastructure
-- **Event Replay Tool**: Ability to replay any conversation for debugging
-- **Performance Dashboard**: Real-time latency and throughput metrics
-- **Reliability Report**: System behavior under failure conditions
-- **Event Flow Visualizer**: See conversations flow through your system
+- Dedicated Morning Coach: Specialized agent with morning prompt
+- Deep Thoughts Report as a markdown when ask for 'deep research': AI-powered insight amplification
+- Morning Evaluation Suite: New metrics for morning effectiveness
+- Refined Morning Prompt: Data-driven prompt improvements
 
-## Phase 2: Intelligent Evolution (10-12 hours)
+### Session 5: Personal Context Integration (3-4 hours)
 
-### Session 5: Intelligent Orchestrator Development (3-4 hours)
-
-**Goal**: Evolve your simple orchestrator into an intelligent routing system
-
-**Prototype Evolution Approach**:
-1. **Current Behavior Analysis**: Map how your orchestrator routes messages now
-2. **Routing Intelligence**: Add context detection using real conversation patterns
-3. **Gradual Complexity**: Incrementally add routing rules with fallback to current behavior
-4. **Live A/B Testing**: Route percentage of traffic to new logic
+**Goal**: Integrate your personal markdown files to create deeply personalized coaching with "aha moments"
 
 **Topics**:
-- **Context Detection Patterns**: Learn from your conversation corpus
-- **Progressive Enhancement**: Add routing features without breaking current flow
-- **Multi-Agent Preparation**: Prepare for Session 6's specialized agents
-- **Fallback Safety**: Always route to working coach if uncertain
-- **Dual-Track Preparation**: Add async task spawning for future Opus analysis
+- Markdown file loading system for personal context
+- Semantic search across your life history, core beliefs, and goals
+- Context relevance scoring and selection
+- Natural integration of personal insights and todos into coach responses
+- Privacy-preserving separation from test conversations
 
 **Key Deliverables**:
-- **Smart Orchestrator v2**: Context-aware routing with your coach as fallback
-- **Routing Analytics**: Data on routing decisions and accuracy
-- **A/B Test Results**: Performance comparison of routing strategies
-- **Safety Metrics**: Confirmation that no conversations were dropped
-- **Integration Tests**: Validation of backward compatibility
+- Context file reader and parser
+- MCP server from todoist, to capture to dos and use in conversations (capturing info upfront in daily chat, so chat can tell user upfront, challenge user's choice of 'key problem', and mention other things in to do that's relevant for the problem.
+- Personal knowledge base integration
+- Context-aware coach responses
+- "Aha moment" generation from your real history
+- Clear separation between test and personal data
 
-### Session 6: Specialized Agent Evolution (4-5 hours)
+### Session 6: Intelligent Orchestrator Development (3-4 hours)
 
-**Goal**: Evolve your single coach into specialized morning/evening variants
-
-**Prototype Evolution Approach**:
-1. **Personality Analysis**: Identify current coach's strengths in each context
-2. **Incremental Specialization**: Gradually differentiate behaviors
-3. **Live Swapping Tests**: A/B test specialized vs general coach
-4. **User Preference Learning**: Track which variant performs better when
+**Goal**: Build intelligent routing system that leverages personal context for sophisticated conversations
 
 **Topics**:
-- **Coach Cloning**: Create variants of your working coach
-- **Personality Refinement**: Enhance morning energy vs evening reflection
-- **Challenge Agent Addition**: New agent for skeptical interventions
-- **Hot Swapping**: Change coaches mid-conversation seamlessly
-- **Performance Comparison**: Measure specialized vs general effectiveness
+- Context Detection Patterns from personal files 
+- Smart Routing: Detect conversation state and user needs
+- Progressive Enhancement: Add routing intelligence incrementally
+- Multi-Mode Support: Morning vs future evening vs challenge conversations
+- Pattern Recognition: Identify conversation themes in real-time
 
 **Key Deliverables**:
-- **Morning Coach v2**: Optimized for goal-setting and energy
-- **Evening Coach v2**: Enhanced for reflection and learning extraction  
-- **Challenge Agent v1**: Interrupts with supportive skepticism
-- **Variant Performance Report**: Which specialization helps most
-- **Smooth Transition Tests**: Validation of coach handoffs
+- Smart Orchestrator v2: Context-aware routing with personal knowledge
+- Routing Analytics: Data on routing decisions and effectiveness
+- Conversation Flow Optimization: Improved natural progression
+- Mode Detection: Automatic recognition of coaching context
+- Integration Tests: Validation of intelligent routing
 
-### Session 7: System Integration and Reliability (3-4 hours)
+## Phase 2: Voice Revolution with Performance (11-13 hours)
 
-**Goal**: Harden your evolved system for production use
+### Session 7: Performance and Cost Optimization (3-4 hours)
 
-**Prototype Evolution Approach**:
-1. **Current Reliability Baseline**: Measure uptime and error rates
-2. **Stress Testing**: Push system until it breaks, then fix weak points
-3. **Recovery Mechanisms**: Add graceful degradation patterns
-4. **Production Monitoring**: Implement comprehensive observability
+**Goal**: Optimize system performance to enable natural voice conversations
 
 **Topics**:
-- **Multi-Day Conversations**: Test continuity across sessions
-- **Concurrent User Support**: Handle multiple Michaels simultaneously
-- **Error Recovery Patterns**: Graceful handling of API failures
-- **Health Check System**: Proactive problem detection
-- **Usage Analytics**: Understand real conversation patterns
+- Response Time Analysis: Identify and fix latency bottlenecks
+- Parallel Processing: Run analyzers concurrently
+- Smart Caching: Cache based on usage patterns
+- Token Optimization: Reduce costs without sacrificing quality
+- Voice-Ready Performance: Sub-3-second response times
 
 **Key Deliverables**:
-- **Production-Ready System**: Hardened for reliable daily use
-- **Reliability Metrics**: 99.9% uptime achievement
-- **Load Test Results**: Support for 10+ concurrent conversations
-- **Recovery Playbook**: Automated error recovery procedures
-- **Usage Insights**: Data-driven understanding of user patterns
+- Optimized Coach v3: 50% faster responses
+- Performance Dashboard: Real-time latency tracking
+- Cost Reduction: 40% lower API costs
+- Caching System: Smart response caching
+- Voice-Ready Benchmarks: Consistent low latency
 
-## Phase 3: Advanced Intelligence (6-8 hours)
+### Session 8: Voice Integration Preparation (2-3 hours)
 
-### Session 8: Memory and Context Management (3-4 hours)
-
-**Goal**: Add memory to your coaches based on real conversation needs
-
-**Prototype Evolution Approach**:
-1. **Memory Need Analysis**: Identify where lack of memory hurts conversations
-2. **Incremental Addition**: Add memory features one at a time
-3. **Impact Measurement**: Quantify how memory improves coaching
-4. **Cost/Benefit Analysis**: Balance memory value vs complexity
+**Goal**: Prepare your coaching system for voice interaction
 
 **Topics**:
-- **Conversation Continuity**: Remember previous session goals
-- **Pattern Recognition**: Identify recurring user challenges
-- **Context Prioritization**: Store only high-value information
-- **Memory-Enhanced Coaching**: Use history to personalize responses
-- **Privacy-Aware Design**: Secure handling of personal diary data
+- Text-to-Voice Analysis: Adapt responses for spoken delivery
+- Conversation Rhythm: Natural timing for voice interactions
+- Voice Personality Design: Warm, supportive audio presence
+- LiveKit Setup: Development environment preparation
+- Voice-Specific Metrics: New evaluation criteria
 
 **Key Deliverables**:
-- **Memory-Enabled Coach v3**: Remembers key context across sessions
-- **Memory Impact Report**: Quantified improvement in coaching quality
-- **Context Retrieval System**: Efficient access to relevant history
-- **Pattern Insights Dashboard**: Recurring themes in user's journey
-- **Privacy Compliance**: Secure storage and access controls
+- Voice Readiness Report: Required adaptations identified
+- LiveKit Dev Environment: Ready for voice development
+- Voice-Adapted Prompts: Optimized for spoken conversation
+- Timing Analysis: Natural conversation pace data
+- Voice Testing Plan: Comprehensive evaluation strategy
 
-### Session 9: Performance and Cost Optimization (3-4 hours)
+### Session 9: Building the Voice Interface (3-4 hours)
 
-**Goal**: Optimize your system based on real usage data
-
-**Prototype Evolution Approach**:
-1. **Cost Analysis**: Review actual token usage from Sessions 2-8
-2. **Bottleneck Identification**: Profile real system performance
-3. **Targeted Optimization**: Fix only measured problems
-4. **User Experience Validation**: Ensure optimizations don't hurt quality
+**Goal**: Create voice wrapper for your personalized coaching system
 
 **Topics**:
-- **Token Usage Analysis**: Understand your actual API costs
-- **Caching Strategy**: Cache based on real repeated queries
-- **Response Time Optimization**: Reduce latency where users notice
-- **Dual-Track Implementation**: Add Opus for deep insights efficiently
-- **Cost/Quality Tradeoffs**: Data-driven model selection
+- LiveKit Agent Framework: Voice-enable your text coach
+- Speech Pipeline: STT → Coach → TTS flow
+- Voice Activity Detection: Natural conversation timing
+- Personal Context in Voice: Reference your history naturally
+- State Synchronization: Seamless voice/text continuity
 
 **Key Deliverables**:
-- **Optimized Coach v4**: 50% cost reduction with maintained quality
-- **Performance Report**: Before/after latency comparisons
-- **Caching System**: Smart cache based on usage patterns
-- **Cost Dashboard**: Real-time tracking of API expenses
-- **Optimization Playbook**: Guidelines for future improvements
+- Voice-Enabled Coach v1: Working voice conversations
+- Latency Metrics: Speech-to-response timing
+- Voice Quality Scores: STT/TTS effectiveness
+- Personal Context Integration: Natural history references
+- Error Recovery: Graceful speech failure handling
 
-## Phase 4: Voice Evolution (10-12 hours)
+### Session 10: Voice UX and Natural Conversation (2-3 hours)
 
-### Session 10: Voice Integration Preparation (2-3 hours)
-
-**Goal**: Understand voice requirements by studying your text coach patterns
-
-**Prototype Evolution Approach**:
-1. **Conversation Timing Analysis**: Study natural pause points in text
-2. **Response Length Optimization**: Adjust for spoken delivery
-3. **Voice Personality Design**: Adapt text personality for audio
-4. **Technical Foundation**: Set up LiveKit environment
+**Goal**: Create natural, responsive voice interactions
 
 **Topics**:
-- **Text-to-Voice Analysis**: Which responses work spoken vs written
-- **Conversation Rhythm**: Natural timing for voice interactions
-- **Voice Coach Personality**: Adapt warmth and tone for audio
-- **LiveKit Setup**: Development environment preparation
-- **Voice-Specific Metrics**: New evaluation criteria for audio
+- Interruption Handling: Natural conversation flow
+- Audio Feedback: Thinking sounds and confirmations
+- Barge-In Support: User-friendly interruptions
+- Voice Personality Tuning: Warm, engaging presence
+- Conversation Flow: Natural turn-taking
 
 **Key Deliverables**:
-- **Voice Readiness Report**: What needs to change for voice
-- **LiveKit Dev Environment**: Ready for voice development
-- **Voice-Adapted Prompts**: Modified for spoken delivery
-- **Timing Analysis**: Data on conversation pace
-- **Voice Testing Plan**: Strategy for audio evaluation
+- Natural Voice Coach v2: Fluid conversations
+- UX Metrics: Interruption handling success
+- Audio Cue Library: Non-verbal feedback
+- Personality Settings: Optimized voice parameters
+- Flow Validation: Natural conversation testing
 
-### Session 11: Building the Voice Interface (3-4 hours)
+## Phase 3: Evening, Weekly Synthesis & Production (14-16 hours)
 
-**Goal**: Create voice agent wrapper for your existing coaching system
+### Session 11: Evening Check-Out Implementation (4-5 hours)
 
-**Prototype Evolution Approach**:
-1. **Voice Baseline**: Record sample text conversations to establish timing
-2. **Incremental Voice Features**: Add STT, then TTS, then VAD
-3. **Quality Measurement**: Compare voice conversations to text baseline
-4. **Latency Optimization**: Tune for natural conversation flow
+**Goal**: Create evening reflection agent that connects to morning sessions
 
 **Topics**:
-- **LiveKit Agent Framework**: Wrap your text coach in voice interface
-- **Speech Pipeline Setup**: STT → Coach → TTS flow
-- **Voice Activity Detection**: When to listen vs when to speak
-- **Prompt Adaptation**: Modify coach responses for spoken delivery
-- **State Synchronization**: Maintain context between voice and text
+- Evening Coach Agent: Retrospective-focused personality
+- Morning Session Linking: Reference specific morning goals
+- Deep Thoughts Evolution: Append evening insights to morning report
+- Evening-Specific Evals: Progress assessment, learning extraction
+- Session Continuity: Seamless morning-to-evening flow
 
 **Key Deliverables**:
-- **Voice-Enabled Coach v1**: Basic working voice conversations
-- **Latency Measurements**: Time from speech end to response start
-- **Voice Quality Metrics**: STT accuracy, TTS naturalness scores
-- **A/B Test Results**: Voice vs text coaching effectiveness
-- **Error Recovery**: Graceful handling of speech recognition failures
+- Evening Coach Agent: Specialized retrospective agent
+- Session Linking System: Connect morning/evening sessions
+- Evolving Deep Thoughts: Single daily report that grows
+- Evening Evaluation Suite: Reflection quality metrics
+- Integrated Daily Flow: Complete morning-evening cycle
 
-### Session 12: Voice UX and Natural Conversation (2-3 hours)
+### Session 12: Weekly Synthesis and Meta-Analysis (3-4 hours)
 
-**Goal**: Make voice interactions feel natural and responsive
-
-**Prototype Evolution Approach**:
-1. **Conversation Flow Analysis**: Study natural pause patterns from recordings
-2. **Interruption Testing**: Measure optimal interruption windows
-3. **Feedback Refinement**: Add audio cues and confirmations
-4. **User Testing**: Get real feedback on voice experience
+**Goal**: Build weekly status reports that synthesize multiple Deep Thoughts
 
 **Topics**:
-- **Interruption Handling**: Allow natural conversation overlaps
-- **Thinking Indicators**: Audio cues while processing
-- **Barge-In Support**: Let users interrupt long responses
-- **Voice Personality**: Tune TTS parameters for warmth
-- **Error Communication**: Voice-appropriate error messages
+- Report Selection UI: Choose 3-10 Deep Thoughts by date
+- Pattern Synthesis: Identify themes across selected reports
+- Sentiment Analysis: Track emotional journey through the week
+- Meta-Cognitive Question: "What do you believe now that you didn't before?"
+- Weekly Evaluation: Progress feeling vs healthy skepticism balance
 
 **Key Deliverables**:
-- **Natural Voice Coach v2**: Fluid conversation with interruptions
-- **UX Metrics Report**: Interruption success rate, user satisfaction
-- **Audio Cue System**: Non-verbal feedback sounds
-- **Voice Personality Settings**: Optimized TTS configuration
-- **Conversation Flow Tests**: Validation of natural timing
+- Connect together morning and evening sessions pairwise for same day with a common markdown file
+- Weekly Report Generator: Synthesize multiple sessions, overview of week's problems and solutions, Stories to keep, question: "what do I believe now, I didn't before?"
+- Date Selection Interface: User-friendly report picker
+- Pattern Recognition Engine: Cross-session analysis
+- Sentiment Tracker: Emotional journey visualization
+- Weekly Eval Framework: Balance optimism with hunger
 
-### Session 13: Production Voice Deployment (3-4 hours)
+### Session 13: Redis Event-Driven Architecture (2-3 hours)
 
-**Goal**: Deploy and monitor your voice coaching system
-
-**Prototype Evolution Approach**:
-1. **Deployment Readiness**: Package voice system for production
-2. **Monitoring Setup**: Track voice-specific quality metrics
-3. **Scaling Testing**: Handle multiple concurrent voice sessions
-4. **Continuous Improvement**: Set up feedback loops
+**Goal**: Scale to production-ready infrastructure for multi-user support
 
 **Topics**:
-- **Docker Containerization**: Package complete voice system
-- **LiveKit Cloud Setup**: Production room configuration
-- **Voice Quality Monitoring**: Track STT accuracy, latency, drops
-- **Cost Optimization**: Balance voice quality vs API costs
-- **User Feedback Integration**: Systematic improvement process
+- Redis Pub/Sub implementation
+- Event bus migration from in-memory
+- Multi-user conversation handling
+- Event replay and debugging tools
+- Performance monitoring
 
 **Key Deliverables**:
-- **Production Voice System**: Fully deployed and monitored
-- **Voice Analytics Dashboard**: Real-time quality metrics
-- **Scaling Report**: Concurrent session capacity and costs
-- **Deployment Playbook**: Reproducible deployment process
-- **30-Day Improvement Plan**: Data-driven enhancement roadmap
+- Redis-Powered System: Production infrastructure
+- Event Replay Tools: Debugging capabilities
+- Multi-User Support: Concurrent conversations
+- Monitoring Dashboard: System health metrics
+- Migration Playbook: Zero-downtime transition
 
+### Session 14: System Integration and Reliability (3-4 hours)
+
+**Goal**: Harden system for production deployment
+
+**Topics**:
+- Error Recovery Patterns: Graceful failure handling
+- Health Monitoring: Proactive issue detection
+- Backup Systems: Data persistence and recovery
+- Load Testing: Stress test at scale
+- Production Readiness: Final hardening
+
+**Key Deliverables**:
+- Production System: 99.9% uptime capable
+- Recovery Procedures: Automated error handling
+- Health Dashboard: Real-time monitoring
+- Load Test Results: Proven scalability
+- Deployment Guide: Production procedures
+
+### Session 15: Production Voice Deployment (2-3 hours)
+
+**Goal**: Deploy complete voice coaching system
+
+**Topics**:
+- Docker Containerization: Package full system
+- LiveKit Cloud Setup: Production configuration
+- Voice Quality Monitoring: Track performance
+- Cost Management: Optimize voice expenses
+- Continuous Improvement: Feedback loops
+
+**Key Deliverables**:
+- Deployed Voice System: Live production coach
+- Analytics Dashboard: Voice quality metrics
+- Cost Report: Voice operation expenses
+- Deployment Playbook: Reproducible process
+- Improvement Roadmap: Data-driven enhancements
 
 ## The Evolution Pattern
 

@@ -257,3 +257,59 @@ class TestReportGeneration:
         for command in exit_commands:
             result = await enhanced_cli.process_input(command)
             assert result is None  # Should return None to exit CLI
+    
+    @pytest.mark.asyncio
+    async def test_evaluation_reporter_generate_deep_report_method_exists(self):
+        """Test that the generate_deep_report method exists and can be called."""
+        from src.evaluation.reporting.reporter import EvaluationReporter
+        from src.evaluation.generator import GeneratedConversation
+        from src.evaluation.analyzers.base import BaseAnalyzer, AnalysisScore
+        
+        # Create a mock conversation
+        conversation = GeneratedConversation(
+            messages=[
+                {"role": "user", "content": "I want to be more productive"},
+                {"role": "assistant", "content": "What specific productivity challenge are you facing?"},
+                {"role": "user", "content": "I waste too much time on emails"},
+                {"role": "assistant", "content": "Can you commit to checking emails only twice daily this week?"}
+            ],
+            persona_type="Real User",
+            scenario="CLI Session",
+            timestamp=datetime.now(),
+            breakthrough_achieved=False,
+            final_resistance_level=0.5
+        )
+        
+        # Create mock analyzers
+        mock_analyzer = Mock(spec=BaseAnalyzer)
+        mock_analyzer.name = "TestAnalyzer"
+        mock_analyzer.analyze = AsyncMock(return_value=AnalysisScore(
+            value=0.8,
+            reasoning="Test reasoning",
+            analyzer_name="TestAnalyzer"
+        ))
+        
+        # Create reporter and test method exists
+        reporter = EvaluationReporter()
+        assert hasattr(reporter, 'generate_deep_report'), "generate_deep_report method should exist"
+        
+        # Test method can be called (mock the LLM service to avoid API calls)
+        with patch.object(reporter, 'opus_service') as mock_opus:
+            mock_opus.generate_response = AsyncMock(return_value="Test AI reflection")
+            
+            result = await reporter.generate_deep_report(
+                conversation=conversation,
+                user_notes="Test notes",
+                analyzers=[mock_analyzer],
+                performance_data={"response_times_ms": [500, 750], "percentile_80": 750, "responses_under_1s_percentage": 0.5}
+            )
+            
+            # Verify result
+            assert result is not None
+            assert hasattr(result, 'ai_reflection')
+            assert hasattr(result, 'behavioral_scores')
+            assert hasattr(result, 'overall_score')
+            assert result.user_notes == "Test notes"
+            
+            # Verify the analyzer was called
+            mock_analyzer.analyze.assert_called_once()

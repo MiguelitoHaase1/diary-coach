@@ -1,0 +1,10 @@
+## Core vibecoding Philosophy: Three Key Principles
+
+### 1. Compartmentalization Through Incremental Development
+**Minimize cognitive load and context window overflow** by breaking work into small, testable increments. Each session (defined in roadmap.md) is further decomposed into bite-sized tasks that can be independently tested and validated. This prevents AI context overflow and improves observability.
+
+### 2. Continuous Improvement Through Evaluation
+**Set up testable evaluations** to measure and improve AI collaboration effectiveness. Track what works, what doesn't, and refine the approach based on empirical results. Every session generates logs and status updates that feed back into better future interactions.
+
+### 3. Learning While Building
+**Transform delegation into education**. The AI doesn't just write code—it creates learning opportunities through Dojo documents that help you understand the "why" behind every technical decision. Building becomes teaching.

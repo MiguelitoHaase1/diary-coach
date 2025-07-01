@@ -12,6 +12,13 @@ from src.evaluation.performance_tracker import PerformanceTracker
 from src.evaluation.reporting.reporter import EvaluationReporter
 from src.evaluation.analyzers.specificity import SpecificityPushAnalyzer
 from src.evaluation.analyzers.action import ActionOrientationAnalyzer
+from src.evaluation.analyzers.morning import (
+    ProblemSelectionAnalyzer,
+    ThinkingPivotAnalyzer, 
+    ExcitementBuilderAnalyzer
+)
+from src.evaluation.reporting.deep_thoughts import DeepThoughtsGenerator
+from src.evaluation.reporting.eval_exporter import EvaluationExporter
 
 
 class EnhancedCLI(DiaryCoachCLI):
@@ -30,8 +37,17 @@ class EnhancedCLI(DiaryCoachCLI):
         self.current_eval = None
         self.evaluation_reporter = EvaluationReporter()
         
-        # Initialize analyzers with LLM service
+        # Initialize Deep Thoughts generator and Eval exporter
+        self.deep_thoughts_generator = DeepThoughtsGenerator()
+        self.eval_exporter = EvaluationExporter()
+        
+        # Initialize analyzers with LLM service (including morning-specific ones)
         self.analyzers = [
+            # Morning-specific analyzers
+            ProblemSelectionAnalyzer(llm_service=coach.llm_service),
+            ThinkingPivotAnalyzer(llm_service=coach.llm_service),
+            ExcitementBuilderAnalyzer(llm_service=coach.llm_service),
+            # General analyzers
             SpecificityPushAnalyzer(llm_service=coach.llm_service),
             ActionOrientationAnalyzer(llm_service=coach.llm_service)
         ]
@@ -54,7 +70,7 @@ class EnhancedCLI(DiaryCoachCLI):
         
         if any(user_input.lower().strip() == cmd for cmd in stop_commands):
             await self._handle_stop_command()
-            return "Light evaluation report generated. Type 'deep report' for detailed analysis or 'exit' to quit."
+            return "Conversation evaluation complete. Type 'deep report' to generate Deep Thoughts + evaluation files, or 'exit' to quit."
         
         if user_input.lower().strip() == "report":
             await self._handle_report_command()
@@ -72,8 +88,10 @@ class EnhancedCLI(DiaryCoachCLI):
         ]
         
         if any(user_input.lower().strip() == cmd for cmd in deep_report_commands):
+            if not self.conversation_history:
+                return "No conversation history to evaluate. Please start a conversation first."
             await self._handle_deep_report_command()
-            return "Deep evaluation report generated."
+            return "Deep Thoughts and evaluation reports generated."
         
         try:
             # Track performance
@@ -131,8 +149,8 @@ class EnhancedCLI(DiaryCoachCLI):
         if user_notes.lower().strip() == "skip":
             user_notes = "No notes provided"
         
-        # Generate light evaluation report immediately
-        await self._generate_light_evaluation(user_notes)
+        # Generate in-memory evaluation only (no file generation)
+        await self._generate_in_memory_evaluation(user_notes)
         
         if self.current_eval:
             print(f"\nCoaching Effectiveness: {self.current_eval.overall_score * 10:.1f}/10")
@@ -145,12 +163,8 @@ class EnhancedCLI(DiaryCoachCLI):
             print(f"\nBehavioral Analysis:")
             for score in self.current_eval.behavioral_scores:
                 print(f"- {score.analyzer_name}: {score.value * 10:.1f}/10")
-            
-            # Store the report file path for potential deep report upgrade
-            if hasattr(self.current_eval, 'report_file_path'):
-                print(f"\nLight report saved to: {self.current_eval.report_file_path}")
         
-        print("\nType 'deep report' for enhanced analysis, or 'exit' to quit.")
+        print("\nType 'deep report' to generate Deep Thoughts + evaluation files, or 'exit' to quit.")
     
     async def _handle_report_command(self) -> None:
         """Handle report command to display evaluation."""
@@ -163,8 +177,8 @@ class EnhancedCLI(DiaryCoachCLI):
         print(f"Session Cost: ${self.get_session_cost():.4f}")
         print(f"Performance: {self.performance_tracker.get_median():.0f}ms median")
     
-    async def _generate_light_evaluation(self, user_notes: str) -> None:
-        """Generate light evaluation using Haiku model."""
+    async def _generate_in_memory_evaluation(self, user_notes: str) -> None:
+        """Generate in-memory evaluation without file creation."""
         from src.evaluation.generator import GeneratedConversation
         
         # Convert conversation history to GeneratedConversation format
@@ -184,7 +198,7 @@ class EnhancedCLI(DiaryCoachCLI):
             "responses_under_1s_percentage": self.performance_tracker.percentage_under_threshold(1000)
         }
         
-        # Generate light evaluation report
+        # Generate light evaluation report (in memory only)
         try:
             self.current_eval = await self.evaluation_reporter.generate_light_report(
                 conversation=conversation,
@@ -193,15 +207,8 @@ class EnhancedCLI(DiaryCoachCLI):
                 performance_data=performance_data
             )
             
-            # Save report to docs/prototype
-            report_filename = f"eval_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
-            report_path = f"docs/prototype/{report_filename}"
-            self.current_eval.save_as_markdown(report_path)
-            
-            # Store the report file path for potential upgrade to deep report
-            self.current_eval.report_file_path = report_path
-            
-            print(f"\nLight evaluation report saved to: {report_path}")
+            # Store user notes for deep report
+            self.current_eval.user_notes = user_notes
             
         except Exception as e:
             print(f"Error generating evaluation: {e}")
@@ -209,79 +216,54 @@ class EnhancedCLI(DiaryCoachCLI):
             await self._generate_simple_evaluation()
     
     async def _handle_deep_report_command(self) -> None:
-        """Handle deep report command for detailed analysis."""
+        """Handle deep report command - generates Deep Thoughts (Opus) + Evaluation (Sonnet) files."""
         if not self.conversation_history:
             print("No conversation history to evaluate.")
             return
         
-        if not self.current_eval or not hasattr(self.current_eval, 'report_file_path'):
-            print("No existing report found. Please run 'stop' command first.")
-            return
+        print("\n🧠 Generating Deep Thoughts + Evaluation reports...")
         
-        print("\nUpgrading to deep analysis with AI reflection...")
-        
-        # Use existing user notes or collect new ones
-        existing_notes = getattr(self.current_eval, 'user_notes', 'No notes provided')
-        print(f"\nExisting notes: {existing_notes}")
-        print("Add additional notes for deep analysis (or 'skip' to use existing): ", end="")
-        additional_notes = await self._get_input("")
-        
-        if additional_notes.lower().strip() != "skip":
-            user_notes = f"{existing_notes}\n\nAdditional notes: {additional_notes}"
+        # Ensure we have user notes
+        if not self.current_eval:
+            # Generate in-memory evaluation first if needed
+            print("Add notes about this conversation (or 'skip'): ", end="")
+            user_notes = await self._get_input("")
+            if user_notes.lower().strip() == "skip":
+                user_notes = "No notes provided"
+            await self._generate_in_memory_evaluation(user_notes)
         else:
-            user_notes = existing_notes
+            user_notes = getattr(self.current_eval, 'user_notes', 'No notes provided')
         
-        # Generate deep evaluation report and update existing file
-        await self._generate_deep_evaluation(user_notes, upgrade_existing=True)
-    
-    async def _generate_deep_evaluation(self, user_notes: str, upgrade_existing: bool = False) -> None:
-        """Generate deep evaluation using Opus model."""
-        from src.evaluation.generator import GeneratedConversation
+        # Generate unique conversation ID for this session
+        conversation_id = f"session_{datetime.now().strftime('%Y%m%d_%H%M')}"
         
-        # Convert conversation history to GeneratedConversation format
-        conversation = GeneratedConversation(
-            messages=self.conversation_history,
-            persona_type="Real User",  # Real user, not a persona
-            scenario="CLI Session",
-            timestamp=datetime.now(),
-            final_resistance_level=0.5,  # Unknown for real user
-            breakthrough_achieved=False  # Unknown for real user
-        )
-        
-        # Prepare performance data
-        performance_data = {
-            "response_times_ms": self.performance_tracker.response_times,
-            "percentile_80": self.performance_tracker.get_percentile(80),
-            "responses_under_1s_percentage": self.performance_tracker.percentage_under_threshold(1000)
-        }
-        
-        # Generate deep evaluation report
         try:
-            deep_eval = await self.evaluation_reporter.generate_deep_report(
-                conversation=conversation,
-                user_notes=user_notes,
-                analyzers=self.analyzers,
-                performance_data=performance_data
+            # Step 1: Generate Deep Thoughts report (Opus)
+            print("📝 Generating Deep Thoughts report (Opus)...")
+            deep_thoughts_content = await self.deep_thoughts_generator.generate_deep_thoughts(
+                conversation_history=self.conversation_history,
+                conversation_id=conversation_id
             )
+            deep_thoughts_path = self.deep_thoughts_generator.get_output_filepath()
+            print(f"✅ Deep Thoughts saved to: {deep_thoughts_path}")
             
-            if upgrade_existing and hasattr(self.current_eval, 'report_file_path'):
-                # Upgrade existing report file
-                report_path = self.current_eval.report_file_path
-                deep_eval.save_as_markdown(report_path)
-                print(f"\nReport upgraded to deep analysis: {report_path}")
-            else:
-                # Save new deep report
-                report_filename = f"eval_deep_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
-                report_path = f"docs/prototype/{report_filename}"
-                deep_eval.save_as_markdown(report_path)
-                print(f"\nDeep evaluation report saved to: {report_path}")
+            # Step 2: Generate evaluation export (Sonnet)
+            if self.current_eval:
+                print("📋 Generating evaluation report (Sonnet)...")
+                eval_content = await self.eval_exporter.export_evaluation_markdown(self.current_eval)
+                eval_path = self.eval_exporter.get_output_filepath()
+                print(f"✅ Evaluation saved to: {eval_path}")
             
-            self.current_eval = deep_eval
+            print("\n🎉 Deep report complete!")
+            print("📁 Generated files:")
+            print(f"   • Deep Thoughts: {deep_thoughts_path}")
+            if self.current_eval:
+                print(f"   • Evaluation: {eval_path}")
             
         except Exception as e:
-            print(f"Error generating deep evaluation: {e}")
-            # Fallback to simple evaluation
-            await self._generate_simple_evaluation()
+            print(f"❌ Error generating deep report: {str(e)}")
+            print("Please try again or use 'exit' to quit.")
+    
     
     async def _generate_simple_evaluation(self) -> None:
         """Generate simple evaluation as fallback."""
