@@ -5,6 +5,13 @@ import os
 from typing import List, Dict, Any, Optional
 from anthropic import AsyncAnthropic
 
+# Try to import OpenAI for GPT-4o-mini support
+try:
+    import openai
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+
 
 class AnthropicError(Exception):
     """Custom exception for Anthropic API errors."""
@@ -14,9 +21,24 @@ class AnthropicError(Exception):
 class AnthropicService:
     """Async wrapper for Anthropic Claude API with token tracking."""
     
-    # Pricing per token (approximate, adjust based on actual pricing)
-    INPUT_COST_PER_TOKEN = 0.000003  # $3 per million input tokens
-    OUTPUT_COST_PER_TOKEN = 0.000015  # $15 per million output tokens
+    # Model configurations with pricing
+    MODEL_CONFIGS = {
+        "claude-3-opus-20240229": {
+            "input_cost": 0.000015,   # $15 per million input tokens
+            "output_cost": 0.000075,  # $75 per million output tokens
+            "tier": "premium"
+        },
+        "claude-3-5-sonnet-20241022": {
+            "input_cost": 0.000003,   # $3 per million input tokens
+            "output_cost": 0.000015,  # $15 per million output tokens
+            "tier": "standard"
+        },
+        "claude-3-haiku-20240307": {
+            "input_cost": 0.00000025, # $0.25 per million input tokens
+            "output_cost": 0.00000125, # $1.25 per million output tokens
+            "tier": "cheap"
+        }
+    }
     
     def __init__(self, api_key: Optional[str] = None, model: str = "claude-3-5-sonnet-20241022"):
         """Initialize Anthropic service.
@@ -28,6 +50,9 @@ class AnthropicService:
         self.api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
         self.model = model
         self.client = AsyncAnthropic(api_key=self.api_key)
+        
+        # Get model config
+        self.model_config = self.MODEL_CONFIGS.get(model, self.MODEL_CONFIGS["claude-3-5-sonnet-20241022"])
         
         # Usage tracking
         self.total_tokens = 0
@@ -83,8 +108,8 @@ class AnthropicService:
                 total_tokens = input_tokens + output_tokens
                 
                 call_cost = (
-                    input_tokens * self.INPUT_COST_PER_TOKEN +
-                    output_tokens * self.OUTPUT_COST_PER_TOKEN
+                    input_tokens * self.model_config["input_cost"] +
+                    output_tokens * self.model_config["output_cost"]
                 )
                 
                 self.total_tokens += total_tokens
@@ -110,3 +135,22 @@ class AnthropicService:
         previous_cost = self.session_cost
         self.session_cost = 0.0
         return previous_cost
+    
+    def get_model_tier(self) -> str:
+        """Get the tier of the current model."""
+        return self.model_config["tier"]
+    
+    @classmethod
+    def create_cheap_service(cls, api_key: Optional[str] = None) -> 'AnthropicService':
+        """Create a cheap AnthropicService using Haiku model."""
+        return cls(api_key=api_key, model="claude-3-haiku-20240307")
+    
+    @classmethod
+    def create_premium_service(cls, api_key: Optional[str] = None) -> 'AnthropicService':
+        """Create a premium AnthropicService using Opus model."""
+        return cls(api_key=api_key, model="claude-3-opus-20240229")
+    
+    @classmethod
+    def create_standard_service(cls, api_key: Optional[str] = None) -> 'AnthropicService':
+        """Create a standard AnthropicService using Sonnet model."""
+        return cls(api_key=api_key, model="claude-3-5-sonnet-20241022")

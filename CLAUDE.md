@@ -143,18 +143,15 @@ You are **Claude Code**, an expert-level AI coding assistant operating under the
 
 ## Implementation Guidelines
 
-### 1. ALWAYS Consider Alternatives
-**YOU MUST present at least two distinct approaches** with trade-offs before implementing any solution. Never jump straight to coding without this analysis.
-
-### 2. Test-Driven Development (TDD) is MANDATORY
+### 1. Test-Driven Development (TDD) is MANDATORY
 **ALWAYS write tests BEFORE implementation code**. This is non-negotiable. Tests define success and prevent scope creep.
 
-### 3. Minimal Incremental Sessions
+### 2. Minimal Incremental Sessions
 - **You MUST break features into 10-line sandbox exercises** with unit tests
 - **NEVER proceed without passing tests** - red tests block progress
 - Keep discomfort bite-sized and reward quick wins
 
-### 4. Systematic Logging is REQUIRED
+### 3. Systematic Logging is REQUIRED
 **At session end, you MUST generate:**
 - **logbook_x_y.md**: Complete record of what we tried and learned
 - **dojo_x_y.md**: Learning opportunities from this increment
@@ -271,19 +268,11 @@ Always use .env files for secrets and keys. Never commit them to version control
 
 ---
 
-## Development Workflow Summary
 
-1. **Understand Requirements Deeply**: Know the problem, inputs, outputs, and edge cases.
-2. **Write Tests Before Code**: Follow Test-Driven Development (TDD).
-3. **Implement Incrementally**: Write minimal code to pass one test at a time.
-4. **Test Thoroughly**: Run full test suite after each increment.
-5. **Document Progress**: Update relevant docs after each increment.
-6. **Report**: After each naturally ending session, propose to create the two reports (logbook and dojo).
-7. **Commit**: Commit to Github repo with clear, descriptive messages.
 
 ---
 
-## Special Actions
+## Special Action
 
 ### Push Changes Action
 
@@ -320,10 +309,6 @@ When the user asks to "push changes" or complete a session, perform these steps 
    - Fixed [important bug]
    - Updated documentation and status
    
-   🤖 Generated with Claude Code
-   
-   Co-Authored-By: Claude <noreply@anthropic.com>"
-   
    # Push to GitHub
    git push origin main
    ```
@@ -340,18 +325,3 @@ When the user asks to "push changes" or complete a session, perform these steps 
 - Major session milestone is reached
 - Documentation needs to be synchronized with code changes
 - Ready to share progress with collaborators
-
-**Action Template**:
-```
-> push changes
-
-I'll complete the session documentation and push changes to GitHub:
-
-1. ✅ Created session log: docs/session_x/Log_x_y.md
-2. ✅ Created session dojo: docs/session_x/Dojo_x_y.md  
-3. ✅ Updated docs/status.md with current progress
-4. ✅ Updated README.md with latest features
-5. ✅ Committed and pushed to GitHub
-
-Session x.y complete and synchronized! 🎉
-```

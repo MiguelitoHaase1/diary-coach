@@ -45,16 +45,26 @@ Goodbye! Have a transformative day! 🌟
 ## ✨ Current Features
 
 ### 🤖 Intelligent Coaching
+- **Morning Specialization**: Time-aware coaching with morning-specific prompts and energy (6:00 AM - 11:59 AM)
 - **Personalized Conversations**: Uses Michael's specific coaching style and approach
 - **Context Awareness**: Maintains conversation history and builds on previous discussions
 - **Natural Interaction**: Responds to natural language without rigid command structures
 
+### 🧠 Deep Thoughts Generation
+- **Pinneable Insights**: Opus-powered analysis you'll want to revisit throughout the day
+- **Breakthrough Thinking**: Transforms conversations into actionable insights
+- **Comprehensive Analysis**: Includes evaluation summaries and full conversation transcripts
+
 ### 📊 Advanced Evaluation System
-- **Behavioral Analysis**: 4 LLM-powered analyzers measuring coaching effectiveness:
-  - **Specificity Push**: How well the coach challenges vague statements
-  - **Action Orientation**: Drives toward concrete commitments and next steps
-  - **Emotional Presence**: Acknowledges emotions before jumping to solutions
-  - **Framework Disruption**: Questions systematic thinking patterns
+- **3-Tier LLM Architecture**: Strategic model selection for cost-effectiveness:
+  - **GPT-4o-mini**: Cheap testing during development (~$0.15/M tokens)
+  - **Claude Sonnet**: Standard operations and persona simulation (~$3/M tokens) 
+  - **Claude Opus**: Premium analysis for Deep Thoughts generation (~$15/M tokens)
+- **Behavioral Analysis**: 7 LLM-powered analyzers measuring coaching effectiveness:
+  - **Morning Analyzers**: ProblemSelection, ThinkingPivot, ExcitementBuilder
+  - **General Analyzers**: Specificity Push, Action Orientation, Emotional Presence, Framework Disruption
+- **Enhanced Persona Testing**: Cooperative personas that accept coaching premise while showing resistance patterns
+- **Comprehensive Eval Command**: Type `eval` for discretionary full evaluation with Sonnet-4 + Opus analysis
 - **Performance Tracking**: Real-time response speed monitoring with percentile reporting
 - **Two-Tier Reports**: Light reports for immediate feedback, deep reports with AI reflection
 
@@ -66,9 +76,13 @@ Goodbye! Have a transformative day! 🌟
 - **Conversation Transcripts**: Full conversation history included in all reports
 
 ### 📈 Quality Assurance
-- **Automated Testing**: 80+ tests covering all system components
-- **PM Persona Testing**: 3 realistic personas test coaching against different resistance patterns
-- **Conversation Generation**: Automated creation of coaching scenarios for evaluation
+- **Automated Testing**: 35+ tests covering all system components
+- **PM Persona Testing**: 3 enhanced personas test coaching against different resistance patterns:
+  - **ControlFreak**: Shows procrastination and fear of imperfection
+  - **FrameworkRigid**: Intellectual thinking over action
+  - **LegacyBuilder**: Vision obsession over daily execution
+- **Task-Specific Scenarios**: Concrete problem identification scenarios (file organization, user research, team communication)
+- **Conversation Generation**: Automated creation of realistic coaching scenarios for evaluation
 
 ## 🏗️ Architecture Overview
 

@@ -32,11 +32,11 @@ class ConversationGenerator:
         """
         self.coach = coach
         self.scenarios = {
-            "morning_goal_setting": "I need to figure out my priorities for today.",
-            "evening_reflection": "I'm reflecting on how today went with my team.",
-            "decision_making": "I'm torn between two different product directions.",
-            "team_conflict": "I'm having issues with how my team meetings are going.",
-            "perfectionism": "I keep refining this feature but it's never quite ready."
+            "morning_goal_setting": "I need to pick the most important problem to solve today. I'm torn between organizing my file system to improve focus, or diving into the user research analysis for our next product feature. Both feel important.",
+            "decision_making": "I need to decide on my top priority for today. I could either work on the team communication issues we've been having, or focus on finalizing the Q2 roadmap presentation. Both are pressing.",
+            "team_issue": "I want to address the most important team issue today. I'm considering whether to have that difficult conversation with Sarah about her performance, or spend time redesigning our sprint planning process.",
+            "product_priority": "I need to choose which product problem to focus on today. Should I tackle the user onboarding flow that's converting poorly, or work on the API performance issues our enterprise clients are complaining about?",
+            "daily_focus": "I'm trying to pick my single most important task for today. I could either deep-dive into competitor analysis for our pricing strategy, or finally write up that technical documentation the engineering team keeps asking for."
         }
     
     async def generate_conversation(
@@ -60,11 +60,11 @@ class ConversationGenerator:
         messages = []
         context = []
         
-        # Start with scenario-based opening
+        # Start with scenario-based opening that accepts the coaching premise
         if scenario in self.scenarios:
             opening_message = self.scenarios[scenario]
         else:
-            opening_message = "I'm working through some challenges with my product team."
+            opening_message = "I need to identify the most important problem to solve today. I'm considering whether to work on our user retention analytics dashboard or tackle the cross-team collaboration issues we've been having. Both feel urgent."
         
         # Add opening user message
         messages.append({

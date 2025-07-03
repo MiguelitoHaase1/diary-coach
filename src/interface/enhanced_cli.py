@@ -19,6 +19,8 @@ from src.evaluation.analyzers.morning import (
 )
 from src.evaluation.reporting.deep_thoughts import DeepThoughtsGenerator
 from src.evaluation.reporting.eval_exporter import EvaluationExporter
+from src.services.llm_factory import LLMFactory, LLMTier
+from src.evaluation.eval_command import EvalCommand
 
 
 class EnhancedCLI(DiaryCoachCLI):
@@ -38,8 +40,12 @@ class EnhancedCLI(DiaryCoachCLI):
         self.evaluation_reporter = EvaluationReporter()
         
         # Initialize Deep Thoughts generator and Eval exporter
-        self.deep_thoughts_generator = DeepThoughtsGenerator()
+        # Use PREMIUM tier (Opus) for manual testing
+        self.deep_thoughts_generator = DeepThoughtsGenerator(tier=LLMTier.PREMIUM)
         self.eval_exporter = EvaluationExporter()
+        
+        # Initialize comprehensive eval command
+        self.eval_command = EvalCommand(coach)
         
         # Initialize analyzers with LLM service (including morning-specific ones)
         self.analyzers = [
@@ -90,8 +96,18 @@ class EnhancedCLI(DiaryCoachCLI):
         if any(user_input.lower().strip() == cmd for cmd in deep_report_commands):
             if not self.conversation_history:
                 return "No conversation history to evaluate. Please start a conversation first."
-            await self._handle_deep_report_command()
+            await self._handle_deep_report_command(include_full_analysis=True)
             return "Deep Thoughts and evaluation reports generated."
+        
+        # Check for comprehensive eval command
+        eval_commands = [
+            "eval", "comprehensive eval", "persona eval", "full eval",
+            "test personas", "run eval", "evaluate coach"
+        ]
+        
+        if any(user_input.lower().strip() == cmd for cmd in eval_commands):
+            await self._handle_eval_command()
+            return "Comprehensive persona-based evaluation complete."
         
         try:
             # Track performance
@@ -215,7 +231,7 @@ class EnhancedCLI(DiaryCoachCLI):
             # Fallback to simple evaluation
             await self._generate_simple_evaluation()
     
-    async def _handle_deep_report_command(self) -> None:
+    async def _handle_deep_report_command(self, include_full_analysis: bool = False) -> None:
         """Handle deep report command - generates Deep Thoughts (Opus) + Evaluation (Sonnet) files."""
         if not self.conversation_history:
             print("No conversation history to evaluate.")
@@ -238,11 +254,13 @@ class EnhancedCLI(DiaryCoachCLI):
         conversation_id = f"session_{datetime.now().strftime('%Y%m%d_%H%M')}"
         
         try:
-            # Step 1: Generate Deep Thoughts report (Opus)
+            # Step 1: Generate Deep Thoughts report with full analysis if requested
             print("📝 Generating Deep Thoughts report (Opus)...")
             deep_thoughts_content = await self.deep_thoughts_generator.generate_deep_thoughts(
                 conversation_history=self.conversation_history,
-                conversation_id=conversation_id
+                conversation_id=conversation_id,
+                include_evals=include_full_analysis,
+                include_transcript=include_full_analysis
             )
             deep_thoughts_path = self.deep_thoughts_generator.get_output_filepath()
             print(f"✅ Deep Thoughts saved to: {deep_thoughts_path}")
@@ -262,6 +280,31 @@ class EnhancedCLI(DiaryCoachCLI):
             
         except Exception as e:
             print(f"❌ Error generating deep report: {str(e)}")
+            print("Please try again or use 'exit' to quit.")
+    
+    async def _handle_eval_command(self) -> None:
+        """Handle comprehensive persona-based evaluation command."""
+        print("🎯 Starting comprehensive persona-based evaluation...")
+        print("   This will test the coach against all personas with Sonnet-4 simulation")
+        print("   and generate Deep Thoughts reports with Opus.")
+        print()
+        
+        try:
+            results = await self.eval_command.run_comprehensive_eval(
+                conversations_per_persona=2  # Keep it reasonable for manual testing
+            )
+            
+            print("\n✨ Evaluation insights:")
+            if results.get("results"):
+                for persona_type, persona_results in results["results"].items():
+                    breakthrough_count = persona_results.get("breakthrough_achieved_count", 0)
+                    total_conversations = len(persona_results.get("conversations", []))
+                    avg_score = persona_results.get("avg_breakthrough_score", 0)
+                    
+                    print(f"   • {persona_type.replace('_', ' ').title()}: {breakthrough_count}/{total_conversations} breakthroughs, {avg_score:.1f}/10 avg effectiveness")
+            
+        except Exception as e:
+            print(f"❌ Error during comprehensive evaluation: {str(e)}")
             print("Please try again or use 'exit' to quit.")
     
     

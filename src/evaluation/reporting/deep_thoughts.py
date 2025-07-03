@@ -6,21 +6,25 @@ from typing import List, Dict, Any, Optional
 from pathlib import Path
 
 from src.services.llm_service import AnthropicService
+from src.services.llm_factory import LLMFactory, LLMTier
 
 
 class DeepThoughtsGenerator:
-    """Generates Deep Thoughts reports using Opus for breakthrough insights."""
+    """Generates Deep Thoughts reports with configurable LLM tier."""
     
-    def __init__(self, llm_service: Optional[AnthropicService] = None):
+    def __init__(self, llm_service: Optional[AnthropicService] = None, tier: LLMTier = LLMTier.PREMIUM):
         """Initialize the Deep Thoughts Generator.
         
         Args:
-            llm_service: Optional LLM service. If not provided, creates Opus service.
+            llm_service: Optional LLM service. If not provided, creates service based on tier.
+            tier: LLM tier to use (CHEAP, STANDARD, or PREMIUM)
         """
         if llm_service:
             self.llm_service = llm_service
         else:
-            self.llm_service = AnthropicService(model="claude-3-opus-20240229")
+            self.llm_service = LLMFactory.create_service(tier)
+        
+        self.tier = tier
     
     def _get_output_path(self, timestamp: Optional[datetime] = None) -> Path:
         """Get the output file path for Deep Thoughts report.
@@ -45,7 +49,9 @@ class DeepThoughtsGenerator:
         self,
         conversation_history: List[Dict[str, str]],
         conversation_id: str,
-        timestamp: Optional[datetime] = None
+        timestamp: Optional[datetime] = None,
+        include_evals: bool = False,
+        include_transcript: bool = False
     ) -> str:
         """Generate Deep Thoughts report and save to file.
         
@@ -60,8 +66,13 @@ class DeepThoughtsGenerator:
         # Build conversation summary for analysis
         conversation_text = self._format_conversation_for_analysis(conversation_history)
         
-        # Generate Deep Thoughts using Opus
-        deep_thoughts_content = await self._generate_analysis(conversation_text, conversation_id)
+        # Generate Deep Thoughts analysis
+        deep_thoughts_content = await self._generate_analysis(
+            conversation_text, 
+            conversation_id,
+            include_evals=include_evals,
+            include_transcript=include_transcript
+        )
         
         # Get output file path
         output_path = self._get_output_path(timestamp)
@@ -107,7 +118,13 @@ class DeepThoughtsGenerator:
         
         return "\n\n".join(formatted_lines)
     
-    async def _generate_analysis(self, conversation_text: str, conversation_id: str) -> str:
+    async def _generate_analysis(
+        self, 
+        conversation_text: str, 
+        conversation_id: str,
+        include_evals: bool = False,
+        include_transcript: bool = False
+    ) -> str:
         """Generate Deep Thoughts analysis using Opus model.
         
         Args:
@@ -117,8 +134,8 @@ class DeepThoughtsGenerator:
         Returns:
             Deep Thoughts report content
         """
-        # Structured prompt for consistent Deep Thoughts format
-        analysis_prompt = f"""You are an expert executive coach analyzing a coaching conversation with Michael. Generate a "Deep Thoughts" report that transforms this conversation into breakthrough insights he'll want to revisit throughout his day.
+        # Enhanced prompt for Deep Thoughts with optional sections
+        base_prompt = f"""You are an expert executive coach analyzing a coaching conversation with Michael. Generate a "Deep Thoughts" report that transforms this conversation into breakthrough insights he'll want to revisit throughout his day.
 
 CONVERSATION TO ANALYZE:
 {conversation_text}
@@ -153,13 +170,43 @@ GUIDELINES:
 - Ensure each section adds unique value
 
 Generate the Deep Thoughts report now:"""
+        
+        # Add optional sections if requested
+        if include_evals or include_transcript:
+            enhanced_sections = ""
+            if include_evals:
+                enhanced_sections += """
+
+## Evaluation Summary
+Provide a brief evaluation of the coaching effectiveness:
+- Key coaching moves that worked well
+- Areas for improvement
+- Overall coaching effectiveness score (1-10) with brief justification
+"""
+            
+            if include_transcript:
+                enhanced_sections += """
+
+## Conversation Transcript
+Include the full conversation transcript for reference:
+```
+{conversation_text}
+```
+"""
+            
+            analysis_prompt = base_prompt + enhanced_sections
+        else:
+            analysis_prompt = base_prompt
 
         try:
-            # Generate analysis using Opus model with focused parameters
+            # Generate analysis with parameters based on tier
+            max_tokens = 1500 if self.tier == LLMTier.PREMIUM else 1000
+            temperature = 0.2 if self.tier == LLMTier.PREMIUM else 0.3
+            
             analysis_content = await self.llm_service.generate_response(
                 messages=[{"role": "user", "content": analysis_prompt}],
-                max_tokens=1500,  # Allow longer responses for thorough analysis
-                temperature=0.2   # Lower temperature for more focused, analytical content
+                max_tokens=max_tokens,
+                temperature=temperature
             )
             
             return analysis_content
