@@ -45,7 +45,7 @@ class AnthropicService:
         }
     }
     
-    def __init__(self, api_key: Optional[str] = None, model: str = "claude-3-5-sonnet-20241022"):
+    def __init__(self, api_key: Optional[str] = None, model: str = "claude-sonnet-4-20250514"):
         """Initialize Anthropic service.
         
         Args:
@@ -57,7 +57,7 @@ class AnthropicService:
         self.client = AsyncAnthropic(api_key=self.api_key)
         
         # Get model config
-        self.model_config = self.MODEL_CONFIGS.get(model, self.MODEL_CONFIGS["claude-3-5-sonnet-20241022"])
+        self.model_config = self.MODEL_CONFIGS.get(model, self.MODEL_CONFIGS["claude-sonnet-4-20250514"])
         
         # Usage tracking
         self.total_tokens = 0

@@ -25,7 +25,7 @@ async def create_diary_coach_system():
     # Create LLM service
     llm_service = AnthropicService(
         api_key=api_key,
-        model=os.getenv("COACH_MODEL", "claude-3-5-sonnet-20241022")
+        model=os.getenv("COACH_MODEL", "claude-sonnet-4-20250514")
     )
     
     # Create coach agent
