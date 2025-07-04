@@ -151,7 +151,7 @@ When current time is between 6:00 AM and 11:59 AM, apply these specific morning 
         response_text = await self.llm_service.generate_response(
             messages=self.message_history,
             system_prompt=self._get_system_prompt(),
-            max_tokens=200,
+            max_tokens=400,  # Increased for more thoughtful responses
             temperature=0.7
         )
         
@@ -177,8 +177,7 @@ When current time is between 6:00 AM and 11:59 AM, apply these specific morning 
         
         if content_lower == "good morning":
             self.conversation_state = "morning"
-        elif content_lower == "good evening":
-            self.conversation_state = "evening"
+        # Note: Evening mode temporarily disabled - focusing on morning excellence
         # Otherwise maintain current state
     
     def _track_conversation_elements(self, user_content: str, response_text: str) -> None:

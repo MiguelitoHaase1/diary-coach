@@ -33,6 +33,11 @@ class AnthropicService:
             "output_cost": 0.000015,  # $15 per million output tokens
             "tier": "standard"
         },
+        "claude-sonnet-4-20250514": {
+            "input_cost": 0.000003,   # $3 per million input tokens (estimated)
+            "output_cost": 0.000015,  # $15 per million output tokens (estimated)
+            "tier": "premium"
+        },
         "claude-3-haiku-20240307": {
             "input_cost": 0.00000025, # $0.25 per million input tokens
             "output_cost": 0.00000125, # $1.25 per million output tokens
