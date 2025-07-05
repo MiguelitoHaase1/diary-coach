@@ -119,15 +119,10 @@ When current time is between 6:00 AM and 11:59 AM, apply these specific morning 
             
             # Create response
             response = AgentResponse(
+                agent_name="diary_coach",
                 content=response_content,
-                agent_id="diary_coach",
-                conversation_id=message.conversation_id,
-                metadata={
-                    "conversation_state": self.conversation_state,
-                    "is_morning_time": self._is_morning_time(),
-                    "morning_challenge": self.morning_challenge,
-                    "morning_value": self.morning_value
-                }
+                response_to=message.message_id,
+                conversation_id=message.conversation_id
             )
             
             return response
@@ -135,10 +130,10 @@ When current time is between 6:00 AM and 11:59 AM, apply these specific morning 
         except Exception as e:
             # Error handling - return fallback response
             error_response = AgentResponse(
+                agent_name="diary_coach",
                 content="I'm having trouble processing your message right now. Could you try again?",
-                agent_id="diary_coach",
-                conversation_id=message.conversation_id,
-                metadata={"error": str(e)}
+                response_to=message.message_id,
+                conversation_id=message.conversation_id
             )
             return error_response
     
