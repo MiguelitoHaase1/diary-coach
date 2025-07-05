@@ -18,6 +18,7 @@ class ContextState:
     todo_context: Optional[List[Dict[str, Any]]] = None
     document_context: Optional[Dict[str, Any]] = None
     conversation_history: Optional[List[Dict[str, Any]]] = None
+    memory_recall: Optional[str] = None
     
     # Context relevance and usage
     context_relevance: Dict[str, float] = field(default_factory=dict)
@@ -25,6 +26,9 @@ class ContextState:
     
     # Decision tracking
     decision_path: List[str] = field(default_factory=list)
+    
+    # Special modes
+    recall_mode: bool = False
     
     # Coach response
     coach_response: Optional[str] = None

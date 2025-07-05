@@ -8,6 +8,10 @@ from langgraph.graph.state import CompiledStateGraph
 from src.orchestration.context_state import ContextState
 from src.orchestration.mcp_todo_node import MCPTodoNode
 from src.orchestration.relevance_scorer import EnhancedRelevanceScorer
+from src.orchestration.implicit_context_coach import ImplicitContextCoach
+from src.orchestration.memory_recall import MemoryRecallNode
+from src.orchestration.document_loader import MarkdownDocumentLoader
+from src.orchestration.checkpoint_manager import CloudCheckpointManager
 
 
 class ContextRelevanceScorer:
@@ -78,40 +82,42 @@ class TodoContextNode:
 class DocumentContextNode:
     """Fetches relevant document context when needed."""
     
+    def __init__(self, documents_path: str = "/Users/michaelhaase/Desktop/coding/diary-coach/docs/memory"):
+        """Initialize with document loader."""
+        self.document_loader = MarkdownDocumentLoader(documents_path)
+    
     async def fetch_documents(self, state: ContextState) -> ContextState:
         """Fetch documents based on relevance score."""
-        relevance = state.context_relevance.get("documents", 0.0)
-        
-        if relevance > 0.6:
-            # Mock document data for now (will be replaced with actual document loader)
-            state.document_context = {
-                "core_beliefs": "Focus on impact, embrace discomfort, build systems",
-                "source": "docs/session_2/corebeliefs.md"
-            }
-            state.context_usage["documents_fetched"] = True
-        else:
-            state.context_usage["documents_fetched"] = False
-        
-        state.decision_path.append("document_context")
-        return state
+        return await self.document_loader.load_documents(state)
 
 
 class ConversationMemoryNode:
     """Manages conversation history and memory."""
     
+    def __init__(self):
+        """Initialize with checkpoint manager."""
+        self.checkpoint_manager = CloudCheckpointManager()
+    
     async def load_memory(self, state: ContextState) -> ContextState:
-        """Load conversation memory based on relevance score."""
+        """Load conversation memory from checkpoints."""
         relevance = state.context_relevance.get("memory", 0.0)
         
-        if relevance > 0.6:
-            # Mock memory data for now (will be replaced with checkpoint system)
-            state.conversation_history = [
-                {"date": "2024-12-15", "topic": "delegation", "insights": "..."},
-                {"date": "2024-12-10", "topic": "prioritization", "insights": "..."}
-            ]
-            state.context_usage["memory_fetched"] = True
+        if relevance > 0.6 and state.conversation_id:
+            # Try to load from checkpoint
+            try:
+                checkpoint_state = await self.checkpoint_manager.load_checkpoint(state.conversation_id)
+                if checkpoint_state and checkpoint_state.conversation_history:
+                    state.conversation_history = checkpoint_state.conversation_history
+                    state.context_usage["memory_fetched"] = True
+                else:
+                    state.context_usage["memory_fetched"] = False
+                    state.context_usage["memory_fetch_reason"] = "No checkpoint found"
+            except Exception as e:
+                state.context_usage["memory_fetched"] = False
+                state.context_usage["memory_fetch_error"] = str(e)
         else:
             state.context_usage["memory_fetched"] = False
+            state.context_usage["memory_fetch_reason"] = "Low relevance score"
         
         state.decision_path.append("conversation_memory")
         return state
@@ -151,21 +157,58 @@ def should_fetch_context(state: ContextState) -> bool:
     return max_relevance > 0.6
 
 
-def create_context_aware_graph() -> CompiledStateGraph:
+def route_after_scoring(state: ContextState) -> str:
+    """Route after context relevance scoring."""
+    # Check if this is a memory recall query first
+    if state.messages:
+        memory_recall_node = MemoryRecallNode()
+        if memory_recall_node._detect_memory_query(state.messages):
+            return "memory_recall"
+    
+    # Otherwise, check if we should fetch context
+    if should_fetch_context(state):
+        return "todo_context"
+    else:
+        return "coach"
+
+
+def route_after_memory_recall(state: ContextState) -> str:
+    """Route after memory recall processing."""
+    # If memory recall was triggered, go straight to coach
+    if state.context_usage.get("memory_recall_triggered", False):
+        return "coach"
+    
+    # Otherwise, proceed with normal context fetching
+    if should_fetch_context(state):
+        return "todo_context"
+    else:
+        return "coach"
+
+
+def create_context_aware_graph(llm_service=None) -> CompiledStateGraph:
     """Create the context-aware LangGraph."""
     
     # Create graph
     graph = StateGraph(ContextState)
+    
+    # Mock LLM service for testing if none provided
+    if llm_service is None:
+        class MockLLMService:
+            async def generate_response(self, messages, system_prompt, max_tokens=200, temperature=0.7):
+                return "Based on your priorities, what needs your attention first?"
+        llm_service = MockLLMService()
     
     # Create node instances
     scorer = EnhancedRelevanceScorer()  # Use enhanced relevance scorer
     todo_node = MCPTodoNode()  # Use MCP Todo Node instead of mock
     doc_node = DocumentContextNode()
     memory_node = ConversationMemoryNode()
-    coach = ContextAwareCoach()
+    memory_recall = MemoryRecallNode()  # Add memory recall node
+    coach = ImplicitContextCoach(llm_service)  # Use implicit context coach
     
     # Add nodes
     graph.add_node("context_relevance_scorer", scorer.score)
+    graph.add_node("memory_recall", memory_recall.process_memory_query)
     graph.add_node("todo_context", todo_node.fetch_todos)
     graph.add_node("document_context", doc_node.fetch_documents)
     graph.add_node("conversation_memory", memory_node.load_memory)
@@ -174,13 +217,24 @@ def create_context_aware_graph() -> CompiledStateGraph:
     # Add edges
     graph.add_edge(START, "context_relevance_scorer")
     
-    # Conditional edges based on context relevance
+    # Conditional edges after scoring - check for memory recall first
     graph.add_conditional_edges(
         "context_relevance_scorer",
-        should_fetch_context,
+        route_after_scoring,
         {
-            True: "todo_context",
-            False: "coach"
+            "memory_recall": "memory_recall",
+            "todo_context": "todo_context",
+            "coach": "coach"
+        }
+    )
+    
+    # Conditional edges after memory recall
+    graph.add_conditional_edges(
+        "memory_recall",
+        route_after_memory_recall,
+        {
+            "todo_context": "todo_context",
+            "coach": "coach"
         }
     )
     
