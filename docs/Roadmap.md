@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-Build a multi-agent coaching system prioritizing personal experience and voice interaction before production hardening. Start with a working prototype (Session 2), enhance with personal context and evaluation (Sessions 3-4), migrate to LangGraph/LangSmith (Session 5), then add intelligent routing, memory, and voice capabilities. Production features come last after core experience is perfected.
+Build a multi-agent coaching system prioritizing personal experience and voice interaction before production hardening. Start with a working prototype (Session 2), enhance with personal context and evaluation (Sessions 3-4), migrate to LangGraph/LangSmith (Session 5), build conversation memory and context infrastructure (Session 6), then implement parallel multi-agent orchestration with dedicated MCP agent (Session 7). Production features come last after core experience is perfected.
 
 **Tech Stack**: Anthropic SDK (Sonnet + Opus), LangGraph (orchestration), LangSmith (observability), OpenTelemetry, pytest + LangChain, Personal Context Files (Markdown), LiveKit (voice), Redis Pub/Sub (early phases), FastAPI (later phases)
 
@@ -79,7 +79,7 @@ Build a multi-agent coaching system prioritizing personal experience and voice i
 
 ## Phase 2: LangGraph Migration & Intelligence (14-16 hours)
 
-### Session 5: LangGraph Architecture Migration (4-5 hours)
+### Session 5: LangGraph Architecture Migration (4-5 hours) ✅
 
 **Goal**: Migrate event-bus to LangGraph while preserving all functionality
 
@@ -97,45 +97,67 @@ Build a multi-agent coaching system prioritizing personal experience and voice i
 - OTel spans for all agent communications
 - Migration tests proving feature parity
 
-### Session 6: Personal Context Integration (3-4 hours)
+### Session 6: Conversation Memory & Context Infrastructure (3-4 hours) ✅
 
-**Goal**: Add personal context using LangGraph's state management
-
-**Topics**:
-- Context loading as graph nodes (markdown reader, todoist MCP)
-- State channels for context relevance scoring
-- Conditional edges based on context detection
-- LangSmith tracking of context usage patterns
-- Privacy-preserving state separation
-
-**Key Deliverables**:
-- Context-aware graph with dynamic routing
-- MCP server node for todo integration
-- Context usage analytics in LangSmith
-- Personalized coaching with state persistence
-- "Aha moment" tracking via custom metrics
-
-### Session 7: Intelligent Multi-Agent Orchestration (3-4 hours)
-
-**Goal**: Build sophisticated agent communication patterns
+**Goal**: Build conversation memory and context-aware infrastructure (without MCP)
 
 **Topics**:
-- Sub-graphs for morning vs evening flows
-- Agent communication via shared state channels
-- Parallel analyzer execution with result aggregation
-- Dynamic graph modification based on conversation needs
-- Custom LangSmith events for agent decisions
+- Context-aware LangGraph with conditional routing
+- Relevance scoring system (pattern matching + LLM analysis)
+- Document context loading from markdown files
+- Conversation memory with checkpoint persistence
+- Memory recall for "remember when..." queries
 
 **Key Deliverables**:
-- Modular sub-graphs for different coaching modes
-- Inter-agent message passing patterns
-- Decision tracking in LangSmith
-- Performance optimization via parallel nodes
-- Complex orchestration patterns library
+- Context-aware graph architecture with dynamic routing
+- Multi-modal relevance scoring system
+- Document loader for `/docs/memory/` folder
+- Conversation history management
+- Memory persistence and intelligent recall
+- 42+ tests validating all functionality
+
+**Lessons Learned**: MCP integration attempted but proved that dedicated agent architecture (Session 7) is necessary for clean separation of concerns.
+
+### Session 7: Parallel Multi-Agent Orchestration with MCP (4-5 hours)
+
+**Goal**: Implement parallel orchestration with dedicated MCP agent for zero-latency context enhancement
+
+**Topics**:
+- Parallel orchestration pattern (fast coach path + slow context path)
+- Dedicated MCP Agent for all external data fetching
+- Progressive enhancement with streaming responses
+- Error isolation between coaching and data fetching
+- Context caching and optimization strategies
+
+**Key Deliverables**:
+- Parallel orchestrator with immediate coach responses
+- MCP Agent handling Todoist, Calendar, and other integrations
+- Progressive context enhancement without blocking
+- Robust error handling with graceful degradation
+- Performance monitoring for both paths
+
+**Architecture**:
+```
+User Message
+    ↓
+Parallel Orchestrator
+    ├─→ Coach Agent (fast path)
+    │     ↓
+    │   Immediate Response Stream
+    │
+    └─→ Context Orchestrator (slow path)
+          ├─→ Relevance Scorer
+          ├─→ MCP Agent (todos, calendar, etc.)
+          └─→ Memory Agent
+                ↓
+             Context Package
+                ↓
+         Progressive Enhancement
+```
 
 ### Session 8: Advanced State Evolution (3-4 hours)
 
-**Goal**: Implement multi-session state management
+**Goal**: Implement multi-session state management and synthesis
 
 **Topics**:
 - State persistence across conversations
@@ -290,6 +312,23 @@ Every session follows the "Wrap, Don't Weld" principle:
 4. **Measure Impact**: Track user satisfaction throughout migration
 5. **Preserve Experience**: User never sees the plumbing change
 
+## Key Architectural Insights
+
+### Session 6 MCP Lessons
+The attempted MCP integration in Session 6 revealed critical architectural requirements:
+1. **Separation of Concerns**: Mixing MCP with coaching logic creates complexity
+2. **Environment Boundaries**: MCP client-server communication needs dedicated handling
+3. **Testing Challenges**: Integrated MCP makes coaching logic hard to test
+4. **Error Isolation**: MCP failures shouldn't break coaching conversations
+
+### Session 7 Parallel Orchestration Benefits
+The parallel architecture solves all Session 6 pain points:
+1. **Zero Latency**: Coach responds immediately while context loads
+2. **Progressive Enhancement**: Initial response enhanced when context arrives
+3. **Clean Testing**: Mock the MCP agent interface, not individual servers
+4. **Failure Isolation**: Context failures don't impact coaching quality
+5. **Scalability**: Easy to add new context sources without touching coach
+
 ## The Evolution Pattern
 
 Every session follows this rhythm:
@@ -298,3 +337,23 @@ Every session follows this rhythm:
 3. **Implement Enhancement**: Add new capability incrementally
 4. **Validate Impact**: Prove the improvement with data
 5. **Document Learning**: Capture what worked for future reference
+
+## Success Metrics
+
+### Technical Excellence
+- Clean architecture with separated concerns
+- Sub-second coach responses with progressive enhancement
+- Comprehensive test coverage (increasing with each session)
+- Production-ready error handling and monitoring
+
+### User Experience
+- Natural conversational flow without technical interruptions
+- Context enhances without disrupting coaching
+- Voice interactions feel human and responsive
+- Weekly synthesis provides meaningful insights
+
+### Learning & Growth
+- Each session builds on previous learnings
+- Architectural decisions validated through implementation
+- Knowledge captured in comprehensive documentation
+- Patterns established for future AI system development

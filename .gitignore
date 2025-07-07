@@ -73,3 +73,10 @@ Thumbs.db
 /checkpoints/
 temp/
 tmp/
+
+# MCP servers (external repositories)
+mcp-servers/
+
+# Test files
+test_debug_flow.py
+test_mcp_integration.py

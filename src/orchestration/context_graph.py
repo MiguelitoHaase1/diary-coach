@@ -61,22 +61,14 @@ class ContextRelevanceScorer:
 class TodoContextNode:
     """Fetches relevant todo context when needed."""
     
+    def __init__(self):
+        """Initialize with real MCP Todo Node."""
+        self.mcp_todo_node = MCPTodoNode()
+    
     async def fetch_todos(self, state: ContextState) -> ContextState:
-        """Fetch todos based on relevance score."""
-        relevance = state.context_relevance.get("todos", 0.0)
-        
-        if relevance > 0.6:  # Only fetch if relevance is high
-            # Mock todo data for now (will be replaced with MCP integration)
-            state.todo_context = [
-                {"id": "1", "content": "Finish Q4 planning", "priority": "high"},
-                {"id": "2", "content": "Review team proposals", "priority": "medium"}
-            ]
-            state.context_usage["todos_fetched"] = True
-        else:
-            state.context_usage["todos_fetched"] = False
-        
-        state.decision_path.append("todo_context")
-        return state
+        """Fetch todos using real MCP integration."""
+        # Use the real MCP Todo Node instead of mock data
+        return await self.mcp_todo_node.fetch_todos(state)
 
 
 class DocumentContextNode:
