@@ -46,8 +46,19 @@ class LangSmithTracker:
         # Send to LangSmith if client is available
         if self.client:
             try:
-                # LangSmith tracking implementation would go here
-                pass
+                from uuid import uuid4
+                # Create a new run for tracking
+                self.client.create_run(
+                    id=str(uuid4()),
+                    name="conversation_start",
+                    run_type="chain",
+                    inputs={"conversation_id": state.conversation_id, "state": state.conversation_state},
+                    project_name=os.getenv("LANGSMITH_PROJECT", self.project_name),
+                    extra={
+                        "metadata": event["metadata"],
+                        "conversation_id": state.conversation_id
+                    }
+                )
             except Exception as e:
                 # Log error but don't fail the conversation
                 print(f"LangSmith tracking error: {e}")
@@ -67,8 +78,20 @@ class LangSmithTracker:
         # Send to LangSmith if client is available
         if self.client:
             try:
-                # LangSmith agent communication tracking would go here
-                pass
+                from uuid import uuid4
+                # Track agent communication
+                self.client.create_run(
+                    id=str(uuid4()),
+                    name=f"agent_{agent_name}",
+                    run_type="llm",
+                    inputs=input_data,
+                    outputs=output_data,
+                    project_name=os.getenv("LANGSMITH_PROJECT", self.project_name),
+                    extra={
+                        "agent_name": agent_name,
+                        "timestamp": communication["timestamp"]
+                    }
+                )
             except Exception as e:
                 print(f"LangSmith agent tracking error: {e}")
     

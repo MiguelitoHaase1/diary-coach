@@ -5,6 +5,14 @@ import os
 from typing import List, Dict, Any, Optional
 from anthropic import AsyncAnthropic
 
+# Try to import LangSmith for tracing
+try:
+    from langsmith import Client as LangSmithClient
+    from langsmith.wrappers import wrap_openai
+    LANGSMITH_AVAILABLE = True
+except ImportError:
+    LANGSMITH_AVAILABLE = False
+
 # Try to import OpenAI for GPT-4o-mini support
 try:
     import openai
@@ -64,6 +72,14 @@ class AnthropicService:
         self.total_cost = 0.0
         self.session_cost = 0.0
         
+        # Initialize LangSmith client if available
+        self.langsmith_client = None
+        if LANGSMITH_AVAILABLE and os.getenv("LANGSMITH_API_KEY"):
+            try:
+                self.langsmith_client = LangSmithClient()
+            except Exception as e:
+                print(f"Warning: LangSmith initialization failed: {e}")
+        
     async def generate_response(
         self,
         messages: List[Dict[str, str]],
@@ -101,7 +117,31 @@ class AnthropicService:
                 if system_prompt:
                     call_params["system"] = system_prompt
                 
-                # Make API call
+                # Make API call with optional LangSmith tracing
+                if self.langsmith_client:
+                    try:
+                        from uuid import uuid4
+                        # Create LangSmith run for this API call
+                        run_id = str(uuid4())
+                        self.langsmith_client.create_run(
+                            id=run_id,
+                            name="anthropic_api_call",
+                            run_type="llm",
+                            inputs={
+                                "messages": messages,
+                                "system_prompt": system_prompt,
+                                "model": self.model,
+                                "max_tokens": max_tokens,
+                                "temperature": temperature
+                            },
+                            project_name=os.getenv("LANGSMITH_PROJECT", "diary-coach")
+                        )
+                    except Exception as e:
+                        print(f"LangSmith run creation failed: {e}")
+                        run_id = None
+                else:
+                    run_id = None
+                
                 response = await self.client.messages.create(**call_params)
                 
                 # Extract response text
@@ -120,6 +160,23 @@ class AnthropicService:
                 self.total_tokens += total_tokens
                 self.total_cost += call_cost
                 self.session_cost += call_cost
+                
+                # Update LangSmith run with results
+                if self.langsmith_client and run_id:
+                    try:
+                        self.langsmith_client.update_run(
+                            run_id=run_id,
+                            outputs={"response": response_text},
+                            extra={
+                                "input_tokens": input_tokens,
+                                "output_tokens": output_tokens,
+                                "total_tokens": total_tokens,
+                                "cost": call_cost,
+                                "model": self.model
+                            }
+                        )
+                    except Exception as e:
+                        print(f"LangSmith run update failed: {e}")
                 
                 return response_text
                 

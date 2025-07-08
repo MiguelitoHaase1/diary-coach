@@ -111,7 +111,7 @@ class MCPTodoNode:
             env=env
         )
         
-    async def fetch_todos(self, state: ContextState) -> ContextState:
+    async def fetch_todos(self, state: ContextState, date_filter: Optional[str] = None) -> ContextState:
         """Fetch todos based on relevance score and conversation context."""
         print(f"🏗️ MCP DEBUG: fetch_todos called")
         relevance = state.context_relevance.get("todos", 0.0)
@@ -144,9 +144,9 @@ class MCPTodoNode:
                 state.decision_path.append("todo_context")
                 return state
             
-            # Fetch todos from MCP server
+            # Fetch todos from MCP server with optional date filter
             print("🌐 MCP DEBUG: Calling _fetch_todos_from_mcp...")
-            todos = await self._fetch_todos_from_mcp()
+            todos = await self._fetch_todos_from_mcp(date_filter=date_filter)
             print(f"📥 MCP DEBUG: Raw todos fetched: {len(todos)}")
             
             # Filter todos based on conversation context
@@ -170,7 +170,7 @@ class MCPTodoNode:
         state.decision_path.append("todo_context")
         return state
     
-    async def _fetch_todos_from_mcp(self) -> List[Dict[str, Any]]:
+    async def _fetch_todos_from_mcp(self, date_filter: Optional[str] = None) -> List[Dict[str, Any]]:
         """Fetch todos from Todoist via MCP server."""
         print("🔑 MCP DEBUG: Checking API token...")
         token = self._get_api_token()
@@ -183,7 +183,7 @@ class MCPTodoNode:
         
         # Use a simpler approach with proper exception handling
         try:
-            result = await self._call_mcp_safely()
+            result = await self._call_mcp_safely(date_filter=date_filter)
             if result:
                 print(f"🎉 MCP DEBUG: Successfully fetched {len(result)} real todos")
                 return result
@@ -196,7 +196,7 @@ class MCPTodoNode:
             print(f"❌ MCP DEBUG: MCP call failed: {e}")
             return self._get_mock_todos()  # Fallback to mock data
     
-    async def _call_mcp_safely(self) -> List[Dict[str, Any]]:
+    async def _call_mcp_safely(self, date_filter: Optional[str] = None) -> List[Dict[str, Any]]:
         """Safely call MCP server with proper error handling."""
         session = None
         read_stream = None
@@ -222,9 +222,15 @@ class MCPTodoNode:
             await session.initialize()
             print("✅ MCP DEBUG: Session initialized")
             
+            # Prepare parameters for get-tasks tool
+            params = {}
+            if date_filter:
+                params["filter"] = date_filter
+                print(f"📅 MCP DEBUG: Using date filter: {date_filter}")
+            
             # Call the get-tasks tool (note: hyphen, not underscore)
             print("📋 MCP DEBUG: Calling get-tasks tool...")
-            result = await session.call_tool("get-tasks", {})
+            result = await session.call_tool("get-tasks", params)
             print(f"✅ MCP DEBUG: get-tasks call completed")
             
             if not result.content:

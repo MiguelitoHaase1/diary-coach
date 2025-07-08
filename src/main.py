@@ -10,6 +10,7 @@ from src.agents.coach_agent import DiaryCoach
 from src.interface.enhanced_cli import EnhancedCLI
 from src.events.bus import EventBus
 from src.persistence.conversation_storage import ConversationStorage
+from src.orchestration.langsmith_tracker import LangSmithTracker
 
 
 async def create_diary_coach_system():
@@ -41,12 +42,16 @@ async def create_diary_coach_system():
     storage_path = Path.cwd() / "conversations"
     conversation_storage = ConversationStorage(base_path=storage_path)
     
+    # Create LangSmith tracker
+    langsmith_tracker = LangSmithTracker(project_name=os.getenv("LANGSMITH_PROJECT", "diary-coach"))
+    
     return {
         "llm_service": llm_service,
         "coach": coach,
         "cli": cli,
         "event_bus": event_bus,
-        "conversation_storage": conversation_storage
+        "conversation_storage": conversation_storage,
+        "langsmith_tracker": langsmith_tracker
     }
 
 
