@@ -47,12 +47,21 @@ class PromptLoader:
         return cls.load_prompt("coach_system_prompt")
     
     @classmethod
+    def get_deep_thoughts_system_prompt(cls) -> str:
+        """Get the Deep Thoughts generator system prompt."""
+        return cls.load_prompt("deep_thoughts_system_prompt")
+    
+    @classmethod
     def clear_cache(cls) -> None:
         """Clear the prompt cache (useful for testing)."""
         cls._cache.clear()
 
 
-# Convenience function for easy imports
+# Convenience functions for easy imports
 def get_coach_system_prompt() -> str:
     """Get the main coaching system prompt."""
     return PromptLoader.get_coach_system_prompt()
+
+def get_deep_thoughts_system_prompt() -> str:
+    """Get the Deep Thoughts generator system prompt."""
+    return PromptLoader.get_deep_thoughts_system_prompt()

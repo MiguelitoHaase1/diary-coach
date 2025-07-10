@@ -7,6 +7,7 @@ from pathlib import Path
 
 from src.services.llm_service import AnthropicService
 from src.services.llm_factory import LLMFactory, LLMTier
+from src.agents.prompts import get_deep_thoughts_system_prompt
 
 
 class DeepThoughtsGenerator:
@@ -125,60 +126,33 @@ class DeepThoughtsGenerator:
         include_evals: bool = False,
         include_transcript: bool = False
     ) -> str:
-        """Generate Deep Thoughts analysis using Opus model.
+        """Generate Deep Thoughts analysis using the system prompt.
         
         Args:
             conversation_text: Formatted conversation for analysis
             conversation_id: Unique identifier for the conversation
+            include_evals: Whether to include evaluation summary
+            include_transcript: Whether to include conversation transcript
             
         Returns:
             Deep Thoughts report content
         """
-        # Enhanced prompt for Deep Thoughts with optional sections
-        base_prompt = f"""You are an expert executive coach analyzing a coaching conversation with Michael. Generate a "Deep Thoughts" report that transforms this conversation into breakthrough insights he'll want to revisit throughout his day.
-
-CONVERSATION TO ANALYZE:
+        # Load the system prompt from the markdown file
+        system_prompt = get_deep_thoughts_system_prompt()
+        
+        # Build the user prompt with conversation context
+        user_prompt = f"""CONVERSATION TO ANALYZE:
 {conversation_text}
 
-Generate a Deep Thoughts report with exactly these sections:
-
-# Deep Thoughts: [Brief Title Describing the Core Challenge]
-
-## Core Problem
-Crystallize the core problem in 2-3 clear sentences. Focus on what Michael is really grappling with, not just what he said explicitly. What's the deeper challenge or opportunity?
-
-## Fact Check
-List key claims and assumptions from the conversation:
-✅ [Verified facts or reasonable assumptions]
-❓ [Questionable claims that need verification]
-❌ [Likely incorrect assumptions]
-
-Use checkmarks, question marks, and X marks to indicate confidence levels.
-
-## Just One More Thing... (Devil's Advocate)
-Channel Columbo's "just one more thing" style. Gently challenge a key assumption or perspective from the conversation. Be insightful but supportive - like a wise friend who sees a blind spot. Start with "I hear [restate his position], but just one more thing puzzles me..."
-
-## Hints (Without Giving Away the Answer)
-Provide 2-3 Socratic hints that guide Michael toward insights without solving the problem for him. Use questions, thought experiments, or gentle suggestions. Focus on helping him think differently, not telling him what to do.
-
-GUIDELINES:
-- Write as if speaking to Michael directly
-- Be concise but insightful (scannable in under 2 minutes)
-- Make it feel like a conversation with a brilliant mentor
-- Challenge assumptions while remaining supportive
-- Focus on breakthrough thinking, not just problem-solving
-- Ensure each section adds unique value
-
-Generate the Deep Thoughts report now:"""
+Generate a Deep Thoughts report now following the structure and guidelines provided in the system prompt."""
         
-        # Add optional sections if requested
+        # Add optional enhancement sections if requested
         if include_evals or include_transcript:
             enhanced_sections = ""
             if include_evals:
                 enhanced_sections += """
 
-## Evaluation Summary
-Provide a brief evaluation of the coaching effectiveness:
+Additionally, include an Evaluation Summary section with:
 - Key coaching moves that worked well
 - Areas for improvement
 - Overall coaching effectiveness score (1-10) with brief justification
@@ -187,16 +161,10 @@ Provide a brief evaluation of the coaching effectiveness:
             if include_transcript:
                 enhanced_sections += """
 
-## Conversation Transcript
-Include the full conversation transcript for reference:
-```
-{conversation_text}
-```
+Additionally, include a Conversation Transcript section with the full conversation for reference.
 """
             
-            analysis_prompt = base_prompt + enhanced_sections
-        else:
-            analysis_prompt = base_prompt
+            user_prompt += enhanced_sections
 
         try:
             # Generate analysis with parameters based on tier
@@ -204,7 +172,8 @@ Include the full conversation transcript for reference:
             temperature = 0.2 if self.tier == LLMTier.PREMIUM else 0.3
             
             analysis_content = await self.llm_service.generate_response(
-                messages=[{"role": "user", "content": analysis_prompt}],
+                messages=[{"role": "user", "content": user_prompt}],
+                system_prompt=system_prompt,
                 max_tokens=max_tokens,
                 temperature=temperature
             )

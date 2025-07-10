@@ -1,6 +1,6 @@
 # Diary Coach - Multi-Agent Text-First Coaching System
 
-A sophisticated multi-agent conversational AI system designed to provide personalized coaching through text-based interactions, with comprehensive conversation evaluation and behavioral change detection.
+A sophisticated multi-agent conversational AI system designed to provide personalized coaching through text-based interactions, with comprehensive conversation evaluation across 7 coaching dimensions.
 
 ## 🚀 Quick Start - Try the Prototype
 
@@ -42,11 +42,11 @@ Report upgraded with comprehensive AI reflection!
 Goodbye! Have a transformative day! 🌟
 ```
 
-## ✨ Current Features
+## ✨ Core Features
 
-### 🤖 Intelligent Coaching
+### 🤖 Intelligent Non-Directive Coaching
 - **Morning Specialization**: Time-aware coaching with morning-specific prompts and energy (6:00 AM - 11:59 AM)
-- **Personalized Conversations**: Uses Michael's specific coaching style and approach
+- **Client-Centered Approach**: Maintains client autonomy through powerful inquiry rather than advice-giving
 - **Context Awareness**: Maintains conversation history and builds on previous discussions
 - **Natural Interaction**: Responds to natural language without rigid command structures
 
@@ -55,18 +55,26 @@ Goodbye! Have a transformative day! 🌟
 - **Breakthrough Thinking**: Transforms conversations into actionable insights
 - **Comprehensive Analysis**: Includes evaluation summaries and full conversation transcripts
 
-### 📊 Advanced Evaluation System
+### 📊 Advanced 7-Dimension Evaluation System
 - **3-Tier LLM Architecture**: Strategic model selection for cost-effectiveness:
   - **GPT-4o-mini**: Cheap testing during development (~$0.15/M tokens)
   - **Claude Sonnet**: Standard operations and persona simulation (~$3/M tokens) 
   - **Claude Opus**: Premium analysis for Deep Thoughts generation (~$15/M tokens)
-- **Behavioral Analysis**: 7 LLM-powered analyzers measuring coaching effectiveness:
-  - **Morning Analyzers**: ProblemSelection, ThinkingPivot, ExcitementBuilder
-  - **General Analyzers**: Specificity Push, Action Orientation, Emotional Presence, Framework Disruption
-- **Enhanced Persona Testing**: Cooperative personas that accept coaching premise while showing resistance patterns
-- **Comprehensive Eval Command**: Type `eval` for discretionary full evaluation with Sonnet-4 + Opus analysis
-- **Performance Tracking**: Real-time response speed monitoring with percentile reporting
-- **Two-Tier Reports**: Light reports for immediate feedback, deep reports with AI reflection
+
+- **7 Coaching Dimensions Measured**:
+  1. **Problem Significance Assessment**: Evaluates how effectively the coach helps clients assess problem importance, urgency, and priority
+  2. **Task Concretization**: Measures transformation of vague goals into specific, measurable, actionable tasks
+  3. **Solution Diversity**: Assesses facilitation of creative thinking and multiple solution generation
+  4. **Crux Identification**: Evaluates discovery of root causes and high-impact leverage points
+  5. **Crux Solution Exploration**: Measures depth of solutions targeting identified core issues
+  6. **Belief System Integration**: Assesses examination and transformation of limiting beliefs
+  7. **Non-Directive Coaching Style**: Evaluates adherence to client autonomy and self-discovery principles
+
+- **Standardized Evaluation Framework**:
+  - 5-point rating scale with detailed rubrics
+  - Step-by-step evaluation process
+  - JSON output with scores, reasoning, strengths, and improvements
+  - Comprehensive behavioral analysis across all dimensions
 
 ### 🎯 Natural User Experience
 - **Multiple End Commands**: Natural ways to end conversations:
@@ -89,13 +97,13 @@ Goodbye! Have a transformative day! 🌟
 The system employs an **event-driven architecture** with specialized components:
 
 ### Core Components
-- **Coach Agent**: Main conversational AI using Michael's coaching prompt and style
+- **Coach Agent**: Main conversational AI using Michael's coaching prompt and non-directive style
 - **Enhanced CLI**: Production-ready interface with natural language command processing
-- **Evaluation System**: Comprehensive behavioral analysis and performance tracking
+- **Evaluation System**: 7-dimension behavioral analysis and performance tracking
 - **LLM Service**: Async wrapper for Anthropic API with cost tracking and retry logic
 
 ### Evaluation Framework
-- **Behavioral Analyzers**: LLM-powered assessment of coaching effectiveness
+- **7 Behavioral Analyzers**: LLM-powered assessment across coaching dimensions
 - **Performance Tracker**: Response time monitoring and optimization insights
 - **Report Generator**: Markdown reports with conversation transcripts and AI reflection
 - **Persona Evaluator**: Tests coaching against realistic resistance patterns
@@ -108,7 +116,7 @@ diary-coach/
 │   ├── main.py              # Application entry point
 │   ├── agents/              # Coaching agent implementation
 │   ├── interface/           # CLI and user interaction
-│   ├── evaluation/          # Conversation analysis system
+│   ├── evaluation/          # 7-dimension analysis system
 │   ├── services/           # External service integrations
 │   ├── events/             # Event-driven architecture
 │   └── persistence/        # Data storage
@@ -145,26 +153,27 @@ Set up testable evaluations to measure and improve AI collaboration effectivenes
 ### 3. **Learning While Building**
 Transform development into education through comprehensive documentation. Every session generates logs and learning opportunities.
 
-## 📈 Current Status: Session 3.2 Complete
+## 📈 Current Status: Enhanced Evaluation System Live
 
-✅ **Production-Ready Evaluation System**
+✅ **Production-Ready 7-Dimension Evaluation**
 - Natural language command processing
-- Reliable markdown report generation  
+- Comprehensive coaching effectiveness measurement
 - Two-tier analysis (light + deep reports)
-- Comprehensive conversation transcripts
+- Standardized JSON evaluation outputs
 - User-friendly CLI flow
 
-✅ **Behavioral Change Detection Framework**
-- 4 LLM-powered behavioral analyzers
-- 3 PM personas with realistic resistance patterns
-- Performance tracking with percentile reporting
-- Automated conversation generation for testing
+✅ **Professional Coaching Standards**
+- Non-directive coaching methodology
+- Root cause and leverage point identification
+- Belief system transformation support
+- Client autonomy and self-discovery focus
 
 ✅ **Robust Technical Foundation**
 - Event-driven architecture ready for scaling
 - Comprehensive test coverage (80+ tests passing)
 - Production-ready error handling
 - Async operations with performance monitoring
+- Docker/Kubernetes deployment ready
 
 ## 🔜 Next Steps
 
@@ -184,13 +193,15 @@ Transform development into education through comprehensive documentation. Every 
 - **[Development Roadmap](docs/Roadmap.md)**: Multi-session development plan
 - **[Session Logs](docs/session_*)**: Detailed development session documentation
 - **[Learning Ledger](docs/learning_ledger.md)**: Knowledge tracking and gaps
+- **[Evaluation Templates](docs/Evaluations_new.md)**: Detailed 7-dimension coaching evaluation criteria
 
 ## 🎯 Project Goals
 
 Build a sophisticated coaching system that:
-- Provides genuinely helpful coaching conversations
-- Continuously improves through behavioral analysis
+- Provides genuinely helpful non-directive coaching conversations
+- Continuously improves through 7-dimension behavioral analysis
 - Maintains natural, human-like interaction patterns
+- Supports client autonomy and self-discovery
 - Scales to support multiple users and specialized coaching domains
 - Serves as a learning platform for AI-powered conversation design
 
@@ -198,7 +209,8 @@ Build a sophisticated coaching system that:
 
 **Ready to start coaching?** Run `source venv/bin/activate && python -m src.main` and experience:
 
-- **Morning Coach Excellence**: Time-aware coaching with specialized morning prompts
+- **Non-Directive Excellence**: Client-centered coaching that facilitates self-discovery
+- **7-Dimension Analysis**: Comprehensive evaluation across all coaching effectiveness metrics
 - **Deep Thoughts Reports**: Pinneable insights generated with Claude Opus 
 - **Smart Evaluation**: Cost-optimized analysis using the right model for each task
 - **Natural Commands**: Say "stop" for evaluation, "deep report" for comprehensive insights

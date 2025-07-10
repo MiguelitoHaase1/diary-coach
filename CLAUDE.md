@@ -3,7 +3,7 @@
 ## The Three Laws
 
 ### 1. Working Software Only
-Every session produces software that runs. No mocks, no scaffolding, no "TODO: implement later".
+Every session produces software and tests that run in realistic settings. No mocks, mock-runs, no scaffolding without a sandbox test of functionality.
 
 ### 2. Tests Define Success  
 Write tests first. Implementation follows. Red tests block progress.
@@ -45,6 +45,14 @@ For each ~10 line increment:
 2. Create `Dojo_x_y.md` for learning opportunities
 3. Commit with format: `feat(session-x): implement increment y`
 4. Push to GitHub
+5. List human improvement tasks thereafter:
+   ```
+   🔴 HUMAN SETUP REQUIRED:
+   - [ ] Particular prompts to iterate on and improve: [link]
+   - [ ] Particular classes to iterate on and improve: [link]
+   - [ ] Other configurations to still adapt and improve: [xyz]
+   ```
+
 
 ---
 
@@ -108,6 +116,38 @@ git commit -m "docs(session-x): update status and logbook"
 claude --model opus      # Complex reasoning
 claude --model sonnet    # Default
 /model opus             # Switch mid-session
+```
+
+---
+
+## MCP (Model Context Protocol) Integration
+A more detailed description of MCP integration approaches is given in @docs/MCP_howto.md
+
+### MCP Rules
+
+1. **Use Real MCP Servers**: Never mock. Find established servers on GitHub first.
+2. **Test in Isolation**: Create `mcp_sandbox.py` to verify connection before integration.
+3. **Read Server Docs**: Tool names use hyphens (`get-tasks`), responses are TextContent objects.
+4. **Ensure Injection**: Data must reach the LLM prompt, not just be fetched:
+   ```python
+   # ❌ WRONG
+   todos = await mcp.get_todos()
+   return llm.generate(prompt)  # Todos never used!
+   
+   # ✅ RIGHT  
+   todos = await mcp.get_todos()
+   enhanced_prompt = inject_context(prompt, todos)
+   return llm.generate(enhanced_prompt)
+   ```
+5. **Build Debug Tools**: Add connection status logging and prompt injection verification.
+6. **Fail Loudly**: No silent fallbacks to mock data.
+
+### MCP Workflow
+```bash
+# 1. Clone and build server
+# 2. Test with mcp_sandbox.py
+# 3. Verify data reaches LLM
+# 4. Add observability
 ```
 
 ---

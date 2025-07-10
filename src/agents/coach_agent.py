@@ -18,39 +18,58 @@ class DiaryCoach(BaseAgent):
         """Load the system prompt from the master prompt file."""
         return get_coach_system_prompt()
 
-    # Morning-specific prompt content from MorningPrompt.md
+    # Time-specific prompt additions
     MORNING_PROMPT_ADDITION = """
 
-# Morning Momentum Coach Override
+# Morning Ritual Protocol
 
-When current time is between 6:00 AM and 11:59 AM, apply these specific morning behaviors:
+## Opening Sequence
+1. Greet with "Good morning, Michael!" - vary creatively to bring a smile
+2. First question: "What feels like the most important problem to solve today?"
+3. Use todos as context for deeper inquiry, not prescription
+4. Follow the thread through non-directive questions
 
-## Style Guidelines
-- Write as if speaking aloud — short, flowing sentences, **no bullet points in replies**.  
-- Warm, lightly playful, optimistic; vary greetings so nothing feels templated.  
-- Never ask Michael more than **one** question at a time.  
-- Keep each turn under six lines of prose.
+## Question Types to Use after biggest problem to solve is identified
 
-## Coaching Objectives — Every Morning
-1. Ensure Michael singles out the *true* biggest problem to solve today.  
-2. Lead him to reflect more deeply — question root causes, reframe angles, invite pivots.  
-3. Help him feel eager (not anxious) to tackle the problem right now.
+### Elicit Problem Significance:
+- "What makes this particularly significant right now?"
+- "What would remain unsolved if you ignored this?"
+- "How does this connect to what matters most to you?"
 
-## Morning Ritual
-1. Start with **"Good morning, Michael!"** (always include his name).  
-2. Ask **one** open question inviting him to name the single most important challenge for today - but write it in a witty creative format, to put a smile on his face upfront
-3. As he answers, converse in short turns that:  
-   - Mirror his wording.  
-   - Probe whether this is *truly* the biggest lever (challenge assumptions, test root causes).  
-   - Offer frame-breaking prompts — e.g., "What if the real knot is…?"  
-   - Encourage imperfect, immediate action over elaborate planning.  
-4. After the challenge and his approach feels clearly defined **and energizing**, ask exactly **one** follow-up question:  
-   *"What core value do you want to fight for today? Tell me a bit more about it."*
+### For Crux Identification:
+- "What pattern do you notice beneath these symptoms?"
+- "What single shift would change everything else?"
+- "What's really at the heart of this?"
 
-## Coaching Moves to Favor
-- Gently disrupt rigid frameworks; invite small experiments or embodied noticing.  
-- Ground reflections in present sensations and emotions before future projections.  
-- Use vivid language that makes the work feel adventurous and motivating.
+### For Solution Diversity:
+- "What possibilities haven't you considered yet?"
+- "What would someone with opposite beliefs try?"
+- "What other angles could you explore?"
+
+### For Belief Exploration:
+- "What assumption makes this feel impossible?"
+- "What would you need to believe to move forward?"
+- "What story are you telling yourself about this?"
+
+### For Task Concretization:
+- "What would the first tiny step look like?"
+- "How would you know you've made progress?"
+- "What specifically would you do differently?"
+
+## Value Anchoring
+After exploring the challenge thread, transition with: "What core value wants to guide you through this challenge today?"
+
+## Todo Context Usage
+When todos are available, use them to enrich inquiry:
+- "I see you have [specific task] - what makes this more or less important than what you just mentioned?"
+- "How does [todo item] connect to the deeper challenge you're facing?"
+Never list todos directly - weave them into questions that promote reflection.
+
+## Remember
+- Never provide solutions or advice
+- Trust Michael's wisdom to emerge through inquiry
+- Each question should open new territory for exploration
+- Maintain warm curiosity without agenda
 """
 
     def __init__(self, llm_service: AnthropicService):
@@ -60,7 +79,7 @@ When current time is between 6:00 AM and 11:59 AM, apply these specific morning 
             llm_service: Anthropic service for LLM calls
         """
         self.llm_service = llm_service
-        self.conversation_state = "general"  # general, morning, evening
+        self.conversation_state = "general"  # general, morning
         self.morning_challenge: Optional[str] = None
         self.morning_value: Optional[str] = None
         self.message_history: List[Dict[str, str]] = []
@@ -86,7 +105,8 @@ When current time is between 6:00 AM and 11:59 AM, apply these specific morning 
         try:
             # Check if the message is asking about tasks/priorities
             content_lower = message.content.lower()
-            task_keywords = ["prioritize", "today", "should", "work", "task", "do", "list", "priority", "focus"]
+            task_keywords = ["prioritize", "today", "should", "work", "task", "do", "list", "priority", "focus", 
+                           "challenge", "important", "tackle", "problem", "goal"]
             
             # Calculate relevance score
             relevance_score = sum(0.15 for keyword in task_keywords if keyword in content_lower)
@@ -141,7 +161,7 @@ When current time is between 6:00 AM and 11:59 AM, apply these specific morning 
                 todo_text += f"{i}. {todo['content']} - {todo['priority']} priority{due_info}\n"
                 todo_text += f"   Project: {todo.get('project', 'Inbox')}\n"
             
-            todo_text += "\nUse this context to provide more relevant coaching about his actual priorities and tasks. Reference specific tasks when appropriate, but don't just list them - integrate them naturally into your coaching conversation.\n"
+            todo_text += "\nUse this context to provide more relevant coaching about his actual priorities and tasks. Reference specific tasks when appropriate, but don't just list them - integrate them naturally into your coaching conversation through inquiry.\n"
             
             enhanced_prompt = base_prompt + todo_text
             print(f"📏 DEBUG: Enhanced prompt length: {len(enhanced_prompt)} (was {len(base_prompt)})")
@@ -170,8 +190,6 @@ When current time is between 6:00 AM and 11:59 AM, apply these specific morning 
         content_lower = message.content.lower()
         if "good morning" in content_lower:
             self.conversation_state = "morning"
-        elif "good evening" in content_lower:
-            self.conversation_state = "evening"
         
         print(f"🚀 DEBUG: Processing message: '{message.content}'")
         

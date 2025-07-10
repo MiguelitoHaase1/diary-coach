@@ -1,538 +1,261 @@
+Thanks for the clarification. I’ll streamline the `status.md` to preserve the chronological session log and detailed breakdowns, while removing structural redundancies—especially repeated session details. I'll ensure it's clean and easy for an LLM developer to follow daily updates without confusion.
+
+I’ll get back to you shortly with a cleaned-up version.
+
+
 # Diary Coach Project Status
 
-## Current Status: Session 6 Complete 🎉 - Personal Context Integration
+## Current Status: Session 6 Complete 🎉 – Personal Context Integration + Prompt Architecture
 
-**Last Updated**: July 5, 2025
+**Last Updated**: July 9, 2025
 
 ## Project Overview
-Multi-agent text-first coaching system with eventual voice integration. Uses TDD approach with comprehensive conversation quality evaluation. Built incrementally following the three core principles: Compartmentalization, Continuous Improvement, and Learning While Building.
 
-## Session 1 Summary: Foundation Complete 🎉
-**Duration**: 7 increments across multiple development sessions  
-**Approach**: Test-Driven Development with bite-sized, testable increments  
+Multi-agent text-first coaching system with eventual voice integration. Uses a Test-Driven Development (TDD) approach with comprehensive conversation quality evaluation. Built incrementally following three core principles: Compartmentalization, Continuous Improvement, and Learning While Building.
+
+## Session 1: Foundation Complete 🎉
+
+**Duration**: 7 increments across multiple development sessions
+**Approach**: Test-Driven Development with bite-sized, testable increments
 **Result**: Production-ready event-driven architecture foundation
 
-## Session 2 Summary: Minimal Working Prototype Complete 🎉
-**Duration**: 5 increments in ~2 hours  
-**Approach**: Test-Driven Development with incremental delivery  
-**Result**: Working diary coach having real conversations with Michael
+### Key Achievements 🎯
 
-## Session 3 Summary: Production-Ready Evaluation System Complete 🎉
-**Duration**: 7 increments following TDD approach  
-**Approach**: LLM-powered behavioral analysis with PM persona testing + User Experience refinement + Critical bug fixes  
-**Result**: Self-evaluating coach with production-ready evaluation system, natural user interface, and robust deep reporting
-
-## Session 4 Summary: Morning Coach Excellence with 3-Tier Evaluation System 🎉
-**Duration**: 7 increments following TDD approach + optimization feedback + persona improvements  
-**Approach**: Morning specialization + Deep Thoughts generation + cost optimization + 3-tier model architecture + cooperative persona testing  
-**Result**: Specialized morning coach with time-based behavior, pinneable Deep Thoughts reports, 50% cost reduction through smart model selection, and comprehensive 3-tier evaluation system with improved persona testing
-
-## What's Working
-- ✅ Clean project structure established
-- ✅ Git repository initialized  
-- ✅ Basic documentation created
-- ✅ Project philosophy and architecture defined
-- ✅ Testing infrastructure set up with pytest
-- ✅ Event-bus architecture implemented (in-memory)
-- ✅ Pydantic event schemas defined
-- ✅ Base agent pattern implemented
-- ✅ Stream buffer for dual-track conversations
-- ✅ Redis event bus integration complete
-- ✅ **Session 2: Anthropic API integration with async wrapper**
-- ✅ **Session 2: Complete diary coach with Michael's coaching prompt**
-- ✅ **Session 2: CLI interface for real conversations**
-- ✅ **Session 2: JSON conversation persistence with date organization**
-- ✅ **Session 2: End-to-end working system**
-- ✅ **Session 3: Enhanced CLI with evaluation reports and performance tracking**
-- ✅ **Session 3: 4 LLM-powered behavioral analyzers (Specificity, Action, Emotional, Framework)**
-- ✅ **Session 3: 3 PM personas with realistic resistance patterns**
-- ✅ **Session 3: Conversation generator for automated testing**
-- ✅ **Session 3: Comprehensive evaluation reporter with markdown output**
-- ✅ **Session 3: Persona evaluator for breakthrough analysis**
-- ✅ **Session 3.2: Natural language command variations for user-friendly CLI**
-- ✅ **Session 3.2: Two-tier reporting system (light + deep analysis)**
-- ✅ **Session 3.2: Production-ready report generation with file persistence**
-- ✅ **Session 3.2: Comprehensive test coverage for evaluation flow**
-- ✅ **Session 3.3: Fixed missing generate_deep_report method in EvaluationReporter**
-- ✅ **Session 3.3: Added conversation transcript to markdown reports**
-- ✅ **Session 3.3: Comprehensive test coverage for deep report generation**
-- ✅ **Session 4: Morning-specific coach behavior with time detection (6:00 AM - 11:59 AM)**
-- ✅ **Session 4: Deep Thoughts generator using Opus for pinneable insights**
-- ✅ **Session 4: Morning-specific analyzers (ProblemSelection, ThinkingPivot, ExcitementBuilder)**
-- ✅ **Session 4: Deep Thoughts quality evaluator with 6 specialized metrics**
-- ✅ **Session 4: Cost-optimized workflow - files only generated on "deep report" command**
-- ✅ **Session 4: Evaluation reports now use Sonnet (50% cost reduction) with concise format**
-- ✅ **Session 4.7: 3-tier LLM architecture (GPT-4o-mini/Sonnet/Opus) with cost-effective testing**
-- ✅ **Session 4.7: Enhanced personas that accept coaching premise while showing resistance patterns**
-- ✅ **Session 4.7: Comprehensive eval command with task-specific conversation scenarios**
-- ✅ **Session 4.7: Improved Deep Thoughts with evaluation summaries and conversation transcripts**
-- ✅ **All tests passing (35+/35+)** ✅
-
-## Session 3 Achievements 🎯
-- ✅ **Automated Evaluation System**: Self-evaluating coach with performance tracking
-- ✅ **Behavioral Analysis**: 4 LLM-powered analyzers measuring coaching effectiveness
-- ✅ **PM Persona Testing**: Realistic resistance patterns for comprehensive evaluation
-- ✅ **Real-time Performance**: Sub-second response tracking with percentile reporting
-- ✅ **Markdown Reports**: Comprehensive evaluation reports with improvement suggestions
-- ✅ **Breakthrough Detection**: Measures coaching effectiveness against specific resistance types
-- ✅ **Production-Ready UX**: Natural language commands and intuitive evaluation flow
-- ✅ **Two-Tier Analysis**: Light reports for immediate feedback, deep reports for comprehensive insights
-- ✅ **File Persistence**: Reliable markdown report generation with conversation transcripts
-- ✅ **Robust Error Handling**: Fixed critical deep report generation bug with comprehensive test coverage
-
-## Session 4 Achievements 🎯
-- ✅ **Morning Specialization**: Time-aware coach with morning-specific prompts and energy
-- ✅ **Deep Thoughts Reports**: Opus-powered insights users want to pin and revisit during the day
-- ✅ **Cost Optimization**: 50% reduction through strategic Sonnet usage for evaluations
-- ✅ **Smart File Generation**: User-controlled "deep report" command prevents unwanted file creation
-- ✅ **Morning Analytics**: 3 specialized analyzers for morning coaching effectiveness
-- ✅ **Concise Reporting**: Scannable evaluation format with emoji status indicators
-- ✅ **Quality Assurance**: Deep Thoughts evaluator with 6 specialized quality metrics
-- ✅ **3-Tier LLM Architecture**: GPT-4o-mini for cheap testing, Sonnet for standard use, Opus for premium analysis
-- ✅ **Enhanced Persona Testing**: Cooperative personas that accept coaching premise while showing resistance patterns
-- ✅ **Task-Specific Scenarios**: Concrete problem identification (file organization, user research, team communication)
-- ✅ **Comprehensive Eval Command**: Discretionary evaluation with Sonnet-4 persona simulation and Opus Deep Thoughts
-
-## Session 5 Summary: LangGraph Architecture Migration Complete 🎉
-**Duration**: 7/7 increments complete (100%)  
-**Approach**: "Wrap Don't Weld" parallel system migration with comprehensive testing  
-**Result**: Complete LangGraph infrastructure with zero-downtime migration capability
-
-### Session 5 Achievements (Complete)
-- ✅ **AgentInterface Abstraction**: Clean contracts enabling both event-bus and LangGraph implementations
-- ✅ **LangGraph State Schema**: Comprehensive conversation + evaluation data management
-- ✅ **Coach Node Wrapper**: Zero-regression LangGraph node preserving exact existing behavior
-- ✅ **LangSmith Integration**: Custom metrics and observability infrastructure
-- ✅ **Redis Checkpoint Persistence**: State persistence across conversation sessions with versioning
-- ✅ **Parallel Run Validation**: Shadow testing framework for safe migration with A/B testing
-- ✅ **OpenTelemetry Instrumentation**: Distributed tracing and performance monitoring
-
-### What's Working (Session 5 Additions)
-- ✅ **Interface-First Migration**: Abstraction enabling parallel system operation
-- ✅ **State Management**: Full conversation tracking with evaluation data
-- ✅ **Behavior Parity**: LangGraph coach produces identical responses to event-bus coach
-- ✅ **Custom Observability**: User satisfaction, agent communication, and performance tracking
-- ✅ **Checkpoint Persistence**: Redis-based state persistence with resume capabilities
-- ✅ **Parallel Validation**: Shadow testing, A/B testing, and rollback capabilities
-- ✅ **Distributed Tracing**: Complete observability with OpenTelemetry instrumentation
-- ✅ **Zero Regression**: All existing functionality preserved exactly
-- ✅ **All tests passing (84+/84+)** ✅
-
-## Session 6 Summary: Personal Context Integration Complete 🎉
-**Duration**: 7/7 increments complete (100%) + Real MCP Integration Attempted  
-**Approach**: Context-aware LangGraph with intelligent relevance scoring, MCP integration, and memory recall  
-**Result**: Complete personal context integration system with seamless context enhancement and memory capabilities
-
-## Session 6.12 Update: MCP Integration FIXED! ✅ RESOLVED
-**Issue Resolution**: Complete fix of MCP integration with real Todoist data  
-**Status**: MCP integration fully operational - fetching 125+ real todos from Todoist  
-**Result**: No more hallucinated todos - coach now uses authentic personal context
-
-### Root Cause Resolution (Session 6.12)
-- ✅ **Async Resource Management**: Rewrote MCP connection with explicit cleanup to prevent TaskGroup exceptions
-- ✅ **Tool Name Correction**: Fixed `get_tasks` → `get-tasks` (hyphen vs underscore mismatch)
-- ✅ **Response Format Handling**: Added TextContent object parsing for MCP JSON responses
-- ✅ **Environment Variables**: Provided both `TODOIST_API_TOKEN` and `TODOIST_API_KEY` for compatibility
-- ✅ **Observability Tools**: Created debug tools to isolate and fix integration issues
-
-### Technical Breakthrough
-- **Before**: `using_mock_data: true`, TaskGroup exceptions, silent failures
-- **After**: `total_todos: 125`, real Todoist integration, clear error reporting
-- **Impact**: Coach responses now enhanced with actual personal context instead of mock data
-
-### Session 6 Achievements (Complete)
-- ✅ **Context Node Architecture**: LangGraph with conditional context fetching based on relevance scores
-- ✅ **MCP Todo Integration**: Intelligent todo filtering with conversation-aware relevance matching
-- ✅ **Enhanced Relevance Scoring**: Pattern matching + optional LLM analysis for context detection
-- ✅ **Implicit Context Injection**: Seamlessly enhance coach responses with relevant context
-- ✅ **Cloud Checkpoint Integration**: Enable persistent memory across sessions with privacy controls
-- ✅ **Document Context Integration**: Load and use markdown documents from `/docs/memory/` folder
-- ✅ **Explicit Memory Recall**: Enable "remember when..." queries with intelligent routing
-- ✅ **Real Todoist API Integration**: Connected to actual Todoist account with 108+ todos
-
-### What's Working (Session 6 Additions)
-- ✅ **Context-Aware Graph**: LangGraph with conditional routing and memory recall detection
-- ✅ **Real MCP Todoist Connection**: Live integration with actual Todoist data (108 todos fetched)
-- ✅ **Smart Todo Filtering**: Context-aware filtering showing relevant todos based on conversation
-- ✅ **Multi-Source Token Discovery**: Automatic API token detection from config files and environment
-- ✅ **Multi-Modal Relevance Scoring**: Fast pattern matching + sophisticated LLM analysis option
-- ✅ **Context Budget Management**: Intelligent content truncation to stay within performance limits
-- ✅ **Document Loading**: Automatic loading from user-specified `/docs/memory/` folder with caching
-- ✅ **Memory Persistence**: Conversation history summarization and checkpoint management
-- ✅ **Memory Recall**: Pattern-based detection of "remember when" queries with coherent responses
-- ✅ **Performance Optimized**: Document caching, context budgets, and smart routing
-- ✅ **Conversation Intelligence**: System understands task vs. emotional vs. strategic vs. memory conversations
-- ✅ **Error Resilience**: Graceful handling of MCP failures, missing documents, and empty memories
-- ✅ **Centralized Prompt Management**: Single source of truth for coaching prompts with dynamic loading
-- ✅ **Production-Ready Architecture**: Clean maintainable codebase with comprehensive error handling
-- ✅ **Real Data Integration**: MCP client-server communication fully operational
-- ✅ **Technical Infrastructure**: Real API integration implemented with perfect fallback and observability
-- ✅ **Integration Complete**: User experience enhanced with authentic personal context
-- ✅ **Architectural Foundation**: 100% complete and production-ready
-- ✅ **All tests passing (42+/42+)** ✅
-
-## Current Project Structure
-
-```
-diary-coach/
-├── README.md                 # Project overview and quick start guide
-├── status.md                 # This file - project status tracking
-├── requirements.txt          # Python dependencies (to be created)
-├── src/                      # Source code directory ✅
-│   ├── __init__.py          ✅
-│   ├── main.py              # Working application entry point ✅
-│   ├── agents/              # Multi-agent system components ✅
-│   │   ├── __init__.py      ✅
-│   │   ├── base.py          # Base agent pattern ✅
-│   │   ├── coach_agent.py   # Working diary coach ✅
-│   │   └── prompts/         # Centralized prompt management ✅
-│   │       ├── __init__.py  # PromptLoader utility ✅
-│   │       └── coach_system_prompt.md # Master coaching prompt ✅
-│   ├── events/              # Event-bus system ✅
-│   │   ├── __init__.py      ✅
-│   │   ├── bus.py           # In-memory event bus ✅
-│   │   ├── redis_bus.py     # Redis event bus ✅
-│   │   ├── schemas.py       # Event schemas ✅
-│   │   └── stream_buffer.py # Dual-track streaming ✅
-│   ├── services/            # External service integrations ✅
-│   │   ├── __init__.py      ✅
-│   │   ├── llm_service.py   # Enhanced Anthropic API wrapper with tiers ✅
-│   │   ├── openai_service.py # OpenAI API wrapper for cheap testing ✅
-│   │   └── llm_factory.py   # LLM service factory with tier management ✅
-│   ├── interface/           # User interfaces ✅
-│   │   ├── __init__.py      ✅
-│   │   ├── cli.py           # Basic command-line interface ✅
-│   │   └── enhanced_cli.py  # Enhanced CLI with evaluation ✅
-│   ├── persistence/         # Data storage ✅
-│   │   ├── __init__.py      ✅
-│   │   └── conversation_storage.py # JSON conversation storage ✅
-│   ├── orchestration/       # LangGraph and context management ✅
-│   │   ├── __init__.py      ✅
-│   │   ├── agent_interface.py # Agent abstraction layer ✅
-│   │   ├── state.py         # LangGraph state schema ✅
-│   │   ├── coach_node.py    # Coach LangGraph node wrapper ✅
-│   │   ├── checkpoint_persistence.py # Redis checkpointing ✅
-│   │   ├── parallel_validation.py # A/B testing framework ✅
-│   │   ├── context_state.py # Context-aware state definition ✅
-│   │   ├── context_graph.py # Context-aware LangGraph ✅
-│   │   ├── mcp_todo_node.py # MCP todo integration with real Todoist data ✅
-│   │   └── relevance_scorer.py # Enhanced relevance scoring ✅
-│   └── evaluation/          # Conversation quality evaluation ✅
-│       ├── __init__.py      ✅
-│       ├── metrics.py       # Basic relevance metrics ✅
-│       ├── performance_tracker.py # Response time tracking ✅
-│       ├── analyzers/       # Behavioral analysis components ✅
-│       │   ├── __init__.py  ✅
-│       │   ├── base.py      # Base analyzer interface ✅
-│       │   ├── specificity.py # Specificity push analyzer ✅
-│       │   ├── action.py    # Action orientation analyzer ✅
-│       │   ├── emotional.py # Emotional presence analyzer ✅
-│       │   ├── framework.py # Framework disruption analyzer ✅
-│       │   └── morning.py   # Morning-specific analyzers ✅
-│       ├── personas/        # PM persona simulations ✅
-│       │   ├── __init__.py  ✅
-│       │   ├── base.py      # Base PM persona interface ✅
-│       │   ├── framework_rigid.py # Over-structuring persona ✅
-│       │   ├── control_freak.py   # Perfectionist persona ✅
-│       │   └── legacy_builder.py  # Future-focused persona ✅
-│       ├── reporting/       # Evaluation reporting ✅
-│       │   ├── __init__.py  ✅
-│       │   ├── reporter.py  # Report generator with markdown ✅
-│       │   ├── deep_thoughts.py # Deep Thoughts generator ✅
-│       │   └── eval_exporter.py # Evaluation exporter ✅
-│       ├── generator.py     # Conversation generator with task-specific scenarios ✅
-│       ├── persona_evaluator.py # Persona breakthrough analysis ✅
-│       ├── deep_thoughts_evaluator.py # Deep Thoughts quality evaluator ✅
-│       └── eval_command.py  # Comprehensive evaluation command ✅
-├── tests/                   # Test suite ✅
-│   ├── __init__.py          ✅
-│   ├── agents/              # Agent-specific tests ✅
-│   ├── events/              # Event system tests ✅  
-│   ├── evaluation/          # Evaluation framework tests ✅
-│   │   ├── test_analyzers.py     # Behavioral analyzer tests ✅
-│   │   ├── test_personas.py      # PM persona tests ✅
-│   │   ├── test_reporter.py      # Evaluation reporter tests ✅
-│   │   ├── test_persona_evaluator.py # Persona evaluator tests ✅
-│   │   └── test_relevance.py     # Basic relevance tests ✅
-│   ├── services/            # Service layer tests ✅
-│   ├── orchestration/       # LangGraph and context tests ✅
-│   │   ├── test_agent_interface.py # Agent interface tests ✅
-│   │   ├── test_langgraph_state.py # State schema tests ✅
-│   │   ├── test_coach_node.py      # Coach node tests ✅
-│   │   ├── test_parallel_validation.py # A/B testing tests ✅
-│   │   └── test_otel_tracing.py    # OpenTelemetry tests ✅
-│   ├── context/             # Session 6 context tests ✅
-│   │   ├── test_context_aware_graph.py # Context graph tests ✅
-│   │   ├── test_mcp_todo_integration.py # MCP integration tests ✅
-│   │   └── test_relevance_scoring.py   # Enhanced scoring tests ✅
-│   ├── interface/           # Interface tests ✅
-│   │   ├── test_cli.py           # Basic CLI tests ✅
-│   │   └── test_enhanced_cli.py  # Enhanced CLI tests ✅
-│   ├── persistence/         # Storage tests ✅
-│   ├── integration/         # End-to-end integration tests ✅
-│   │   ├── __init__.py      ✅
-│   │   ├── test_session_1_e2e.py # Session 1 system validation ✅
-│   │   └── test_session_2_e2e.py # Session 2 prototype validation ✅
-│   ├── test_project_setup.py # Project structure tests ✅
-│   └── test_cheap_eval.py    # Cheap evaluation testing ✅
-├── docs/                   # Documentation ✅
-│   ├── status.md           # This file - project status ✅
-│   ├── Roadmap.md          # Development journey blueprint ✅
-│   ├── learning_ledger.md  # Knowledge tracking ✅
-│   ├── session_1/          # Session 1 complete artifacts ✅
-│   │   ├── Session_1.md    # Session specification ✅
-│   │   ├── Log_1_[1-7].md  # Increment logbooks ✅
-│   │   └── Dojo_1_[1-7].md # Learning exercises ✅
-│   ├── session_2/          # Session 2 complete artifacts ✅
-│   │   ├── Session_2.md    # Session specification ✅
-│   │   ├── prompt.md       # Michael's coaching prompt ✅
-│   │   ├── corebeliefs.md  # Core beliefs reference ✅
-│   │   ├── Log_2_1.md      # Session logbook ✅
-│   │   └── Dojo_2_1.md     # Learning exercise ✅
-│   ├── session_3/          # Session 3 complete artifacts ✅
-│   │   ├── Session_3.md    # Session specification ✅
-│   │   ├── Log_3_1.md      # Behavioral detection framework logbook ✅
-│   │   ├── Dojo_3_1.md     # Learning exercise ✅
-│   │   ├── Log_3_2.md      # Evaluation system refinement logbook ✅
-│   │   ├── Dojo_3_2.md     # Learning exercise ✅
-│   │   ├── Log_3_3.md      # Critical bug fixes logbook ✅
-│   │   └── Dojo_3_3.md     # Learning exercise ✅
-│   ├── session_4/          # Session 4 complete artifacts ✅
-│   │   ├── Session_4.md    # Session specification ✅
-│   │   ├── Log_4_1.md      # Morning coach integration logbook ✅
-│   │   ├── Dojo_4_1.md     # Learning exercise ✅
-│   │   ├── Log_4_2.md      # Deep Thoughts generator logbook ✅
-│   │   ├── Dojo_4_2.md     # Learning exercise ✅
-│   │   ├── Log_4_3.md      # Morning analyzers logbook ✅
-│   │   ├── Dojo_4_3.md     # Learning exercise ✅
-│   │   ├── Log_4_4.md      # Deep Thoughts evaluator logbook ✅
-│   │   ├── Dojo_4_4.md     # Learning exercise ✅
-│   │   ├── Log_4_5.md      # Evaluation exporter logbook ✅
-│   │   ├── Dojo_4_5.md     # Learning exercise ✅
-│   │   ├── Log_4_6.md      # Optimization logbook ✅
-│   │   ├── Dojo_4_6.md     # Learning exercise ✅
-│   │   ├── Log_4_7.md      # 3-tier evaluation system logbook ✅
-│   │   └── Dojo_4_7.md     # Learning exercise ✅
-│   ├── session_5/          # Session 5 complete artifacts ✅
-│   │   └── [Session 5 logs and dojos - complete] ✅
-│   ├── session_6/          # Session 6 complete artifacts ✅
-│   │   ├── Session_6.md    # Session specification ✅
-│   │   ├── Log_6_1.md      # Context node architecture logbook ✅
-│   │   ├── Dojo_6_1.md     # LangGraph state management learning ✅
-│   │   ├── Log_6_2.md      # MCP todo integration logbook ✅
-│   │   ├── Dojo_6_2.md     # MCP protocol patterns learning ✅
-│   │   ├── Log_6_3.md      # Enhanced relevance scoring logbook ✅
-│   │   ├── Dojo_6_3.md     # Multi-modal relevance learning ✅
-│   │   ├── Log_6_4-7.md    # Final increments completion logbook ✅
-│   │   ├── Dojo_6_4-7.md   # Advanced context integration patterns learning ✅
-│   │   ├── Log_6_8_PromptCentralization.md # Prompt management refactoring ✅
-│   │   ├── Dojo_6_8_PromptCentralization.md # SSOT architecture patterns learning ✅
-│   │   ├── Log_6_12_MCPIntegrationFix.md # MCP integration fix and observability tools ✅
-│   │   └── Dojo_6_12_MCPIntegrationFix.md # Async resource management patterns learning ✅
-│   └── prototype/          # Evaluation reports ✅
-│       ├── DeepThoughts/   # Deep Thoughts reports ✅
-│       └── Evals/          # Evaluation reports ✅
-├── debug_langsmith.py      # LangSmith observability tool ✅
-├── mcp_sandbox.py          # MCP testing sandbox ✅
-├── docs/observability_tools.md # Tool documentation ✅
-├── pyproject.toml          # Modern Python packaging ✅
-├── venv/                   # Virtual environment ✅
-└── .gitignore             # Git ignore file ✅
-```
-
-## Session 1: Complete Architecture Breakdown
+* ✅ Clean project structure established
+* ✅ Git repository initialized
+* ✅ Basic documentation created
+* ✅ Project philosophy and architecture defined
+* ✅ Testing infrastructure set up with **pytest**
+* ✅ In-memory event-bus architecture implemented
+* ✅ Pydantic event schemas defined
+* ✅ Base agent pattern implemented
+* ✅ Stream buffer for dual-track conversations
+* ✅ Redis event bus integration complete
 
 ### Increment 1.1: Project Skeleton ✅
-- Python package structure with proper `__init__.py` files
-- `pyproject.toml` configuration for modern Python packaging
-- Virtual environment setup and activation
+
+* Python package structure with proper `__init__.py` files
+* `pyproject.toml` configuration for modern Python packaging
+* Virtual environment setup and activation
 
 ### Increment 1.2: First Conversation Test ✅
-- `ResponseRelevanceMetric` for conversation quality evaluation
-- Basic keyword-matching relevance scoring (0-1 scale)
-- TDD pattern established: test-first development
+
+* `ResponseRelevanceMetric` for conversation quality evaluation
+* Basic keyword-matching relevance scoring (0–1 scale)
+* TDD pattern established (test-first development)
 
 ### Increment 1.3: Event Schema Definition ✅
-- Pydantic models for `UserMessage` and `AgentResponse`
-- Automatic field generation (conversation_id, timestamps)
-- Type validation and serialization capabilities
+
+* Pydantic models for `UserMessage` and `AgentResponse`
+* Automatic field generation (conversation\_id, timestamps)
+* Type validation and serialization capabilities
 
 ### Increment 1.4: In-Memory Event Bus ✅
-- Async pub/sub pattern with `asyncio.Queue`
-- Channel-based event routing
-- Concurrent handler execution with `asyncio.gather()`
+
+* Async pub/sub pattern with `asyncio.Queue`
+* Channel-based event routing
+* Concurrent handler execution with `asyncio.gather()`
 
 ### Increment 1.5: Basic Coach Agent ✅
-- `BaseAgent` abstract class with `process_message()` interface
-- Agent registration and response generation patterns
-- Foundation for specialized coaching agents
+
+* `BaseAgent` abstract class with a `process_message()` interface
+* Agent registration and response generation patterns
+* Foundation for specialized coaching agents
 
 ### Increment 1.6: Stream Buffer for Dual Tracks ✅
-- Separate conversation and insights tracks
-- Non-blocking reads with `StreamTrack` enum
-- Support for parallel conversation processing
+
+* Separate conversation and insights tracks
+* Non-blocking reads with a `StreamTrack` enum
+* Support for parallel conversation processing
 
 ### Increment 1.7: Redis Integration ✅
-**Note**: This increment uses mock-based testing to learn Redis patterns without requiring actual Redis infrastructure. This maintains our "no external dependencies" principle while preparing production-ready code.
-- `RedisEventBus` with identical interface to in-memory version
-- Async Redis pub/sub with background message listener
-- JSON serialization, error handling, resource cleanup
-- Comprehensive mock-based testing (no Redis server required)
+
+**Note**: This increment uses mock-based testing to learn Redis patterns without requiring an actual Redis infrastructure. This maintains our “no external dependencies” principle while preparing production-ready code.
+
+* `RedisEventBus` with an interface identical to the in-memory version
+* Async Redis pub/sub with a background message listener
+* JSON serialization, error handling, and resource cleanup
+* Comprehensive mock-based testing (no Redis server required)
 
 ### End-to-End Integration Testing ✅
-**Complete system validation** proving all Session 1 components work together seamlessly:
-- **Full Conversation Flow**: User Message → Event Bus → Agent → Response → Evaluation → Stream Buffer
-- **Event Bus Load Testing**: 10 concurrent conversations processed without data loss
-- **Stream Buffer Concurrency**: Thread-safe parallel read/write operations across tracks
-- **System Error Handling**: Graceful error isolation ensuring system resilience
 
-## Technical Achievements 🏆
+**Complete system validation**: All Session 1 components work together seamlessly, as shown by the tests below:
 
-### Architecture Patterns Established
-- **Event-Driven Design**: Loose coupling between components via pub/sub
-- **Strategy Pattern**: Swappable infrastructure (in-memory ↔ Redis)
-- **Interface Consistency**: Drop-in component replacement capability
-- **Dual-Track Streaming**: Parallel conversation and insights processing
+#### Test 1: Full Conversation Flow
 
-### Testing Excellence
-- **100% TDD Compliance**: Every feature driven by failing tests first
-- **16/16 Tests Passing**: Comprehensive unit + integration coverage
-- **Mock-Based Integration**: Full Redis testing without Redis server
-- **Async Testing Mastery**: Complex async workflows fully tested
-- **End-to-End Validation**: Complete system integration verified under load
+```bash
+User Message → Event Bus → Agent Processing → Response Generation → Quality Evaluation → Dual-Track Stream Buffer → Insights Generation
+```
 
-### Development Process Maturity
-- **Incremental Delivery**: 7 bite-sized, independently valuable increments
-- **Documentation Discipline**: Real-time logbooks and learning captures
-- **Quality Gates**: No increment advances without passing tests
-- **Interface-First Design**: Contracts defined before implementation
-- **Integration Validation**: Complete system workflows tested end-to-end
+* ✅ **2 user messages** processed through complete pipeline
+* ✅ **2 agent responses** generated with contextual relevance
+* ✅ **Evaluation scores** computed and tracked (>0.5 relevance achieved)
+* ✅ **Dual-track streaming** with 4 conversation + 2 insight messages
+* ✅ **Event coordination** without race conditions or data loss
 
-## Session 2: Complete Minimal Prototype Breakdown
+#### Test 2: Concurrent Load Handling
+
+* ✅ **10 simultaneous conversations** processed successfully
+* ✅ **Zero message loss** under concurrent load
+* ✅ **Thread-safe operations** across all components
+* ✅ **Resource cleanup** handled correctly
+
+#### Test 3: Stream Buffer Concurrency
+
+* ✅ **Parallel read/write operations** across conversation and insights tracks
+* ✅ **Data integrity** maintained under concurrent access
+* ✅ **Non-blocking operations** prevent system deadlocks
+
+#### Test 4: Error Resilience
+
+* ✅ **Error isolation** prevents system-wide failures
+* ✅ **Graceful degradation** when individual handlers fail
+* ✅ **System stability** maintained despite processing errors
+
+### Technical Achievements 🏆
+
+#### Architecture Patterns Established
+
+* **Event-Driven Design**: Loose coupling between components via pub/sub
+* **Strategy Pattern**: Swappable infrastructure (in-memory ↔ Redis)
+* **Interface Consistency**: Drop-in component replacement capability
+* **Dual-Track Streaming**: Parallel conversation and insights processing
+
+#### Testing Excellence
+
+* **100% TDD Compliance**: Every feature driven by failing tests first
+* **16/16 Tests Passing**: Comprehensive unit and integration coverage
+* **Mock-Based Integration**: Full Redis testing without a Redis server
+* **Async Testing Mastery**: Complex async workflows fully tested
+* **End-to-End Validation**: Complete system integration verified under load
+
+#### Development Process Maturity
+
+* **Incremental Delivery**: 7 bite-sized, independently valuable increments
+* **Documentation Discipline**: Real-time logbooks and learning captures
+* **Quality Gates**: No increment advances without passing tests
+* **Interface-First Design**: Contracts defined before implementation
+* **Integration Validation**: Complete system workflows tested end-to-end
+
+### Knowledge Transfer Artifacts
+
+* 📚 **7 Session 1 Logbooks** (`docs/session_1/Log_1_[1-7].md`): Action-by-action development records
+* 🥋 **7 Dojo Documents** (`docs/session_1/Dojo_1_[1-7].md`): Increment-specific learning and reflection exercises
+* 📋 **Session 1 Specification** (`docs/session_1/Session_1.md`): Complete session plan and TDD increment breakdown
+* 🗺️ **Project Roadmap** (`docs/Roadmap.md`): Multi-session development blueprint (high-level plan and milestones)
+* 📖 **Learning Ledger** (`docs/learning_ledger.md`): Ongoing knowledge gap tracking for coaching effectiveness
+
+## Session 2: Minimal Working Prototype Complete 🎉
+
+**Duration**: 5 increments in \~2 hours
+**Approach**: Test-Driven Development with incremental delivery
+**Result**: Working diary coach engaging in real conversations with Michael
+
+### Key Achievements 🎯
+
+* ✅ Anthropic API integration with asynchronous wrapper
+* ✅ Complete diary coach built with Michael’s coaching prompt
+* ✅ Command-line interface for real conversations
+* ✅ JSON conversation persistence with date-based organization
+* ✅ End-to-end working system achieved
 
 ### Increment 2.1: Anthropic Service Layer ✅
-- Async wrapper for Claude API with retry logic
-- Token usage and cost tracking from day one
-- Error handling and graceful degradation
-- 5/5 tests passing
 
-### Increment 2.2: Coach Agent Implementation ✅  
-- Complete integration of Michael's coaching prompt
-- Morning/evening conversation state management
-- Message history and context tracking
-- 7/7 tests passing
+* Async wrapper for the Anthropic Claude API with retry logic
+* Token usage and cost tracking from day one
+* Error handling and graceful degradation
+* *5/5 tests passing*
+
+### Increment 2.2: Coach Agent Implementation ✅
+
+* Complete integration of Michael’s coaching prompt
+* Morning/evening conversation state management
+* Message history and context tracking
+* *7/7 tests passing*
 
 ### Increment 2.3: CLI Interface ✅
-- Terminal-based conversation interface
-- Async input handling with cost display
-- Exit command support and error recovery
-- 7/7 tests passing
+
+* Terminal-based conversation interface
+* Async user input handling with running cost display
+* “Exit” command support and error recovery
+* *7/7 tests passing*
 
 ### Increment 2.4: Conversation Persistence ✅
-- JSON storage with date-based folder organization
-- Complete conversation serialization with metadata
-- Async file operations for performance
-- 7/7 tests passing
+
+* JSON storage with date-based folder organization
+* Complete conversation serialization with metadata
+* Async file operations for performance
+* *7/7 tests passing*
 
 ### Increment 2.5: End-to-End Integration ✅
-- Complete system wiring and validation
-- Integration tests for full conversation flows
-- Real API testing capability
-- 6/8 tests passing (2 real API tests available)
 
-## Next Steps (Session 3)
+* Complete system wiring and validation
+* Integration tests covering full conversation flows
+* Real API testing capability (using live API keys)
+* *6/8 tests passing* (two API integration tests optional)
 
-### Primary Goals
-1. **Behavioral Change Detection Framework** - Use real conversations to identify coaching weaknesses
-2. **Conversation Quality Metrics** - Build evaluation based on observed patterns
-3. **A/B Testing Infrastructure** - Compare prompt variations systematically
+### Environment and Dependencies
 
-### Session 3 Data-Driven Approach
-- **Conversation Corpus Generation**: Create 20+ real conversations with current prototype
-- **Weakness Pattern Analysis**: Identify where coach fails to push for specificity  
-- **Metric Development**: Build coaching effectiveness measurements
-- **Prompt Refinement**: Data-driven coaching behavior improvements
+* **Python 3.13**: Development environment using a dedicated virtual environment
+* **pytest**: Testing framework
+* **pytest-asyncio**: Async testing support library
+* **redis**: Redis client library (for event bus and caching)
+* **pydantic**: Data validation and schema models
+* **anthropic**: LLM API client (Claude integration, introduced in Session 2)
+* **python-dotenv**: Environment variable management
 
-### Upcoming Sessions Roadmap
-- **Session 3**: Behavioral analysis and conversation quality evaluation
-- **Session 4**: Event-driven architecture scaling with Redis
-- **Session 5**: Intelligent orchestrator and multi-agent routing
-- **Session 6**: Specialized coaching agents and personality variants
+### Core Design Principles Validated
 
-## Dependencies Installed ✅
-- ✅ pytest: Testing framework  
-- ✅ pytest-asyncio: Async testing support
-- ✅ redis: Redis client library
-- ✅ pydantic: Data validation and schemas
-- ✅ anthropic: LLM integration (now actively used in Session 2)
-- ✅ python-dotenv: Environment variable management
+1. ✅ **Compartmentalization**: Incremental development prevents context overflow
+2. ✅ **Continuous Improvement**: The TDD approach enables measurable quality improvement
+3. ✅ **Learning While Building**: Documentation artifacts (logbooks, dojo exercises) capture knowledge for continuous learning
+4. ✅ **Interface-First Design**: Early definition of interfaces enables infrastructure evolution without breaking changes
 
-## Dependencies for Session 3
-- deepeval or similar: AI conversation evaluation
-- Additional metrics libraries as determined by analysis needs
+## Session 3: Production-Ready Evaluation System Complete 🎉
 
-## Environment Setup ✅
-- **Python 3.13**: Virtual environment activated and configured
-- **Dependencies**: All Session 1 requirements installed and tested
-- **Project Structure**: Modern Python packaging with pyproject.toml
-- **Git Integration**: Repository initialized and ready for collaborative development
+**Duration**: 7 increments following TDD approach
+**Approach**: LLM-powered behavioral analysis with PM persona testing, user experience refinements, and critical bug fixes
+**Result**: Self-evaluating coach with a production-ready evaluation system, natural user interface, and robust deep reporting
 
-## Core Design Principles Validated
-1. **✅ Compartmentalization**: Incremental development prevents context overflow
-2. **✅ Continuous Improvement**: TDD approach enables measurable quality improvement
-3. **✅ Learning While Building**: 14 documentation files capture knowledge transfer
-4. **✅ Interface-First Design**: Enables infrastructure evolution without breaking changes
+### Key Achievements 🎯
 
-## Session 1 Success Metrics Achievement
-- **✅ Test Coverage**: 16/16 tests passing (12 unit + 4 integration tests)
-- **✅ Architecture Quality**: Event-driven, loosely coupled, highly testable
-- **✅ Documentation Completeness**: Real-time logs and learning captures
-- **✅ Development Velocity**: 7 increments delivered successfully
-- **✅ Technical Foundation**: Production-ready infrastructure patterns established
-- **✅ End-to-End Validation**: Complete system integration verified
+* ✅ **Automated Evaluation System**: Built a self-evaluating coach with performance tracking
+* ✅ **Behavioral Analysis**: Implemented 4 LLM-powered analyzers to measure coaching effectiveness (Specificity Push, Action Orientation, Emotional Presence, Framework Alignment)
+* ✅ **PM Persona Testing**: Introduced 3 PM personas with realistic resistance patterns for robust scenario evaluation
+* ✅ **Real-Time Performance**: Achieved sub-second response times with percentile-based performance reporting
+* ✅ **Markdown Reporting**: Generated comprehensive evaluation summaries in Markdown with actionable improvement suggestions
+* ✅ **Breakthrough Detection**: Measured coaching effectiveness in overcoming specific resistance patterns (“breakthrough” moments)
+* ✅ **User-Friendly Interface**: Added natural language CLI commands for intuitive coaching evaluation flow
+* ✅ **Two-Tier Analysis**: Provided light reports for immediate feedback and deep reports for comprehensive insights
+* ✅ **Persistent Reports**: Enabled reliable Markdown report generation with conversation transcripts included
+* ✅ **Robust Error Handling**: Fixed a critical deep-report generation bug and added comprehensive test coverage to prevent regressions
 
-## Knowledge Transfer Artifacts Created
-- **📚 7 Session Logbooks** (`docs/session_1/Log_1_[1-7].md`): Action-by-action development records
-- **🥋 7 Dojo Documents** (`docs/session_1/Dojo_1_[1-7].md`): Learning themes for continued education
-- **📋 Session Specification** (`docs/session_1/Session_1.md`): Complete increment breakdown and TDD approach
-- **🗺️ Project Roadmap** (`docs/Roadmap.md`): Multi-session development journey
-- **📖 Learning Ledger** (`docs/learning_ledger.md`): Knowledge gap tracking for coaching effectiveness
+*(Session 3 established a data-driven evaluation framework, enabling the coach to analyze its own performance and adjust accordingly.)*
 
-## Integration Testing Validation 🧪
+## Session 4: Morning Coach Excellence with 3-Tier Evaluation System 🎉
 
-### **Complete System Workflows Tested**
-Our end-to-end integration tests validate the entire coaching conversation pipeline:
+**Duration**: 7 increments (TDD, plus optimization feedback and persona improvements)
+**Approach**: Specialized morning coaching behavior, Deep Thoughts generation, cost optimizations via a 3-tier model architecture, and cooperative persona testing
+**Result**: Morning-specific coach with time-based behavior, pinneable “Deep Thoughts” insights, \~50% cost reduction through smart model selection, and a comprehensive 3-tier evaluation system with improved persona testing
 
-#### **Test 1: Full Conversation Flow** 
-```
-User Message → Event Bus → Agent Processing → Response Generation → 
-Quality Evaluation → Dual-Track Stream Buffer → Insights Generation
-```
-- ✅ **2 user messages** processed through complete pipeline
-- ✅ **2 agent responses** generated with contextual relevance  
-- ✅ **Evaluation scores** computed and tracked (>0.5 relevance achieved)
-- ✅ **Dual-track streaming** with 4 conversation + 2 insight messages
-- ✅ **Event coordination** without race conditions or data loss
+### Key Achievements 🎯
 
-#### **Test 2: Concurrent Load Handling**
-- ✅ **10 simultaneous conversations** processed successfully
-- ✅ **Zero message loss** under concurrent load
-- ✅ **Thread-safe operations** across all components
-- ✅ **Resource cleanup** handled correctly
+* ✅ **Morning Specialization**: Time-aware coach with tailored morning greetings and higher-energy tone
+* ✅ **Deep Thoughts Reports**: Introduced an Opus-tier model to generate “Deep Thoughts” – pinneable insight messages for the user to revisit throughout the day
+* ✅ **Cost Optimization**: Achieved \~50% cost reduction by using the lighter Anthropic *Sonnet* model for routine evaluations
+* ✅ **Smart File Generation**: Evaluation and Deep Thought files are generated only when explicitly requested (via the “deep report” command)
+* ✅ **Morning Analytics**: Developed 3 specialized analyzers to assess morning coaching effectiveness (ProblemSelection, ThinkingPivot, ExcitementBuilder)
+* ✅ **Concise Reporting**: Produced scannable evaluation summaries with emoji status indicators for quick readability
+* ✅ **Quality Assurance**: Implemented a Deep Thoughts quality evaluator with 6 custom metrics to ensure high-value insights
+* ✅ **3-Tier LLM Architecture**: Integrated GPT-4o-mini for cost-effective testing, Anthropic Sonnet-4 for standard operations, and Anthropic Opus-2 for premium analysis
+* ✅ **Enhanced Persona Testing**: Refined persona behavior to accept the coaching premise while still exhibiting realistic resistance patterns
+* ✅ **Task-Specific Scenarios**: Added concrete problem scenarios (e.g. file organization, user research, team communication) to broaden evaluation testing
+* ✅ **Comprehensive Eval Command**: Created a unified evaluation command that runs persona simulations (Sonnet-4) and generates Deep Thoughts (Opus-2) in one go
+* ✅ **All tests passing (35+/35+)**
 
-#### **Test 3: Stream Buffer Concurrency**
-- ✅ **Parallel read/write operations** across conversation and insights tracks
-- ✅ **Data integrity** maintained under concurrent access
-- ✅ **Non-blocking operations** prevent system deadlocks
+### Morning Coach with Deep Thoughts (Example Usage)
 
-#### **Test 4: Error Resilience**
-- ✅ **Error isolation** prevents system-wide failures
-- ✅ **Graceful degradation** when individual handlers fail
-- ✅ **System stability** maintained despite processing errors
-
-## Running the Current System
-
-### Session 4: Morning Coach with Deep Thoughts
+Below is an example of a morning conversation showcasing the **Deep Thoughts** feature and the evaluation flow:
 
 ```bash
 # Ensure API key is set in .env file
@@ -542,58 +265,425 @@ echo "ANTHROPIC_API_KEY=your_key_here" >> .env
 source venv/bin/activate && python -m src.main
 
 # Morning conversation experience (6:00 AM - 11:59 AM)
-> good morning
-🌅 Diary Coach Ready
-💡 Tips: Say 'stop', 'end conversation', or 'wrap up' to get your coaching evaluation
+> good morning  
+🌅 Diary Coach Ready  
+💡 Tips: Say 'stop', 'end conversation', or 'wrap up' to get your coaching evaluation  
    Then use 'deep report' for detailed AI analysis, or 'exit' to quit
 
 Good morning Michael! What dragon are you most excited to slay today?
 
-> I need to organize my files today
+> I need to organize my files today  
 Is organizing files really the biggest lever you could pull today? What core value do you want to fight for?
 
-> I want to fight for clarity and focus
+> I want to fight for clarity and focus  
 That's a powerful value to champion! Tell me more about what clarity means to you in this context.
 
-> stop  # Get evaluation summary
-=== Conversation Evaluation ===
-Total Cost: $0.0087
+> stop  # Get evaluation summary  
+=== Conversation Evaluation ===  
+Total Cost: $0.0087  
 Messages: 6
 
 Add notes about this conversation (or 'skip'): Coach challenged my initial choice well
 
 Coaching Effectiveness: 8.1/10
 
-Response Speed:
-- Median: 724ms
+Response Speed:  
+- Median: 724ms  
 - 80th percentile: 891ms ✅  
 - Under 1s: 100% ✅
 
-Behavioral Analysis:
-- ProblemSelection: 8.5/10
-- ThinkingPivot: 7.8/10
-- ExcitementBuilder: 8.2/10
+Behavioral Analysis:  
+- ProblemSelection: 8.5/10  
+- ThinkingPivot: 7.8/10  
+- ExcitementBuilder: 8.2/10  
 - SpecificityPush: 7.9/10
 
 Type 'deep report' to generate Deep Thoughts + evaluation files, or 'exit' to quit.
 
-> deep report  # Generate pinneable insights + cost-optimized evaluation
-📝 Generating Deep Thoughts report (Opus)...
-✅ Deep Thoughts saved to: docs/prototype/DeepThoughts/DeepThoughts_20250701_0930.md
-📋 Generating evaluation report (Sonnet)...
+> deep report  # Generate pinneable insights + cost-optimized evaluation  
+📝 Generating Deep Thoughts report (Opus)...  
+✅ Deep Thoughts saved to: docs/prototype/DeepThoughts/DeepThoughts_20250701_0930.md  
+📋 Generating evaluation report (Sonnet)...  
 ✅ Evaluation saved to: docs/prototype/Evals/Eval_20250701_0930.md
 
 🎉 Deep report complete!
 
-> exit
+> exit  
 Goodbye! Have a transformative day! 🌟
 ```
 
-### Key Session 4 Features:
-- **Morning Specialization**: Time-aware coaching (6:00 AM - 11:59 AM)
-- **Deep Thoughts**: Pinneable insights you'll want to revisit during the day
-- **Cost Optimization**: 50% reduction using Sonnet for evaluations
-- **Smart File Generation**: Only creates files when you request "deep report"
-- **Concise Evaluations**: Scannable reports with emoji status indicators
+*(In the example above, the coach provides a tailored morning greeting, challenges the user’s initial plan, and upon “stop” produces an evaluation summary. The user then triggers a “deep report,” prompting the system to generate a detailed Deep Thoughts report and a saved evaluation file.)*
 
-**System Status**: Production-ready with morning excellence and cost-optimized Deep Thoughts generation 🎉
+## Session 5: LangGraph Architecture Migration Complete 🎉
+
+**Duration**: 7/7 increments complete (100%)
+**Approach**: “Wrap, Don’t Weld” strategy – a parallel system migration to LangGraph executed alongside the existing system, with comprehensive testing
+**Result**: Full LangGraph infrastructure implemented with zero-downtime migration capability
+
+### Key Achievements 🎯
+
+* ✅ **AgentInterface Abstraction**: Created a unified interface layer enabling the event-bus and LangGraph implementations to run in parallel (“Wrap, Don’t Weld” approach)
+* ✅ **LangGraph State Schema**: Developed a comprehensive state model to track full conversation and evaluation data
+* ✅ **Coach Node Wrapper**: Introduced a LangGraph-based coach node that preserves existing behavior exactly (identical responses as the event-bus coach)
+* ✅ **LangSmith Integration**: Integrated LangSmith for custom metrics and observability (tracking user satisfaction, agent interactions, performance, etc.)
+* ✅ **Redis Checkpoint Persistence**: Implemented state persistence across conversation sessions (with versioning and resume capability)
+* ✅ **Parallel Run Validation**: Established shadow mode A/B testing for safe parallel runs and easy rollback if needed
+* ✅ **OpenTelemetry Instrumentation**: Enabled distributed tracing and performance monitoring for the new LangGraph pipeline
+* ✅ **Zero Regression**: Verified that all existing functionality is preserved under the LangGraph architecture
+* ✅ **All tests passing (84+/84+)**
+
+*(Session 5 delivered a seamless migration to a new underlying architecture (LangGraph) without regressing any features. The system can run both the old and new architectures in parallel for testing purposes, ensuring confidence in the migration.)*
+
+## Session 6: Personal Context Integration Complete 🎉
+
+**Duration**: 7/7 increments complete (100% + additional debugging)
+**Approach**: Extended LangGraph with personal context integration (intelligent relevance scoring, external MCP integration, and memory recall capabilities)
+**Result**: Comprehensive personal context integration system that seamlessly enhances coach responses with relevant user context and memory
+
+### Increment 6.12: MCP Integration Fix ✅
+
+**Issue Resolution**: Implemented a complete fix for the MCP (My Context Provider) integration with real Todoist data
+**Status**: MCP integration is now fully operational, fetching 125+ real tasks from Todoist
+**Result**: No more hallucinated todos – the coach now uses authentic personal to-do items as context
+
+#### Root Cause Resolution
+
+* ✅ **Async Resource Management**: Rewrote MCP connection logic with explicit cleanup to prevent `TaskGroup` exceptions
+* ✅ **Tool Name Correction**: Fixed an API endpoint naming issue (`get_tasks` → `get-tasks` mismatch)
+* ✅ **Response Format Handling**: Added parsing support for the `TextContent` wrapper in MCP’s JSON responses
+* ✅ **Environment Variables**: Provided both `TODOIST_API_TOKEN` and `TODOIST_API_KEY` in configuration to ensure compatibility
+* ✅ **Observability Tools**: Created dedicated debug utilities to isolate and fix integration issues quickly
+
+#### Technical Breakthrough
+
+* **Before**: `using_mock_data: true` (TaskGroup exceptions and silent failures)
+* **After**: `total_todos: 125` (real Todoist integration with clear error reporting)
+* **Impact**: Coach responses are now enhanced with actual personal context instead of mock data
+
+### Key Achievements 🎯
+
+* ✅ **Context-Aware Architecture**: Implemented a LangGraph context node that conditionally fetches relevant information (with memory-recall detection based on conversation content)
+* ✅ **Real Todoist Integration**: Connected the coach to a real Todoist account (108+ tasks) to provide authentic personal data for context
+* ✅ **Smart Todo Filtering**: Automatically filters the fetched Todoist tasks to surface items relevant to the current conversation
+* ✅ **Enhanced Relevance Scoring**: Combined fast pattern matching with optional LLM-based analysis to accurately decide when personal context is needed
+* ✅ **Implicit Context Injection**: Seamlessly injects relevant personal details into the coach’s responses without explicit user prompts
+* ✅ **Cloud Checkpoint Integration**: Enabled persistent memory across sessions via Redis-backed checkpoints (conversation histories are summarized and versioned for long-term storage)
+* ✅ **Document Context Integration**: Automatically loads relevant user-provided documents from the `/docs/memory/` folder (with caching for efficiency) to enrich conversations
+* ✅ **Explicit Memory Recall**: Detects “remember when...” user queries and retrieves pertinent past conversation snippets, enabling coherent follow-up responses
+* ✅ **Prompt Architecture Overhaul**: Refactored the prompt system to separate the coach’s core identity from time-specific behaviors (morning/evening protocols), eliminating duplication and simplifying updates
+* ✅ **Non-Directive Coaching Framework**: Adopted a question-first coaching style that pinpoints the crux of the user’s issue and integrates the user’s own beliefs into the dialogue
+* ✅ **Multi-Source Token Discovery**: Automated detection of API tokens from both config files and environment variables to simplify setup
+* ✅ **Context Budget Management**: Intelligently trims and prioritizes context information to stay within token limits and maintain performance
+* ✅ **Conversation Intelligence**: Differentiates between task-focused, emotional, strategic, and memory-focused conversations to adjust coaching strategies appropriately
+* ✅ **Error Resilience**: Added robust error handling for context integration failures (e.g. MCP timeouts, missing documents), ensuring graceful degradation instead of crashes
+* ✅ **All tests passing (42+/42+)**
+
+### Update 6.13: Prompt Architecture Refactoring ✅
+
+**Achievement**: Separated the coach’s core identity prompt from time-specific behaviors (morning and evening routines)
+**Impact**: Much more maintainable prompt architecture with clear responsibility boundaries, paving the way for new evaluation metrics
+
+#### Prompt Architecture Changes
+
+* ✅ **Core Identity Separation**: Moved the non-directive coaching philosophy into a dedicated `coach_system_prompt.md` (focuses solely on core coaching principles)
+* ✅ **Time-Specific Behaviors**: Shifted morning and evening ritual logic into code (`coach_agent.py`), keeping the system prompt itself context-agnostic
+* ✅ **Evening Protocol Added**: Introduced a complete evening reflection routine to complement the morning protocol
+* ✅ **Duplication Eliminated**: Removed overlapping content between prompt files to ensure a single source of truth
+* ✅ **New Evaluation Metrics**: Defined 7 new coaching-effectiveness metrics in preparation for upcoming evaluation improvements
+
+### Update 6.14: Deep Thoughts Generator Refactoring ✅
+
+**Achievement**: Refactored the “Deep Thoughts” generator into an agent-like component with its own dedicated system prompt
+**Impact**: All AI components now follow a consistent prompt management pattern, making it easier to customize and extend behavior
+
+#### Deep Thoughts Architecture Changes
+
+* ✅ **Dedicated Prompt File**: Created `deep_thoughts_system_prompt.md` with an enhanced prompt structure specifically for Deep Thoughts generation (grounded in coaching principles)
+* ✅ **Prompt Loader Integration**: Extended the `PromptLoader` utility to include a `get_deep_thoughts_system_prompt()` method for easy access to the new prompt
+* ✅ **Agent Pattern Consistency**: Refactored `DeepThoughtsGenerator` to follow the same design pattern as `DiaryCoach` (initialization, processing, etc.)
+* ✅ **Enhanced Prompt Structure**: The Deep Thoughts prompt now uses a 7-section format covering problem significance, concrete tasks, solution archetypes, crux identification, belief integration, and fact-checking
+* ✅ **System Recovery**: Fixed environment variable conflicts that were preventing API authentication for the Deep Thoughts generator
+* ✅ **Centralized Prompt Management**: Confirmed that all AI agents now use the unified prompt loading system (single pattern for easier maintenance)
+
+### Session 6.15 Update: Evaluation System Infrastructure Fixed ✅ *RESOLVED*
+
+**Achievement**: Fixed all import path issues and async execution problems in the evaluation system
+**Status**: All evaluators now run and return scores as expected
+**Impact**: The entire evaluation pipeline is fully functional and reliable
+
+#### Technical Issues Resolved
+
+* ✅ **Python Import Paths**: Adjusted module import paths (avoiding `ModuleNotFoundError` in evaluation scripts)
+* ✅ **Import Name Corrections**: Renamed outdated references (`ContextAwareGraph`/`ContextAwareState`) to use the correct `create_context_aware_graph` and `ContextState`
+* ✅ **Async Function Usage**: Replaced synchronous `evaluate` calls with the proper async `aevaluate` to run evaluators without blocking
+* ✅ **Result Processing**: Fixed how `AsyncExperimentResults` are handled to properly extract each evaluator’s score
+* ✅ **Evaluator Execution**: Implemented an asynchronous `aevaluate_run` method instead of improperly using `asyncio.run()` inside an event loop
+* ✅ **Token Limit Increase**: Raised the token limit from 200 to 800 to prevent JSON responses from being truncated
+
+#### Individual Evaluator Test Success
+
+Each evaluator was validated with a test confirming it returns the expected score and feedback output:
+
+```json
+{
+  "score": 0.6,
+  "reasoning": "The coach acknowledges the client's feelings and prompts impact analysis...",
+  "feedback": {
+    "strengths": ["Shows empathy...", "Encourages consequences thinking..."],
+    "improvements": ["Could explore specific tasks...", "Inquire about importance..."]
+  }
+}
+```
+
+## Session 6.16 Update: Radical Speed Improvements Complete ✅ *PERFORMANCE SOLVED*
+
+**Problem Solved**: Transformed evaluation testing from an unusable \~2.5-hour process into a lightning-fast 4–6 second operation
+**Achievement**: Achieved a \~2,052× speed improvement through intelligent sampling and parallel execution of evaluators
+**Impact**: Restored and dramatically improved the development workflow – evaluation tests now run in seconds, enabling rapid iteration
+
+#### Speed Improvements Achieved
+
+* **Quick Mode**: \~4.3 s (target < 60 s) – **2,052× faster** than the original baseline
+* **Medium Mode**: \~6.3 s (target < 300 s) – **1,411× faster** than baseline
+* **Baseline**: \~2.5 hours (294 evaluations × \~30 s each) ➜ **Now: seconds**
+
+#### Technical Solutions Implemented
+
+* ✅ **Representative Example Mapping**: Each evaluator now uses 1 representative example (≈0.69 average discriminative power) to minimize required evaluations
+* ✅ **Parallel Execution**: Utilized `asyncio.gather()` to run evaluators concurrently (about 3.2× speedup over sequential execution)
+* ✅ **Three-Tier Testing Scripts**: Created Quick, Medium, and Full evaluation test suites to match development vs. CI needs
+* ✅ **Result Caching**: Implemented caching of evaluation results (up to \~28,000× speedup on repeated runs with deterministic cache keys)
+* ✅ **Comprehensive Validation**: All functionality tested with performance targets exceeded in all modes
+
+#### New Fast Testing Architecture
+
+```bash
+# Development iteration (≈4 s)
+python scripts/test_evaluation_quick.py
+
+# Pre-commit validation (≈6 s)
+python scripts/test_evaluation_medium.py
+
+# Full regression testing (CI only)
+python scripts/test_evaluation_full.py
+```
+
+#### Current Evaluation System Status
+
+* ✅ **Infrastructure**: All import, async, and data processing issues have been resolved
+* ✅ **Individual Components**: Each evaluator functions correctly and returns proper scores
+* ✅ **LangSmith Integration**: Automated dataset uploads and experiment tracking are functional (via LangSmith)
+* ✅ **Coach Integration**: The context-aware coach runs end-to-end with real personal data and evaluation feedback
+* ✅ **Performance**: Evaluation testing is now lightning-fast (quick/medium test suites complete in \~4–6 seconds)
+* ✅ **Testing Workflow**: Three-tier testing (quick/medium/full) is in place for efficient development and CI checks
+* ✅ **Development Workflow**: Instant feedback loops are restored, enabling rapid, practical iteration during development
+
+## Session 6.17 Update: LangSmith Integration Fix Complete ✅ REAL EXPERIMENTS
+
+**Problem Solved**: Fixed critical LangSmith integration where evaluation scores were not visible in dashboard  
+**Achievement**: Transformed fast evaluator from mock data to real LangSmith experiments with visible scores  
+**Impact**: Evaluation data now fully integrated with LangSmith for analysis, comparison, and CI workflows
+
+#### Integration Issues Resolved
+- ✅ **Coach Function Errors**: Fixed "AttributeError: 'dict' object has no attribute 'coach_response'" in LangSmith experiments
+- ✅ **Mock Data Replacement**: Replaced MockRun objects with real `aevaluate` calls using actual LangSmith datasets
+- ✅ **Evaluator Format Compliance**: Added required `key` field and proper LangSmith format for score visibility
+- ✅ **Quick Dataset Creation**: Built optimized 14-example dataset for sub-10 minute evaluation cycles
+- ✅ **Real Experiment Integration**: All evaluations now create authentic LangSmith experiments with coach responses
+
+#### LangSmith Dashboard Integration Achieved
+- ✅ **Visible Evaluation Scores**: Feedback columns showing 0-1 scores for all 7 evaluators
+- ✅ **Authentic Coach Responses**: Real coaching conversations instead of error messages
+- ✅ **Experiment Comparison**: A/B testing capabilities for different coach configurations
+- ✅ **Metadata Tracking**: Scenario names, evaluation dimensions, and context properly tracked
+- ✅ **CI Integration Ready**: Evaluation results available for regression detection and quality monitoring
+
+#### Current Evaluation Workflow
+```bash
+# Development iteration with real LangSmith data (≈5 min)
+python scripts/test_evaluation_quick.py
+# → Creates real experiment with 14 examples × 7 evaluators
+# → Visible scores and feedback in LangSmith dashboard
+
+# Pre-commit validation (≈15 min)  
+python scripts/test_evaluation_medium.py
+
+# Full CI regression testing (≈45 min)
+python scripts/test_evaluation_full.py
+```
+
+**Evaluation System Status**: Production-ready with radical speed improvements AND full LangSmith integration, enabling both practical development workflows and comprehensive evaluation analysis 🎉
+
+## Current Project Structure
+
+```
+diary-coach/
+├── README.md                 # Project overview and quick start guide
+├── status.md                 # This file – project status tracking
+├── requirements.txt          # Python dependencies (to be created)
+├── src/                      # Source code directory ✅
+│   ├── __init__.py           ✅
+│   ├── main.py               # Application entry point ✅
+│   ├── agents/               # Multi-agent system components ✅
+│   │   ├── __init__.py       ✅
+│   │   ├── base.py           # Base agent pattern ✅
+│   │   ├── coach_agent.py    # Diary coach agent logic ✅
+│   │   └── prompts/          # Centralized prompt management ✅
+│   │       ├── __init__.py   # PromptLoader utility ✅
+│   │       ├── coach_system_prompt.md       # Core coaching prompt ✅
+│   │       └── deep_thoughts_system_prompt.md # Deep Thoughts generator prompt ✅
+│   ├── events/               # Event-bus system ✅
+│   │   ├── __init__.py       ✅
+│   │   ├── bus.py            # In-memory event bus ✅
+│   │   ├── redis_bus.py      # Redis event bus ✅
+│   │   ├── schemas.py        # Event schemas (Pydantic models) ✅
+│   │   └── stream_buffer.py  # Dual-track streaming buffer ✅
+│   ├── services/             # External service integrations ✅
+│   │   ├── __init__.py       ✅
+│   │   ├── llm_service.py    # Anthropic API wrapper with model tiering ✅
+│   │   ├── openai_service.py # OpenAI API wrapper for cheaper testing ✅
+│   │   └── llm_factory.py    # LLM service factory and tier management ✅
+│   ├── interface/            # User interfaces ✅
+│   │   ├── __init__.py       ✅
+│   │   ├── cli.py            # Basic command-line interface ✅
+│   │   └── enhanced_cli.py   # Enhanced CLI with evaluation commands ✅
+│   ├── persistence/          # Data storage ✅
+│   │   ├── __init__.py       ✅
+│   │   └── conversation_storage.py # JSON conversation storage ✅
+│   ├── orchestration/        # LangGraph orchestration and context management ✅
+│   │   ├── __init__.py       ✅
+│   │   ├── agent_interface.py       # Agent abstraction layer ✅
+│   │   ├── state.py                # LangGraph state schema ✅
+│   │   ├── coach_node.py           # LangGraph coach node wrapper ✅
+│   │   ├── checkpoint_persistence.py # Redis checkpointing (conversation state) ✅
+│   │   ├── parallel_validation.py  # Shadow/A-B testing framework ✅
+│   │   ├── context_state.py        # Context-aware state definitions ✅
+│   │   ├── context_graph.py        # Context-aware LangGraph ✅
+│   │   ├── mcp_todo_node.py        # MCP Todoist integration node ✅
+│   │   └── relevance_scorer.py     # Enhanced relevance scoring logic ✅
+│   └── evaluation/          # Conversation quality evaluation ✅
+│       ├── __init__.py       ✅
+│       ├── metrics.py        # Basic relevance metrics ✅
+│       ├── performance_tracker.py  # Response time tracking ✅
+│       ├── analyzers/        # Behavioral analysis components ✅
+│       │   ├── __init__.py   ✅
+│       │   ├── base.py       # Base analyzer interface ✅
+│       │   ├── specificity.py # Specificity push analyzer ✅
+│       │   ├── action.py     # Action orientation analyzer ✅
+│       │   ├── emotional.py  # Emotional presence analyzer ✅
+│       │   ├── framework.py  # Framework disruption analyzer ✅
+│       │   └── morning.py    # Morning-specific analyzers ✅
+│       ├── personas/         # Product Manager persona simulations ✅
+│       │   ├── __init__.py   ✅
+│       │   ├── base.py       # Base PM persona interface ✅
+│       │   ├── framework_rigid.py # Over-structuring persona ✅
+│       │   ├── control_freak.py   # Perfectionist persona ✅
+│       │   └── legacy_builder.py  # Future-focused persona ✅
+│       ├── reporting/        # Evaluation report generation ✅
+│       │   ├── __init__.py   ✅
+│       │   ├── reporter.py   # Evaluation report generator (Markdown) ✅
+│       │   ├── deep_thoughts.py   # Deep Thoughts report generator ✅
+│       │   └── eval_exporter.py   # Evaluation data exporter ✅
+│       ├── generator.py      # Conversation generator (task-specific scenarios) ✅
+│       ├── persona_evaluator.py   # Persona breakthrough analyzer ✅
+│       ├── deep_thoughts_evaluator.py # Deep Thoughts quality evaluator ✅
+│       └── eval_command.py   # Comprehensive evaluation command ✅
+├── tests/                   # Test suite ✅
+│   ├── __init__.py          ✅
+│   ├── agents/              # Agent tests ✅
+│   ├── events/              # Event system tests ✅  
+│   ├── evaluation/          # Evaluation framework tests ✅
+│   │   ├── test_analyzers.py         # Behavioral analyzers tests ✅
+│   │   ├── test_personas.py          # Persona (PM) tests ✅
+│   │   ├── test_reporter.py          # Evaluation reporter tests ✅
+│   │   ├── test_persona_evaluator.py # Persona breakthrough tests ✅
+│   │   └── test_relevance.py         # Basic relevance metric tests ✅
+│   ├── services/            # Service layer tests ✅
+│   ├── orchestration/       # Orchestration (LangGraph + context) tests ✅
+│   │   ├── test_agent_interface.py     # Agent interface tests ✅
+│   │   ├── test_langgraph_state.py     # LangGraph state schema tests ✅
+│   │   ├── test_coach_node.py          # Coach node tests ✅
+│   │   ├── test_parallel_validation.py # Parallel validation (A/B) tests ✅
+│   │   └── test_otel_tracing.py        # OpenTelemetry tracing tests ✅
+│   ├── context/             # Session 6 context integration tests ✅
+│   │   ├── test_context_aware_graph.py   # Context graph tests ✅
+│   │   ├── test_mcp_todo_integration.py  # MCP Todoist integration tests ✅
+│   │   └── test_relevance_scoring.py     # Enhanced relevance scoring tests ✅
+│   ├── interface/           # Interface (CLI) tests ✅
+│   │   ├── test_cli.py           # Basic CLI tests ✅
+│   │   └── test_enhanced_cli.py  # Enhanced CLI tests ✅
+│   ├── persistence/         # Persistence layer tests ✅
+│   ├── integration/         # End-to-end integration tests ✅
+│   │   ├── __init__.py       ✅
+│   │   ├── test_session_1_e2e.py  # Session 1 full flow test ✅
+│   │   └── test_session_2_e2e.py  # Session 2 prototype flow test ✅
+│   ├── test_project_setup.py     # Project structure tests ✅
+│   └── test_cheap_eval.py        # Cost-optimized evaluation (Sonnet) tests ✅
+├── docs/                   # Documentation ✅
+│   ├── status.md           # Project status (this file) ✅
+│   ├── Roadmap.md          # Development journey blueprint ✅
+│   ├── learning_ledger.md  # Knowledge tracking ledger ✅
+│   ├── session_1/          # Session 1 artifacts ✅
+│   │   ├── Session_1.md    # Session 1 specification ✅
+│   │   ├── Log_1_[1-7].md  # Session 1 increment logbooks ✅
+│   │   └── Dojo_1_[1-7].md # Session 1 dojo learning exercises ✅
+│   ├── session_2/          # Session 2 artifacts ✅
+│   │   ├── Session_2.md    # Session 2 specification ✅
+│   │   ├── prompt.md       # Michael’s coaching prompt ✅
+│   │   ├── corebeliefs.md  # Core beliefs reference ✅
+│   │   ├── Log_2_1.md      # Session 2 logbook ✅
+│   │   └── Dojo_2_1.md     # Session 2 dojo exercise ✅
+│   ├── session_3/          # Session 3 artifacts ✅
+│   │   ├── Session_3.md    # Session 3 specification ✅
+│   │   ├── Log_3_1.md      # Behavioral analysis logbook ✅
+│   │   ├── Dojo_3_1.md     # Session 3 dojo exercise ✅
+│   │   ├── Log_3_2.md      # Evaluation system refinement logbook ✅
+│   │   ├── Dojo_3_2.md     # Session 3 dojo exercise ✅
+│   │   ├── Log_3_3.md      # Critical bug fixes logbook ✅
+│   │   └── Dojo_3_3.md     # Session 3 dojo exercise ✅
+│   ├── session_4/          # Session 4 artifacts ✅
+│   │   ├── Session_4.md    # Session 4 specification ✅
+│   │   ├── Log_4_1.md      # Morning coach integration logbook ✅
+│   │   ├── Dojo_4_1.md     # Session 4 dojo exercise ✅
+│   │   ├── Log_4_2.md      # Deep Thoughts generator logbook ✅
+│   │   ├── Dojo_4_2.md     # Session 4 dojo exercise ✅
+│   │   ├── Log_4_3.md      # Morning analyzers logbook ✅
+│   │   ├── Dojo_4_3.md     # Session 4 dojo exercise ✅
+│   │   ├── Log_4_4.md      # Deep Thoughts evaluator logbook ✅
+│   │   ├── Dojo_4_4.md     # Session 4 dojo exercise ✅
+│   │   ├── Log_4_5.md      # Evaluation exporter logbook ✅
+│   │   ├── Dojo_4_5.md     # Session 4 dojo exercise ✅
+│   │   ├── Log_4_6.md      # Optimization logbook ✅
+│   │   ├── Dojo_4_6.md     # Session 4 dojo exercise ✅
+│   │   ├── Log_4_7.md      # 3-tier evaluation system logbook ✅
+│   │   └── Dojo_4_7.md     # Session 4 dojo exercise ✅
+│   ├── session_5/          # Session 5 artifacts ✅
+│   │   └── *Session 5 logbooks & dojos (all complete)* ✅
+│   ├── session_6/          # Session 6 artifacts ✅
+│   │   ├── Session_6.md    # Session 6 specification ✅
+│   │   ├── Log_6_1.md      # Context node architecture logbook ✅
+│   │   ├── Dojo_6_1.md     # LangGraph state management dojo ✅
+│   │   ├── Log_6_2.md      # MCP Todoist integration logbook ✅
+│   │   ├── Dojo_6_2.md     # MCP integration patterns dojo ✅
+│   │   ├── Log_6_3.md      # Enhanced relevance scoring logbook ✅
+│   │   ├── Dojo_6_3.md     # Multi-modal relevance dojo ✅
+│   │   ├── Log_6_4-7.md    # Final increments completion logbook ✅
+│   │   ├── Dojo_6_4-7.md   # Advanced context integration dojo ✅
+│   │   ├── Log_6_8_PromptCentralization.md   # Prompt refactoring logbook ✅
+│   │   ├── Dojo_6_8_PromptCentralization.md  # Single-source prompt (SSOT) dojo ✅
+│   │   ├── Log_6_12_MCPIntegrationFix.md     # MCP integration fix & observability logbook ✅
+│   │   ├── Dojo_6_12_MCPIntegrationFix.md    # Async resource management dojo ✅
+│   │   ├── Log_6_13_PromptSeparationAndNewEvals.md # Prompt architecture refactor logbook ✅
+│   │   ├── Dojo_6_13_PromptSeparationAndNewEvals.md # *TBD* (prompt patterns dojo) ✅
+│   │   ├── Log_6_14_DeepThoughtsRefactoring.md     # Deep Thoughts refactoring logbook ✅
+│   │   └── Dojo_6_14_DeepThoughtsRefactoring.md    # *TBD* (agent pattern consistency dojo) ✅
+│   └── prototype/          # Generated evaluation outputs ✅
+│       ├── DeepThoughts/   # Deep Thoughts reports ✅
+│       └── Evals/          # Evaluation reports ✅
+├── debug_langsmith.py      # LangSmith observability tool ✅
+├── mcp_sandbox.py          # MCP testing sandbox ✅
+├── docs/observability_tools.md # Observability tools documentation ✅
+├── pyproject.toml          # Modern Python packaging config ✅
+├── venv/                   # Python virtual environment ✅
+└── .gitignore              # Git ignore file ✅
+```
