@@ -12,6 +12,7 @@ class LLMTier(Enum):
     CHEAP = "cheap"        # GPT-4o-mini for frequent testing
     STANDARD = "standard"  # Claude Sonnet for regular use
     PREMIUM = "premium"    # Claude Opus for high-quality analysis
+    O3 = "o3"             # GPT o3-mini for Deep Thoughts (cheaper than Opus)
 
 
 class LLMFactory:
@@ -48,6 +49,12 @@ class LLMFactory:
         elif tier == LLMTier.PREMIUM:
             return AnthropicService.create_premium_service(api_key)
         
+        elif tier == LLMTier.O3:
+            if not OPENAI_AVAILABLE:
+                # Fallback to premium Anthropic model
+                return AnthropicService.create_premium_service(api_key)
+            return OpenAIService(api_key=openai_key, model="o3")
+        
         else:
             raise ValueError(f"Unsupported LLM tier: {tier}")
     
@@ -68,3 +75,11 @@ class LLMFactory:
     def create_premium_service(api_key: Optional[str] = None) -> AnthropicService:
         """Create a premium LLM service for high-quality analysis."""
         return LLMFactory.create_service(LLMTier.PREMIUM, api_key)
+    
+    @staticmethod
+    def create_o3_service(
+        api_key: Optional[str] = None,
+        openai_key: Optional[str] = None
+    ) -> Union[AnthropicService, OpenAIService]:
+        """Create an O3 LLM service for Deep Thoughts analysis."""
+        return LLMFactory.create_service(LLMTier.O3, api_key, openai_key)

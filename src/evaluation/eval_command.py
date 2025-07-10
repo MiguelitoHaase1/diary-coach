@@ -24,8 +24,8 @@ class EvalCommand:
         self.coach = coach
         # Use STANDARD tier (Sonnet-4) for persona simulation
         self.persona_evaluator = PersonaEvaluator(coach=coach)
-        # Use PREMIUM tier (Opus) for Deep Thoughts generation
-        self.deep_thoughts_generator = DeepThoughtsGenerator(tier=LLMTier.PREMIUM)
+        # Use O3 tier (GPT o3) for cost-effective Deep Thoughts generation
+        self.deep_thoughts_generator = DeepThoughtsGenerator(tier=LLMTier.O3)
         self.eval_exporter = EvaluationExporter()
     
     async def run_comprehensive_eval(
@@ -44,7 +44,7 @@ class EvalCommand:
         """
         print("🚀 Starting comprehensive persona-based evaluation...")
         print(f"   • Using Sonnet-4 for persona simulation")
-        print(f"   • Using Opus for Deep Thoughts generation")
+        print(f"   • Using GPT o3 for Deep Thoughts generation")
         print(f"   • Testing {conversations_per_persona} conversations per persona")
         print()
         

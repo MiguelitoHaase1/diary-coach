@@ -19,9 +19,21 @@ class OpenAIError(Exception):
 class OpenAIService:
     """Async wrapper for OpenAI API with token tracking for cheap testing."""
     
-    # Pricing per token for GPT-4o-mini (approximate)
-    INPUT_COST_PER_TOKEN = 0.00000015   # $0.15 per million input tokens
-    OUTPUT_COST_PER_TOKEN = 0.0000006   # $0.60 per million output tokens
+    # Pricing per token (approximate)
+    PRICING = {
+        "gpt-4o-mini": {
+            "input": 0.00000015,   # $0.15 per million input tokens
+            "output": 0.0000006    # $0.60 per million output tokens
+        },
+        "gpt-4o": {
+            "input": 0.0000025,    # $2.50 per million input tokens
+            "output": 0.00001      # $10.00 per million output tokens
+        },
+        "o3": {
+            "input": 0.00000015,   # $0.15 per million input tokens (estimated)
+            "output": 0.0000006    # $0.60 per million output tokens (estimated)
+        }
+    }
     
     def __init__(self, api_key: Optional[str] = None, model: str = "gpt-4o-mini"):
         """Initialize OpenAI service.
@@ -92,9 +104,11 @@ class OpenAIService:
                 output_tokens = response.usage.completion_tokens
                 total_tokens = input_tokens + output_tokens
                 
+                # Calculate cost based on model pricing
+                model_pricing = self.PRICING.get(self.model, self.PRICING["gpt-4o-mini"])
                 call_cost = (
-                    input_tokens * self.INPUT_COST_PER_TOKEN +
-                    output_tokens * self.OUTPUT_COST_PER_TOKEN
+                    input_tokens * model_pricing["input"] +
+                    output_tokens * model_pricing["output"]
                 )
                 
                 self.total_tokens += total_tokens

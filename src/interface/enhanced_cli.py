@@ -4,6 +4,9 @@ import asyncio
 import time
 from datetime import datetime
 from typing import Optional, List, Dict, Any
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.panel import Panel
 from src.interface.cli import DiaryCoachCLI
 from src.agents.coach_agent import DiaryCoach
 from src.events.bus import EventBus
@@ -17,6 +20,8 @@ from src.evaluation.analyzers.morning import (
     ThinkingPivotAnalyzer, 
     ExcitementBuilderAnalyzer
 )
+from src.evaluation.analyzers.emotional import EmotionalPresenceAnalyzer
+from src.evaluation.analyzers.framework import FrameworkDisruptionAnalyzer
 from src.evaluation.reporting.deep_thoughts import DeepThoughtsGenerator
 from src.evaluation.reporting.eval_exporter import EvaluationExporter
 from src.services.llm_factory import LLMFactory, LLMTier
@@ -39,15 +44,18 @@ class EnhancedCLI(DiaryCoachCLI):
         self.current_eval = None
         self.evaluation_reporter = EvaluationReporter()
         
+        # Initialize Rich console for markdown rendering
+        self.console = Console()
+        
         # Initialize Deep Thoughts generator and Eval exporter
-        # Use PREMIUM tier (Opus) for manual testing
-        self.deep_thoughts_generator = DeepThoughtsGenerator(tier=LLMTier.PREMIUM)
+        # Use O3 tier (GPT o3) for cost-effective Deep Thoughts analysis
+        self.deep_thoughts_generator = DeepThoughtsGenerator(tier=LLMTier.O3)
         self.eval_exporter = EvaluationExporter()
         
         # Initialize comprehensive eval command
         self.eval_command = EvalCommand(coach)
         
-        # Initialize analyzers with LLM service (including morning-specific ones)
+        # Initialize analyzers with LLM service (all 7 evaluators)
         self.analyzers = [
             # Morning-specific analyzers
             ProblemSelectionAnalyzer(llm_service=coach.llm_service),
@@ -55,7 +63,9 @@ class EnhancedCLI(DiaryCoachCLI):
             ExcitementBuilderAnalyzer(llm_service=coach.llm_service),
             # General analyzers
             SpecificityPushAnalyzer(llm_service=coach.llm_service),
-            ActionOrientationAnalyzer(llm_service=coach.llm_service)
+            ActionOrientationAnalyzer(llm_service=coach.llm_service),
+            EmotionalPresenceAnalyzer(llm_service=coach.llm_service),
+            FrameworkDisruptionAnalyzer(llm_service=coach.llm_service)
         ]
     
     async def process_input(self, user_input: str) -> Optional[str]:
@@ -265,12 +275,28 @@ class EnhancedCLI(DiaryCoachCLI):
             deep_thoughts_path = self.deep_thoughts_generator.get_output_filepath()
             print(f"✅ Deep Thoughts saved to: {deep_thoughts_path}")
             
+            # Display Deep Thoughts content in terminal with Rich markdown rendering
+            print("\n")
+            self.console.print(Panel(
+                Markdown(deep_thoughts_content),
+                title="📝 DEEP THOUGHTS REPORT",
+                border_style="blue"
+            ))
+            
             # Step 2: Generate evaluation export (Sonnet)
             if self.current_eval:
-                print("📋 Generating evaluation report (Sonnet)...")
+                print("\n📋 Generating evaluation report (Sonnet)...")
                 eval_content = await self.eval_exporter.export_evaluation_markdown(self.current_eval)
                 eval_path = self.eval_exporter.get_output_filepath()
                 print(f"✅ Evaluation saved to: {eval_path}")
+                
+                # Display evaluation content in terminal with Rich markdown rendering
+                print("\n")
+                self.console.print(Panel(
+                    Markdown(eval_content),
+                    title="📋 EVALUATION REPORT",
+                    border_style="green"
+                ))
             
             print("\n🎉 Deep report complete!")
             print("📁 Generated files:")

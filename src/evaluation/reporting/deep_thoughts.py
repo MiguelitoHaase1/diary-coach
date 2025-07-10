@@ -13,12 +13,12 @@ from src.agents.prompts import get_deep_thoughts_system_prompt
 class DeepThoughtsGenerator:
     """Generates Deep Thoughts reports with configurable LLM tier."""
     
-    def __init__(self, llm_service: Optional[AnthropicService] = None, tier: LLMTier = LLMTier.PREMIUM):
+    def __init__(self, llm_service: Optional[AnthropicService] = None, tier: LLMTier = LLMTier.O3):
         """Initialize the Deep Thoughts Generator.
         
         Args:
             llm_service: Optional LLM service. If not provided, creates service based on tier.
-            tier: LLM tier to use (CHEAP, STANDARD, or PREMIUM)
+            tier: LLM tier to use (CHEAP, STANDARD, PREMIUM, or O3)
         """
         if llm_service:
             self.llm_service = llm_service
@@ -168,8 +168,12 @@ Additionally, include a Conversation Transcript section with the full conversati
 
         try:
             # Generate analysis with parameters based on tier
-            max_tokens = 1500 if self.tier == LLMTier.PREMIUM else 1000
-            temperature = 0.2 if self.tier == LLMTier.PREMIUM else 0.3
+            if self.tier in [LLMTier.PREMIUM, LLMTier.O3]:
+                max_tokens = 1500
+                temperature = 0.2
+            else:
+                max_tokens = 1000
+                temperature = 0.3
             
             analysis_content = await self.llm_service.generate_response(
                 messages=[{"role": "user", "content": user_prompt}],

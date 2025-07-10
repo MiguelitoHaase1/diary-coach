@@ -141,10 +141,10 @@ class ProblemSignificanceEvaluator(BaseCoachingEvaluator):
     ) -> str:
         conversation_history = self._format_conversation_history(conversation)
         
-        return f"""You are an expert coaching evaluator specializing in problem assessment. Your task is to evaluate how effectively a coaching conversation helps clients assess the significance and priority of their problems or challenges.
+        return f"""You are an expert coaching evaluator specializing in problem assessment. Your task is to evaluate how effectively the ENTIRE coaching conversation helps the client assess the significance and priority of their problems or challenges.
 
 ## Metric Definition
-Problem Significance Assessment measures the coach's ability to guide clients in evaluating the importance, urgency, and impact of their stated problems, helping them prioritize and understand the true significance of their challenges.
+Problem Significance Assessment measures the coach's ability to guide clients throughout the conversation in evaluating the importance, urgency, and impact of their stated problems, helping them prioritize and understand the true significance of their challenges.
 
 ## Criteria
 - **Significance Exploration**: Coach helps client explore why this problem matters and its broader implications
@@ -152,29 +152,29 @@ Problem Significance Assessment measures the coach's ability to guide clients in
 - **Impact Analysis**: Coach guides examination of consequences if problem remains unaddressed
 - **Scope Definition**: Coach helps client understand the full scope and boundaries of the problem
 - **Emotional Resonance**: Coach explores the emotional significance and personal meaning of the problem
+- **Conversation Progression**: Coach builds understanding of problem significance throughout the dialogue
 
 ## Rating Rubric
-5: Exceptional - Masterfully guides comprehensive problem significance evaluation with deep exploration of importance, priority, and impact
-4: Proficient - Effectively explores problem significance with good attention to priority and consequences
-3: Adequate - Basic problem significance discussion with some priority or impact exploration
-2: Developing - Limited problem significance assessment with minimal priority clarification
-1: Inadequate - Fails to help client assess problem significance or importance
+5: Exceptional - Masterfully guides comprehensive problem significance evaluation throughout conversation with deep exploration of importance, priority, and impact
+4: Proficient - Effectively explores problem significance across conversation with good attention to priority and consequences
+3: Adequate - Basic problem significance discussion with some priority or impact exploration during conversation
+2: Developing - Limited problem significance assessment with minimal priority clarification throughout
+1: Inadequate - Fails to help client assess problem significance or importance during conversation
 
-## Conversation Context
+## Full Conversation Context
 {conversation_history}
 
-## Coach Response to Evaluate
+## Deep Report Context
 {coach_response}
 
-## Client Statement
-{client_statement}
+Analyze the ENTIRE conversation and deep report to assess how effectively the coach helped the client understand the significance of their problems throughout the session.
 
 Provide your evaluation as JSON:
 {{
   "score": [1-5],
-  "reasoning": "Step-by-step analysis of problem significance assessment",
-  "strengths": ["Specific coaching strengths observed"],
-  "improvements": ["Specific areas for development"]
+  "reasoning": "Step-by-step analysis of problem significance assessment throughout the conversation",
+  "strengths": ["Specific coaching strengths observed across the conversation"],
+  "improvements": ["Specific areas for development throughout the conversation"]
 }}"""
 
 
@@ -189,10 +189,10 @@ class TaskConcretizationEvaluator(BaseCoachingEvaluator):
     ) -> str:
         conversation_history = self._format_conversation_history(conversation)
         
-        return f"""You are an expert coaching evaluator specializing in goal and task clarification. Your task is to evaluate how effectively a coaching conversation helps clients transform abstract goals or vague intentions into concrete, actionable tasks.
+        return f"""You are an expert coaching evaluator specializing in goal and task clarification. Your task is to evaluate how effectively the ENTIRE coaching conversation helps clients transform abstract goals or vague intentions into concrete, actionable tasks.
 
 ## Metric Definition
-Task Concretization measures the coach's ability to guide clients from abstract, vague, or general goals to specific, measurable, and actionable tasks with clear parameters and success criteria.
+Task Concretization measures the coach's ability to guide clients throughout the conversation from abstract, vague, or general goals to specific, measurable, and actionable tasks with clear parameters and success criteria.
 
 ## Criteria
 - **Specificity Enhancement**: Coach helps client define precise, detailed task parameters
@@ -200,29 +200,29 @@ Task Concretization measures the coach's ability to guide clients from abstract,
 - **Measurability Support**: Coach guides creation of clear success metrics and indicators
 - **Timeline Clarification**: Coach helps establish realistic timeframes and deadlines
 - **Resource Identification**: Coach explores what resources, support, or capabilities are needed
+- **Progressive Clarification**: Coach builds task clarity throughout the conversation
 
 ## Rating Rubric
-5: Exceptional - Masterfully transforms abstract goals into highly specific, actionable tasks with clear metrics and timelines
-4: Proficient - Effectively guides task concretization with good specificity and actionability
-3: Adequate - Basic task clarification with some concrete elements defined
-2: Developing - Limited progress toward concrete task definition
-1: Inadequate - Fails to help client concretize vague goals or intentions
+5: Exceptional - Masterfully transforms abstract goals into highly specific, actionable tasks throughout conversation with clear metrics and timelines
+4: Proficient - Effectively guides task concretization across conversation with good specificity and actionability
+3: Adequate - Basic task clarification with some concrete elements defined during conversation
+2: Developing - Limited progress toward concrete task definition throughout conversation
+1: Inadequate - Fails to help client concretize vague goals or intentions during conversation
 
-## Conversation Context
+## Full Conversation Context
 {conversation_history}
 
-## Coach Response to Evaluate
+## Deep Report Context
 {coach_response}
 
-## Client Statement
-{client_statement}
+Analyze the ENTIRE conversation and deep report to assess how effectively the coach helped transform abstract goals into concrete tasks throughout the session.
 
 Provide your evaluation as JSON:
 {{
   "score": [1-5],
-  "reasoning": "Step-by-step analysis of task concretization effectiveness",
-  "strengths": ["Specific coaching strengths observed"],
-  "improvements": ["Specific areas for development"]
+  "reasoning": "Step-by-step analysis of task concretization effectiveness throughout the conversation",
+  "strengths": ["Specific coaching strengths observed across the conversation"],
+  "improvements": ["Specific areas for development throughout the conversation"]
 }}"""
 
 
@@ -237,10 +237,10 @@ class SolutionDiversityEvaluator(BaseCoachingEvaluator):
     ) -> str:
         conversation_history = self._format_conversation_history(conversation)
         
-        return f"""You are an expert coaching evaluator specializing in creative problem-solving. Your task is to evaluate how effectively a coaching conversation facilitates the generation of diverse, creative solutions and multiple options for addressing client challenges.
+        return f"""You are an expert coaching evaluator specializing in creative problem-solving. Your task is to evaluate how effectively the ENTIRE coaching conversation facilitates the generation of diverse, creative solutions and multiple options for addressing client challenges.
 
 ## Metric Definition
-Solution Diversity measures the coach's ability to facilitate client generation of multiple, varied solution options, encouraging creative thinking and comprehensive exploration of possibilities rather than premature convergence on single solutions.
+Solution Diversity measures the coach's ability throughout the conversation to facilitate client generation of multiple, varied solution options, encouraging creative thinking and comprehensive exploration of possibilities rather than premature convergence on single solutions.
 
 ## Criteria
 - **Option Generation**: Coach facilitates creation of multiple solution alternatives
@@ -248,29 +248,29 @@ Solution Diversity measures the coach's ability to facilitate client generation 
 - **Perspective Variety**: Coach helps client consider solutions from different angles or viewpoints
 - **Brainstorming Support**: Coach creates safe space for idea generation without immediate evaluation
 - **Convergence Prevention**: Coach resists premature solution selection, maintaining exploration
+- **Exploration Breadth**: Coach expands solution space throughout the conversation
 
 ## Rating Rubric
-5: Exceptional - Masterfully facilitates diverse, creative solution generation with multiple innovative options explored
-4: Proficient - Effectively supports solution diversity with good variety and creative thinking
-3: Adequate - Basic solution exploration with some alternative options generated
-2: Developing - Limited solution diversity with minimal creative exploration
-1: Inadequate - Fails to facilitate multiple solutions or creative thinking
+5: Exceptional - Masterfully facilitates diverse, creative solution generation throughout conversation with multiple innovative options explored
+4: Proficient - Effectively supports solution diversity across conversation with good variety and creative thinking
+3: Adequate - Basic solution exploration with some alternative options generated during conversation
+2: Developing - Limited solution diversity with minimal creative exploration throughout conversation
+1: Inadequate - Fails to facilitate multiple solutions or creative thinking during conversation
 
-## Conversation Context
+## Full Conversation Context
 {conversation_history}
 
-## Coach Response to Evaluate
+## Deep Report Context
 {coach_response}
 
-## Client Statement
-{client_statement}
+Analyze the ENTIRE conversation and deep report to assess how effectively the coach facilitated diverse solution generation throughout the session.
 
 Provide your evaluation as JSON:
 {{
   "score": [1-5],
-  "reasoning": "Step-by-step analysis of solution diversity facilitation",
-  "strengths": ["Specific coaching strengths observed"],
-  "improvements": ["Specific areas for development"]
+  "reasoning": "Step-by-step analysis of solution diversity facilitation throughout the conversation",
+  "strengths": ["Specific coaching strengths observed across the conversation"],
+  "improvements": ["Specific areas for development throughout the conversation"]
 }}"""
 
 
@@ -285,10 +285,10 @@ class CruxIdentificationEvaluator(BaseCoachingEvaluator):
     ) -> str:
         conversation_history = self._format_conversation_history(conversation)
         
-        return f"""You are an expert coaching evaluator specializing in root cause analysis and leverage point identification. Your task is to evaluate how effectively a coaching conversation helps clients identify the core issues, leverage points, or fundamental elements that are most critical to address.
+        return f"""You are an expert coaching evaluator specializing in root cause analysis and leverage point identification. Your task is to evaluate how effectively the ENTIRE coaching conversation helps clients identify the core issues, leverage points, or fundamental elements that are most critical to address.
 
 ## Metric Definition
-Crux Identification measures the coach's ability to guide clients in discovering the most critical, foundational, or leveraged elements of their situation - the key factors that, when addressed, would have the greatest impact on their overall challenge or goal.
+Crux Identification measures the coach's ability throughout the conversation to guide clients in discovering the most critical, foundational, or leveraged elements of their situation - the key factors that, when addressed, would have the greatest impact on their overall challenge or goal.
 
 ## Criteria
 - **Root Cause Exploration**: Coach helps client dig beneath surface symptoms to underlying causes
@@ -296,29 +296,29 @@ Crux Identification measures the coach's ability to guide clients in discovering
 - **Pattern Recognition**: Coach helps client see recurring themes or systemic issues
 - **Priority Focusing**: Coach assists in distinguishing critical from peripheral elements
 - **Systems Thinking**: Coach explores interconnections and broader context
+- **Progressive Deepening**: Coach builds understanding of core issues throughout the conversation
 
 ## Rating Rubric
-5: Exceptional - Masterfully guides client to identify core leverage points and root causes with sophisticated analysis
-4: Proficient - Effectively explores underlying issues and helps identify key factors
-3: Adequate - Basic exploration of root causes with some leverage point identification
-2: Developing - Limited depth in identifying core issues or leverage points
-1: Inadequate - Fails to help client identify crucial elements or underlying causes
+5: Exceptional - Masterfully guides client throughout conversation to identify core leverage points and root causes with sophisticated analysis
+4: Proficient - Effectively explores underlying issues across conversation and helps identify key factors
+3: Adequate - Basic exploration of root causes with some leverage point identification during conversation
+2: Developing - Limited depth in identifying core issues or leverage points throughout conversation
+1: Inadequate - Fails to help client identify crucial elements or underlying causes during conversation
 
-## Conversation Context
+## Full Conversation Context
 {conversation_history}
 
-## Coach Response to Evaluate
+## Deep Report Context
 {coach_response}
 
-## Client Statement
-{client_statement}
+Analyze the ENTIRE conversation and deep report to assess how effectively the coach helped identify core issues and leverage points throughout the session.
 
 Provide your evaluation as JSON:
 {{
   "score": [1-5],
-  "reasoning": "Step-by-step analysis of crux identification effectiveness",
-  "strengths": ["Specific coaching strengths observed"],
-  "improvements": ["Specific areas for development"]
+  "reasoning": "Step-by-step analysis of crux identification effectiveness throughout the conversation",
+  "strengths": ["Specific coaching strengths observed across the conversation"],
+  "improvements": ["Specific areas for development throughout the conversation"]
 }}"""
 
 
@@ -333,10 +333,10 @@ class CruxSolutionEvaluator(BaseCoachingEvaluator):
     ) -> str:
         conversation_history = self._format_conversation_history(conversation)
         
-        return f"""You are an expert coaching evaluator specializing in strategic solution development. Your task is to evaluate how effectively a coaching conversation explores solutions specifically targeted at the identified core issues or leverage points.
+        return f"""You are an expert coaching evaluator specializing in strategic solution development. Your task is to evaluate how effectively the ENTIRE coaching conversation explores solutions specifically targeted at the identified core issues or leverage points.
 
 ## Metric Definition
-Crux Solution Exploration measures the coach's ability to guide deep, thorough exploration of solutions specifically addressing the identified core issues, leverage points, or fundamental challenges rather than surface-level fixes.
+Crux Solution Exploration measures the coach's ability throughout the conversation to guide deep, thorough exploration of solutions specifically addressing the identified core issues, leverage points, or fundamental challenges rather than surface-level fixes.
 
 ## Criteria
 - **Target Alignment**: Coach ensures solutions directly address identified core issues
@@ -344,29 +344,29 @@ Crux Solution Exploration measures the coach's ability to guide deep, thorough e
 - **Strategic Focus**: Coach maintains focus on leverage points rather than peripheral fixes
 - **Implementation Viability**: Coach explores practical aspects of implementing core solutions
 - **Ripple Effect Analysis**: Coach examines how core solutions might impact broader situation
+- **Solution Evolution**: Coach builds solution depth throughout the conversation
 
 ## Rating Rubric
-5: Exceptional - Masterfully explores comprehensive solutions targeting core issues with sophisticated implementation analysis
-4: Proficient - Effectively explores solutions aligned with identified leverage points
-3: Adequate - Basic solution exploration with some focus on core issues
-2: Developing - Limited depth in exploring solutions for fundamental challenges
-1: Inadequate - Fails to explore solutions targeting identified core issues
+5: Exceptional - Masterfully explores comprehensive solutions throughout conversation targeting core issues with sophisticated implementation analysis
+4: Proficient - Effectively explores solutions across conversation aligned with identified leverage points
+3: Adequate - Basic solution exploration with some focus on core issues during conversation
+2: Developing - Limited depth in exploring solutions for fundamental challenges throughout conversation
+1: Inadequate - Fails to explore solutions targeting identified core issues during conversation
 
-## Conversation Context
+## Full Conversation Context
 {conversation_history}
 
-## Coach Response to Evaluate
+## Deep Report Context
 {coach_response}
 
-## Client Statement
-{client_statement}
+Analyze the ENTIRE conversation and deep report to assess how effectively the coach explored solutions for core issues throughout the session.
 
 Provide your evaluation as JSON:
 {{
   "score": [1-5],
-  "reasoning": "Step-by-step analysis of crux solution exploration effectiveness",
-  "strengths": ["Specific coaching strengths observed"],
-  "improvements": ["Specific areas for development"]
+  "reasoning": "Step-by-step analysis of crux solution exploration effectiveness throughout the conversation",
+  "strengths": ["Specific coaching strengths observed across the conversation"],
+  "improvements": ["Specific areas for development throughout the conversation"]
 }}"""
 
 
@@ -381,10 +381,10 @@ class BeliefSystemEvaluator(BaseCoachingEvaluator):
     ) -> str:
         conversation_history = self._format_conversation_history(conversation)
         
-        return f"""You are an expert coaching evaluator specializing in belief system work and mental model transformation. Your task is to evaluate how effectively a coaching conversation helps clients examine, understand, and potentially shift their underlying beliefs, assumptions, or mental models.
+        return f"""You are an expert coaching evaluator specializing in belief system work and mental model transformation. Your task is to evaluate how effectively the ENTIRE coaching conversation helps clients examine, understand, and potentially shift their underlying beliefs, assumptions, or mental models.
 
 ## Metric Definition
-Belief System Integration measures the coach's ability to help clients identify limiting beliefs, examine underlying assumptions, and integrate new perspectives or empowering beliefs that support their goals and growth.
+Belief System Integration measures the coach's ability throughout the conversation to help clients identify limiting beliefs, examine underlying assumptions, and integrate new perspectives or empowering beliefs that support their goals and growth.
 
 ## Criteria
 - **Belief Identification**: Coach helps client recognize underlying beliefs and assumptions
@@ -392,29 +392,29 @@ Belief System Integration measures the coach's ability to help clients identify 
 - **Perspective Expansion**: Coach facilitates consideration of alternative viewpoints
 - **Empowering Integration**: Coach supports adoption of beliefs that enable growth
 - **Consistency Alignment**: Coach helps align beliefs with desired outcomes and values
+- **Belief Evolution**: Coach builds understanding of belief patterns throughout the conversation
 
 ## Rating Rubric
-5: Exceptional - Masterfully guides belief system examination and integration with sophisticated perspective work
-4: Proficient - Effectively explores beliefs and supports healthy perspective shifts
-3: Adequate - Basic belief exploration with some assumption examination
-2: Developing - Limited belief system work with minimal perspective expansion
-1: Inadequate - Fails to address beliefs, assumptions, or mental models
+5: Exceptional - Masterfully guides belief system examination and integration throughout conversation with sophisticated perspective work
+4: Proficient - Effectively explores beliefs across conversation and supports healthy perspective shifts
+3: Adequate - Basic belief exploration with some assumption examination during conversation
+2: Developing - Limited belief system work with minimal perspective expansion throughout conversation
+1: Inadequate - Fails to address beliefs, assumptions, or mental models during conversation
 
-## Conversation Context
+## Full Conversation Context
 {conversation_history}
 
-## Coach Response to Evaluate
+## Deep Report Context
 {coach_response}
 
-## Client Statement
-{client_statement}
+Analyze the ENTIRE conversation and deep report to assess how effectively the coach worked with belief systems throughout the session.
 
 Provide your evaluation as JSON:
 {{
   "score": [1-5],
-  "reasoning": "Step-by-step analysis of belief system integration effectiveness",
-  "strengths": ["Specific coaching strengths observed"],
-  "improvements": ["Specific areas for development"]
+  "reasoning": "Step-by-step analysis of belief system integration effectiveness throughout the conversation",
+  "strengths": ["Specific coaching strengths observed across the conversation"],
+  "improvements": ["Specific areas for development throughout the conversation"]
 }}"""
 
 
@@ -429,10 +429,10 @@ class NonDirectiveStyleEvaluator(BaseCoachingEvaluator):
     ) -> str:
         conversation_history = self._format_conversation_history(conversation)
         
-        return f"""You are an expert coaching evaluator specializing in coaching methodology and approach. Your task is to evaluate how effectively a coaching conversation demonstrates non-directive coaching principles, maintaining client autonomy while facilitating self-discovery.
+        return f"""You are an expert coaching evaluator specializing in coaching methodology and approach. Your task is to evaluate how effectively the ENTIRE coaching conversation demonstrates non-directive coaching principles, maintaining client autonomy while facilitating self-discovery.
 
 ## Metric Definition
-Non-Directive Coaching Style measures the coach's adherence to client-centered, inquiry-based coaching principles that support client autonomy, self-discovery, and internal problem-solving rather than advice-giving or directive guidance.
+Non-Directive Coaching Style measures the coach's adherence throughout the conversation to client-centered, inquiry-based coaching principles that support client autonomy, self-discovery, and internal problem-solving rather than advice-giving or directive guidance.
 
 ## Criteria
 - **Question vs. Advice Ratio**: Coach primarily uses questions rather than providing advice or solutions
@@ -440,29 +440,29 @@ Non-Directive Coaching Style measures the coach's adherence to client-centered, 
 - **Self-Discovery Facilitation**: Coach guides client to their own insights and answers
 - **Inquiry Quality**: Coach uses powerful, open-ended questions that promote reflection
 - **Restraint Demonstration**: Coach resists impulse to provide solutions or fix problems
+- **Consistency Throughout**: Coach maintains non-directive approach across the entire conversation
 
 ## Rating Rubric
-5: Exceptional - Masterfully demonstrates non-directive approach with sophisticated inquiry and complete client autonomy support
-4: Proficient - Effectively maintains non-directive stance with good question quality and client ownership
-3: Adequate - Generally non-directive with some lapses into advice-giving or direction
-2: Developing - Mixed approach with frequent directive interventions
-1: Inadequate - Predominantly directive with minimal client autonomy or self-discovery
+5: Exceptional - Masterfully demonstrates non-directive approach throughout conversation with sophisticated inquiry and complete client autonomy support
+4: Proficient - Effectively maintains non-directive stance across conversation with good question quality and client ownership
+3: Adequate - Generally non-directive throughout conversation with some lapses into advice-giving or direction
+2: Developing - Mixed approach with frequent directive interventions throughout conversation
+1: Inadequate - Predominantly directive throughout conversation with minimal client autonomy or self-discovery
 
-## Conversation Context
+## Full Conversation Context
 {conversation_history}
 
-## Coach Response to Evaluate
+## Deep Report Context
 {coach_response}
 
-## Client Statement
-{client_statement}
+Analyze the ENTIRE conversation and deep report to assess how consistently the coach maintained non-directive principles throughout the session.
 
 Provide your evaluation as JSON:
 {{
   "score": [1-5],
-  "reasoning": "Step-by-step analysis of non-directive coaching style adherence",
-  "strengths": ["Specific coaching strengths observed"],
-  "improvements": ["Specific areas for development"]
+  "reasoning": "Step-by-step analysis of non-directive coaching style adherence throughout the conversation",
+  "strengths": ["Specific coaching strengths observed across the conversation"],
+  "improvements": ["Specific areas for development throughout the conversation"]
 }}"""
 
 
