@@ -65,7 +65,7 @@ class TestReportGeneration:
                 result = await enhanced_cli.process_input(command)
                 mock_handle.assert_called_once()
                 assert result is not None
-                assert "Light evaluation report generated" in result
+                assert "Conversation evaluation complete" in result
                 mock_handle.reset_mock()
     
     @pytest.mark.asyncio
@@ -81,7 +81,7 @@ class TestReportGeneration:
                 result = await enhanced_cli.process_input(command)
                 mock_handle.assert_called_once()
                 assert result is not None
-                assert "Deep evaluation report generated" in result
+                assert "Deep Thoughts and evaluation reports generated" in result
                 mock_handle.reset_mock()
     
     @pytest.mark.asyncio
@@ -112,56 +112,66 @@ class TestReportGeneration:
                     
                     # Verify the result
                     assert result is not None
-                    assert "Light evaluation report generated" in result
+                    assert "Conversation evaluation complete" in result
                     
-                    # Verify report was generated and saved
-                    mock_eval.save_as_markdown.assert_called_once()
-                    expected_path = "docs/prototype/eval_20250629_143045.md"
-                    mock_eval.save_as_markdown.assert_called_with(expected_path)
+                    # Verify report was generated but NOT saved (light reports are not saved)
+                    mock_eval.save_as_markdown.assert_not_called()
                     
                     # Verify the evaluation report was assigned
                     assert enhanced_cli.current_eval == mock_eval
-                    assert hasattr(enhanced_cli.current_eval, 'report_file_path')
-                    assert enhanced_cli.current_eval.report_file_path == expected_path
     
     @pytest.mark.asyncio
     async def test_deep_report_upgrades_existing_file(self, enhanced_cli):
-        """Test that deep report upgrades existing light report file."""
-        # Set up existing evaluation with file path
+        """Test that deep report is generated after light report."""
+        # Set up existing evaluation (from light report)
         mock_existing_eval = Mock(spec=EvaluationReport)
-        mock_existing_eval.report_file_path = "docs/prototype/eval_20250629_143045.md"
         mock_existing_eval.user_notes = "Initial notes"
         enhanced_cli.current_eval = mock_existing_eval
         
         # Mock the deep evaluation
         mock_deep_eval = Mock(spec=EvaluationReport)
-        mock_deep_eval.save_as_markdown = Mock()
         
         with patch.object(enhanced_cli, '_get_input', return_value="skip"), \
-             patch.object(enhanced_cli.evaluation_reporter, 'generate_deep_report', return_value=mock_deep_eval):
+             patch.object(enhanced_cli.evaluation_reporter, 'generate_deep_report', return_value=mock_deep_eval), \
+             patch.object(enhanced_cli.deep_thoughts_generator, 'generate_deep_thoughts', return_value="Deep thoughts content"), \
+             patch.object(enhanced_cli.eval_exporter, 'export_evaluation_markdown', return_value="eval_file.md"):
             
             result = await enhanced_cli.process_input("deep report")
             
             # Verify deep report was generated
             assert result is not None
-            assert "Deep evaluation report generated" in result
+            assert "Deep Thoughts and evaluation reports generated" in result
             
-            # Verify the deep report was saved to same file (upgrade)
-            enhanced_cli.evaluation_reporter.generate_deep_report.assert_called_once()
-            call_args = enhanced_cli.evaluation_reporter.generate_deep_report.call_args
-            assert call_args[1]['user_notes'] == "Initial notes"  # Used existing notes
+            # Verify that deep thoughts and eval export were called (no new evaluation generated)
+            enhanced_cli.deep_thoughts_generator.generate_deep_thoughts.assert_called_once()
+            enhanced_cli.eval_exporter.export_evaluation_markdown.assert_called_once_with(mock_existing_eval)
     
     @pytest.mark.asyncio
-    async def test_deep_report_without_existing_report_shows_error(self, enhanced_cli):
-        """Test that deep report without existing report shows appropriate error."""
+    async def test_deep_report_without_existing_report_generates_in_memory(self, enhanced_cli):
+        """Test that deep report without existing report generates in-memory evaluation."""
         # Clear any existing evaluation
         enhanced_cli.current_eval = None
         
-        with patch('builtins.print') as mock_print:
+        # Mock the in-memory evaluation
+        mock_eval = Mock(spec=EvaluationReport)
+        mock_eval.user_notes = "Generated notes"
+        
+        with patch.object(enhanced_cli, '_get_input', return_value="Generated notes"), \
+             patch.object(enhanced_cli, '_generate_in_memory_evaluation') as mock_generate, \
+             patch.object(enhanced_cli.deep_thoughts_generator, 'generate_deep_thoughts', return_value="Deep thoughts"), \
+             patch.object(enhanced_cli.eval_exporter, 'export_evaluation_markdown', return_value="eval.md"):
+            
+            # Set up the mock to set current_eval
+            async def set_current_eval(notes):
+                enhanced_cli.current_eval = mock_eval
+            mock_generate.side_effect = set_current_eval
+            
             result = await enhanced_cli.process_input("deep report")
             
-            # Should show error message
-            mock_print.assert_called_with("No existing report found. Please run 'stop' command first.")
+            # Should generate in-memory evaluation first
+            mock_generate.assert_called_once_with("Generated notes")
+            assert result is not None
+            assert "Deep Thoughts and evaluation reports generated" in result
     
     @pytest.mark.asyncio
     async def test_full_workflow_stop_then_deep_report(self, enhanced_cli):
@@ -171,32 +181,28 @@ class TestReportGeneration:
         mock_light_eval.save_as_markdown = Mock()
         mock_light_eval.overall_score = 0.75
         mock_light_eval.behavioral_scores = []
-        mock_light_eval.report_file_path = "docs/prototype/eval_test.md"
         mock_light_eval.user_notes = "Initial notes"
-        
-        # Mock deep evaluation
-        mock_deep_eval = Mock(spec=EvaluationReport)
-        mock_deep_eval.save_as_markdown = Mock()
         
         with patch.object(enhanced_cli, '_get_input', side_effect=["Initial notes", "skip"]), \
              patch.object(enhanced_cli.evaluation_reporter, 'generate_light_report', return_value=mock_light_eval), \
-             patch.object(enhanced_cli.evaluation_reporter, 'generate_deep_report', return_value=mock_deep_eval):
+             patch.object(enhanced_cli.deep_thoughts_generator, 'generate_deep_thoughts', return_value="Deep thoughts content"), \
+             patch.object(enhanced_cli.eval_exporter, 'export_evaluation_markdown', return_value="eval_file.md"):
             
             # Step 1: Stop command generates light report
             stop_result = await enhanced_cli.process_input("stop")
             assert stop_result is not None
-            assert "Light evaluation report generated" in stop_result
+            assert "Conversation evaluation complete" in stop_result
             assert enhanced_cli.current_eval == mock_light_eval
             
-            # Step 2: Deep report upgrades existing report
+            # Step 2: Deep report exports existing evaluation
             deep_result = await enhanced_cli.process_input("deep report")
             assert deep_result is not None
-            assert "Deep evaluation report generated" in deep_result
-            assert enhanced_cli.current_eval == mock_deep_eval
+            assert "Deep Thoughts and evaluation reports generated" in deep_result
+            assert enhanced_cli.current_eval == mock_light_eval  # Still the same eval
             
-            # Verify both reports were saved
-            mock_light_eval.save_as_markdown.assert_called_once()
-            mock_deep_eval.save_as_markdown.assert_called_once()
+            # Verify light report was NOT saved but deep report WAS exported
+            mock_light_eval.save_as_markdown.assert_not_called()
+            enhanced_cli.eval_exporter.export_evaluation_markdown.assert_called_once_with(mock_light_eval)
     
     @pytest.mark.asyncio
     async def test_error_handling_in_light_report_generation(self, enhanced_cli):

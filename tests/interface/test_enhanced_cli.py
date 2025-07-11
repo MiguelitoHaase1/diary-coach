@@ -68,7 +68,7 @@ class TestEnhancedCLI:
             
             result3 = await enhanced_cli.process_input("stop")
             assert result3 is not None  # Stop now returns a message instead of None
-            assert "Light evaluation report generated" in result3
+            assert "Conversation evaluation complete" in result3
             
             # Should display evaluation report
             printed_output = ' '.join([str(call) for call in mock_print.call_args_list])
@@ -87,7 +87,7 @@ class TestEnhancedCLI:
             
             result4 = await enhanced_cli.process_input("deep report")
             assert result4 is not None
-            assert "Deep evaluation report generated" in result4
+            assert "Deep Thoughts and evaluation reports generated" in result4
         
         # Test that exit actually exits
         result5 = await enhanced_cli.process_input("exit")

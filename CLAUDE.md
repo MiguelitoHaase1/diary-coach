@@ -17,6 +17,7 @@ Stale docs = broken build. Update docs with every increment or session fails.
 - **Change only what the test requires** - resist the urge to refactor, unless I explicitly ask you to --- but feel free to ask me explicitly to refactor a part if you find it useful
 - **Functions do one thing** - if you need "and" to describe it, split it
 - **88 character line limit** - readability over cleverness
+- **Lint before commit** - run `python -m flake8` and fix all issues
 
 ---
 
