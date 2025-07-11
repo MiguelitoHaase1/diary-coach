@@ -2,7 +2,7 @@
 
 import asyncio
 from typing import List, Optional
-from src.services.llm_factory import LLMFactory
+from src.services.llm_factory import LLMFactory, LLMTier
 from src.evaluation.personas.base import BasePMPersona
 
 
@@ -11,7 +11,7 @@ class TestUserAgent(BasePMPersona):
     
     def __init__(self, name: str = "TestPM"):
         super().__init__(name)
-        self.llm_service = LLMFactory.get_llm_service("anthropic_opus")
+        self.llm_service = LLMFactory.create_service(LLMTier.CHEAP)  # Use OpenAI for testing
         self.conversation_history: List[str] = []
         self.turn_count = 0
         self.max_turns = 10
@@ -70,7 +70,8 @@ Respond authentically as this PM would:
 
 Keep response conversational and under 100 words. Focus on your immediate reaction to what the coach just said."""
 
-        response = await self.llm_service.generate_response(prompt)
+        messages = [{"role": "user", "content": prompt}]
+        response = await self.llm_service.generate_response(messages)
         return response.strip()
     
     def _get_resistance_description(self) -> str:

@@ -154,7 +154,7 @@ async def run_evaluation_tests(
     test_count: int = 1,
     verbose: bool = False
 ) -> Dict[str, Any]:
-    """Run evaluation system tests using the 7 evaluators.
+    """Run evaluation system tests using the 7 evaluators with LangSmith integration.
     
     Args:
         test_count: Number of test conversations to evaluate
@@ -164,12 +164,30 @@ async def run_evaluation_tests(
         Evaluation test results
     """
     
-    print(f"🧪 Starting evaluation system tests...")
+    print(f"🧪 Starting evaluation system tests with LangSmith...")
+    
+    # Disable MCP debug output
+    import os
+    os.environ['MCP_DEBUG'] = 'false'
+    
+    # Initialize LangSmith client
+    from langsmith import Client
+    from langsmith.evaluation import aevaluate
+    
+    client = Client()
     
     # Initialize test runner
     test_runner = ConversationTestRunner()
     
-    # Run test conversations
+    # Create dataset with test conversations
+    print(f"📊 Creating LangSmith dataset with {test_count} conversations...")
+    dataset_name = f"coaching_eval_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    dataset = client.create_dataset(
+        dataset_name=dataset_name,
+        description="Coaching conversations for evaluation testing"
+    )
+    
+    # Run test conversations and add to dataset
     test_results = await test_runner.run_batch_tests(test_count)
     successful_tests = [r for r in test_results if "error" not in r]
     
@@ -177,81 +195,112 @@ async def run_evaluation_tests(
         print("❌ No successful test conversations to evaluate")
         return {"error": "No successful conversations"}
     
+    # Create examples in dataset
+    for result in successful_tests:
+        example = client.create_example(
+            dataset_id=dataset.id,
+            inputs={"conversation_id": result["conversation_id"]},
+            outputs={
+                "conversation_messages": result["conversation_messages"],
+                "deep_report": result["deep_report"]["deep_thoughts_content"],
+                "test_user_stats": result["test_user_stats"]
+            }
+        )
+    
+    print(f"✅ Created dataset '{dataset_name}' with {len(successful_tests)} examples")
+    
     # Initialize evaluators
     all_evaluators = get_all_evaluators()
     average_evaluator = AverageScoreEvaluator()
     
-    print(f"📊 Running evaluation on {len(successful_tests)} conversations...")
-    print(f"Using {len(all_evaluators)} individual evaluators + average score")
+    print(f"📊 Running evaluation with {len(all_evaluators) + 1} evaluators...")
     
-    evaluation_results = []
+    # Create evaluator wrappers for LangSmith
+    def create_langsmith_evaluator(evaluator):
+        async def eval_func(run, example):
+            # Create a run-like object with conversation data
+            class ConversationRun:
+                def __init__(self, conversation, deep_report):
+                    self.id = run.id
+                    self.inputs = {"messages": conversation}
+                    self.outputs = {"response": deep_report}
+                    self.run_type = "llm"
+                    self.start_time = run.start_time
+                    self.trace_id = run.trace_id
+            
+            conversation_messages = example.outputs.get("conversation_messages", [])
+            deep_report = example.outputs.get("deep_report", "")
+            conversation_run = ConversationRun(conversation_messages, deep_report)
+            
+            # Run evaluator
+            result = await evaluator.aevaluate_run(conversation_run)
+            
+            return {
+                "key": evaluator.key,
+                "score": result.get("score", 0.0),
+                "comment": result.get("reasoning", "")
+            }
+        
+        eval_func.__name__ = f"eval_{evaluator.key}"
+        return eval_func
     
-    for i, test_result in enumerate(successful_tests):
-        print(f"\n🔍 Evaluating conversation {i+1}...")
-        
-        # Create mock Run object for evaluation
-        from langsmith.schemas import Run
-        
-        # Format conversation for evaluation
-        conversation_messages = test_result.get('conversation_messages', [])
-        deep_report = test_result.get('deep_report', {})
-        
-        mock_run = Run(
-            id="mock-run",
-            inputs={"messages": conversation_messages},
-            outputs={"response": deep_report.get('deep_thoughts_content', '')},
-            run_type="llm"
+    # Prepare all evaluators
+    langsmith_evaluators = [create_langsmith_evaluator(e) for e in all_evaluators]
+    langsmith_evaluators.append(create_langsmith_evaluator(average_evaluator))
+    
+    # Simple target function for evaluation
+    async def coach_function(inputs):
+        return {"conversation_id": inputs.get("conversation_id")}
+    
+    try:
+        # Run LangSmith evaluation
+        results = await aevaluate(
+            coach_function,
+            data=dataset_name,
+            evaluators=langsmith_evaluators,
+            experiment_prefix="coaching_eval",
+            metadata={
+                "evaluator_count": len(langsmith_evaluators),
+                "test_type": "conversation_evaluation"
+            },
+            max_concurrency=2,
+            client=client
         )
         
-        # Run all evaluators
-        individual_scores = {}
+        print(f"\n✅ Evaluation complete!")
         
-        for evaluator in all_evaluators:
-            try:
-                result = await evaluator.aevaluate_run(mock_run)
-                individual_scores[evaluator.key] = result.get('score', 0.0)
-                
-                if verbose:
-                    print(f"  {evaluator.key}: {result.get('score', 0.0):.2f}")
-                    
-            except Exception as e:
-                print(f"  ❌ {evaluator.key} failed: {str(e)}")
-                individual_scores[evaluator.key] = 0.0
+        # Get experiment info
+        experiment_name = getattr(results, 'experiment_name', 'coaching_eval')
+        project = os.getenv('LANGSMITH_PROJECT', 'diary-coach-debug')
         
-        # Calculate average score
-        try:
-            avg_result = await average_evaluator.aevaluate_run(mock_run)
-            avg_score = avg_result.get('score', 0.0)
-            
-            if verbose:
-                print(f"  AVERAGE: {avg_score:.2f}")
-                
-        except Exception as e:
-            print(f"  ❌ Average evaluator failed: {str(e)}")
-            avg_score = 0.0
+        print(f"\n📊 View results in LangSmith:")
+        print(f"   https://smith.langchain.com/o/anthropic/projects/p/{project}/datasets/{dataset.id}")
+        print(f"   Experiment: {experiment_name}")
         
-        evaluation_results.append({
-            "conversation_id": test_result.get('conversation_id'),
-            "individual_scores": individual_scores,
-            "average_score": avg_score,
-            "turn_count": test_result.get('turn_count', 0)
-        })
-    
-    # Calculate summary statistics
-    all_averages = [r['average_score'] for r in evaluation_results]
-    overall_avg = sum(all_averages) / len(all_averages) if all_averages else 0
-    
-    print(f"\n📈 Evaluation Summary")
-    print(f"Overall Average Score: {overall_avg:.2f}")
-    print(f"Score Range: {min(all_averages):.2f} - {max(all_averages):.2f}")
-    
-    return {
-        "evaluation_results": evaluation_results,
-        "overall_average": overall_avg,
-        "score_range": [min(all_averages), max(all_averages)] if all_averages else [0, 0],
-        "evaluator_count": len(all_evaluators),
-        "conversation_count": len(evaluation_results)
-    }
+        # Extract aggregate metrics if available
+        if hasattr(results, 'aggregate_metrics'):
+            print(f"\n📈 Evaluation Summary:")
+            for metric, value in results.aggregate_metrics.items():
+                if isinstance(value, dict) and 'mean' in value:
+                    print(f"   {metric}: {value['mean']:.2f}")
+                else:
+                    print(f"   {metric}: {value}")
+        
+        return {
+            "dataset_name": dataset_name,
+            "dataset_id": dataset.id,
+            "experiment_name": experiment_name,
+            "evaluator_count": len(langsmith_evaluators),
+            "conversation_count": len(successful_tests),
+            "langsmith_url": f"https://smith.langchain.com/o/anthropic/projects/p/{project}/datasets/{dataset.id}"
+        }
+        
+    except Exception as e:
+        print(f"\n❌ LangSmith evaluation failed: {str(e)}")
+        if verbose:
+            import traceback
+            traceback.print_exc()
+        return {"error": str(e)}
 
 
 async def main():

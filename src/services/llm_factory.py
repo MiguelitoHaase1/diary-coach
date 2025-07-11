@@ -53,7 +53,7 @@ class LLMFactory:
             if not OPENAI_AVAILABLE:
                 # Fallback to premium Anthropic model
                 return AnthropicService.create_premium_service(api_key)
-            return OpenAIService(api_key=openai_key, model="o3")
+            return OpenAIService(api_key=openai_key, model="gpt-4o")  # Use GPT-4o (fallback until o3 access granted)
         
         else:
             raise ValueError(f"Unsupported LLM tier: {tier}")

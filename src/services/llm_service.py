@@ -4,6 +4,10 @@ import asyncio
 import os
 from typing import List, Dict, Any, Optional
 from anthropic import AsyncAnthropic
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Try to import LangSmith for tracing
 try:
@@ -53,16 +57,25 @@ class AnthropicService:
         }
     }
     
-    def __init__(self, api_key: Optional[str] = None, model: str = "claude-sonnet-4-20250514"):
+    def __init__(self, api_key: Optional[str] = None, model: str = "claude-sonnet-4-20250514", use_subscription: bool = False):
         """Initialize Anthropic service.
         
         Args:
             api_key: Anthropic API key. If None, uses ANTHROPIC_API_KEY env var.
             model: Claude model to use for generation.
+            use_subscription: If True, uses Claude subscription instead of API.
         """
-        self.api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
+        self.use_subscription = use_subscription
+        
+        if use_subscription:
+            # For subscription usage, we don't need an API key
+            self.api_key = None
+            self.client = AsyncAnthropic()  # Uses default auth
+        else:
+            self.api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
+            self.client = AsyncAnthropic(api_key=self.api_key)
+        
         self.model = model
-        self.client = AsyncAnthropic(api_key=self.api_key)
         
         # Get model config
         self.model_config = self.MODEL_CONFIGS.get(model, self.MODEL_CONFIGS["claude-sonnet-4-20250514"])
