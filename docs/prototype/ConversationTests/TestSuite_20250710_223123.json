@@ -1,0 +1,12 @@
+[
+  {
+    "test_name": "PM_coaching_session_1",
+    "error": "'dict' object has no attribute 'coach_response'",
+    "timestamp": "2025-07-10T22:31:19.112273"
+  },
+  {
+    "test_name": "PM_coaching_session_2",
+    "error": "'dict' object has no attribute 'coach_response'",
+    "timestamp": "2025-07-10T22:31:23.135144"
+  }
+]

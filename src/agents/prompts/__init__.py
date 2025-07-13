@@ -47,6 +47,11 @@ class PromptLoader:
         return cls.load_prompt("coach_system_prompt")
     
     @classmethod
+    def get_coach_morning_protocol(cls) -> str:
+        """Get the morning protocol additions for the coach."""
+        return cls.load_prompt("coach_morning_protocol")
+    
+    @classmethod
     def get_deep_thoughts_system_prompt(cls) -> str:
         """Get the Deep Thoughts generator system prompt."""
         return cls.load_prompt("deep_thoughts_system_prompt")
@@ -61,6 +66,10 @@ class PromptLoader:
 def get_coach_system_prompt() -> str:
     """Get the main coaching system prompt."""
     return PromptLoader.get_coach_system_prompt()
+
+def get_coach_morning_protocol() -> str:
+    """Get the morning protocol additions for the coach."""
+    return PromptLoader.get_coach_morning_protocol()
 
 def get_deep_thoughts_system_prompt() -> str:
     """Get the Deep Thoughts generator system prompt."""

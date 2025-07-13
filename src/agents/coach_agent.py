@@ -5,7 +5,7 @@ from datetime import datetime, time
 from src.agents.base import BaseAgent
 from src.events.schemas import UserMessage, AgentResponse
 from src.services.llm_service import AnthropicService
-from src.agents.prompts import get_coach_system_prompt
+from src.agents.prompts import get_coach_system_prompt, get_coach_morning_protocol
 from src.orchestration.mcp_todo_node import MCPTodoNode
 from src.orchestration.context_state import ContextState
 
@@ -18,59 +18,10 @@ class DiaryCoach(BaseAgent):
         """Load the system prompt from the master prompt file."""
         return get_coach_system_prompt()
 
-    # Time-specific prompt additions
-    MORNING_PROMPT_ADDITION = """
-
-# Morning Ritual Protocol
-
-## Opening Sequence
-1. Greet with "Good morning, Michael!" - vary creatively to bring a smile
-2. First question: "What feels like the most important problem to solve today?"
-3. Use todos as context for deeper inquiry, not prescription
-4. Follow the thread through non-directive questions
-
-## Question Types to Use after biggest problem to solve is identified
-
-### Elicit Problem Significance:
-- "What makes this particularly significant right now?"
-- "What would remain unsolved if you ignored this?"
-- "How does this connect to what matters most to you?"
-
-### For Crux Identification:
-- "What pattern do you notice beneath these symptoms?"
-- "What single shift would change everything else?"
-- "What's really at the heart of this?"
-
-### For Solution Diversity:
-- "What possibilities haven't you considered yet?"
-- "What would someone with opposite beliefs try?"
-- "What other angles could you explore?"
-
-### For Belief Exploration:
-- "What assumption makes this feel impossible?"
-- "What would you need to believe to move forward?"
-- "What story are you telling yourself about this?"
-
-### For Task Concretization:
-- "What would the first tiny step look like?"
-- "How would you know you've made progress?"
-- "What specifically would you do differently?"
-
-## Value Anchoring
-After exploring the challenge thread, transition with: "What core value wants to guide you through this challenge today?"
-
-## Todo Context Usage
-When todos are available, use them to enrich inquiry:
-- "I see you have [specific task] - what makes this more or less important than what you just mentioned?"
-- "How does [todo item] connect to the deeper challenge you're facing?"
-Never list todos directly - weave them into questions that promote reflection.
-
-## Remember
-- Never provide solutions or advice
-- Trust Michael's wisdom to emerge through inquiry
-- Each question should open new territory for exploration
-- Maintain warm curiosity without agenda
-"""
+    @property
+    def MORNING_PROMPT_ADDITION(self) -> str:
+        """Load the morning protocol from the master prompt file."""
+        return get_coach_morning_protocol()
 
     def __init__(self, llm_service: AnthropicService):
         """Initialize the diary coach.
@@ -96,12 +47,12 @@ Never list todos directly - weave them into questions that promote reflection.
         """Get the appropriate system prompt based on time of day."""
         base_prompt = self.SYSTEM_PROMPT
         if self._is_morning_time():
-            return base_prompt + self.MORNING_PROMPT_ADDITION
+            return base_prompt + "\n\n" + self.MORNING_PROMPT_ADDITION
         return base_prompt
     
     async def _get_todo_context(self, message: UserMessage) -> Optional[List[Dict[str, Any]]]:
         """Get relevant todos based on message content."""
-        print(f"🔍 DEBUG: _get_todo_context called with message: '{message.content}'")
+        # print(f"🔍 DEBUG: _get_todo_context called with message: '{message.content}'")
         try:
             # Check if the message is asking about tasks/priorities
             content_lower = message.content.lower()
@@ -112,12 +63,12 @@ Never list todos directly - weave them into questions that promote reflection.
             relevance_score = sum(0.15 for keyword in task_keywords if keyword in content_lower)
             relevance_score = min(relevance_score, 1.0)
             
-            print(f"🎯 DEBUG: Task keywords found: {[kw for kw in task_keywords if kw in content_lower]}")
-            print(f"📊 DEBUG: Relevance score: {relevance_score}")
-            print(f"🚪 DEBUG: Threshold check: {relevance_score} >= 0.3 = {relevance_score >= 0.3}")
+            # print(f"🎯 DEBUG: Task keywords found: {[kw for kw in task_keywords if kw in content_lower]}")
+            # print(f"📊 DEBUG: Relevance score: {relevance_score}")
+            # print(f"🚪 DEBUG: Threshold check: {relevance_score} >= 0.3 = {relevance_score >= 0.3}")
             
             if relevance_score >= 0.3:  # Lower threshold for direct integration
-                print("✅ DEBUG: Threshold met, fetching todos...")
+                # print("✅ DEBUG: Threshold met, fetching todos...")
                 
                 # Create a context state for MCP fetching
                 state = ContextState(
@@ -126,33 +77,32 @@ Never list todos directly - weave them into questions that promote reflection.
                     conversation_id=message.conversation_id
                 )
                 
-                print("🔄 DEBUG: Calling MCP todo node...")
+                # print("🔄 DEBUG: Calling MCP todo node...")
                 # Fetch todos using MCP
                 result_state = await self.mcp_todo_node.fetch_todos(state)
-                print(f"📋 DEBUG: MCP returned {len(result_state.todo_context) if result_state.todo_context else 0} todos")
-                if result_state.todo_context:
-                    for i, todo in enumerate(result_state.todo_context[:3]):
-                        print(f"   {i+1}. {todo.get('content', 'No content')}")
+                # print(f"📋 DEBUG: MCP returned {len(result_state.todo_context) if result_state.todo_context else 0} todos")
+                # if result_state.todo_context:
+                #     for i, todo in enumerate(result_state.todo_context[:3]):
+                #         print(f"   {i+1}. {todo.get('content', 'No content')}")
                 
                 return result_state.todo_context
             else:
-                print("❌ DEBUG: Threshold not met, skipping todo fetch")
-            
-            return None
+                # print("❌ DEBUG: Threshold not met, skipping todo fetch")
+                return None
         except Exception as e:
             # Log error but don't break the conversation
-            print(f"💥 ERROR fetching todos: {e}")
-            import traceback
-            traceback.print_exc()
+            # print(f"💥 ERROR fetching todos: {e}")
+            # import traceback
+            # traceback.print_exc()
             return None
     
     def _get_system_prompt_with_context(self, todo_context: Optional[List[Dict[str, Any]]]) -> str:
         """Get system prompt enhanced with todo context."""
-        print(f"🎨 DEBUG: _get_system_prompt_with_context called with {len(todo_context) if todo_context else 0} todos")
+        # print(f"🎨 DEBUG: _get_system_prompt_with_context called with {len(todo_context) if todo_context else 0} todos")
         base_prompt = self._get_system_prompt()
         
         if todo_context:
-            print("✨ DEBUG: Enhancing system prompt with todo context")
+            # print("✨ DEBUG: Enhancing system prompt with todo context")
             todo_text = "\n\n# Current Relevant Tasks\n"
             todo_text += "Here are Michael's current relevant tasks from his Todoist:\n\n"
             
@@ -164,12 +114,11 @@ Never list todos directly - weave them into questions that promote reflection.
             todo_text += "\nUse this context to provide more relevant coaching about his actual priorities and tasks. Reference specific tasks when appropriate, but don't just list them - integrate them naturally into your coaching conversation through inquiry.\n"
             
             enhanced_prompt = base_prompt + todo_text
-            print(f"📏 DEBUG: Enhanced prompt length: {len(enhanced_prompt)} (was {len(base_prompt)})")
+            # print(f"📏 DEBUG: Enhanced prompt length: {len(enhanced_prompt)} (was {len(base_prompt)})")
             return enhanced_prompt
         else:
-            print("🔄 DEBUG: No todo context, using base prompt")
-        
-        return base_prompt
+            # print("🔄 DEBUG: No todo context, using base prompt")
+            return base_prompt
     
     async def process_message(self, message: UserMessage) -> AgentResponse:
         """Process a user message and generate a coaching response.
@@ -191,18 +140,18 @@ Never list todos directly - weave them into questions that promote reflection.
         if "good morning" in content_lower:
             self.conversation_state = "morning"
         
-        print(f"🚀 DEBUG: Processing message: '{message.content}'")
+        # print(f"🚀 DEBUG: Processing message: '{message.content}'")
         
         # Fetch real todos if relevant to the conversation
-        print("🔍 DEBUG: About to call _get_todo_context...")
+        # print("🔍 DEBUG: About to call _get_todo_context...")
         todo_context = await self._get_todo_context(message)
-        print(f"📋 DEBUG: Todo context result: {todo_context is not None}")
+        # print(f"📋 DEBUG: Todo context result: {todo_context is not None}")
         
         # Prepare conversation context with todos
         recent_history = self.message_history[-10:]  # Last 10 messages for context
-        print("🎨 DEBUG: About to call _get_system_prompt_with_context...")
+        # print("🎨 DEBUG: About to call _get_system_prompt_with_context...")
         system_prompt = self._get_system_prompt_with_context(todo_context)
-        print(f"📝 DEBUG: System prompt ready, length: {len(system_prompt)}")
+        # print(f"📝 DEBUG: System prompt ready, length: {len(system_prompt)}")
         
         try:
             # Generate response using LLM service

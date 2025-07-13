@@ -103,7 +103,7 @@ class MCPTodoNode:
             logger.warning(f"MCP server not found in common locations. Using fallback path: {server_path}")
         
         env = self._get_mcp_env()
-        print(f"🔧 MCP DEBUG: Server environment: {list(env.keys())}")
+        # print(f"🔧 MCP DEBUG: Server environment: {list(env.keys())}")
         
         return StdioServerParameters(
             command="node",
@@ -113,23 +113,23 @@ class MCPTodoNode:
         
     async def fetch_todos(self, state: ContextState, date_filter: Optional[str] = None) -> ContextState:
         """Fetch todos based on relevance score and conversation context."""
-        print(f"🏗️ MCP DEBUG: fetch_todos called")
+        # print(f"🏗️ MCP DEBUG: fetch_todos called")
         relevance = state.context_relevance.get("todos", 0.0)
-        print(f"📊 MCP DEBUG: Relevance score: {relevance}")
+        # print(f"📊 MCP DEBUG: Relevance score: {relevance}")
         
         # Initialize context usage tracking
         if not state.context_usage:
             state.context_usage = {}
         
         # Only fetch if relevance is high enough
-        print(f"🚪 MCP DEBUG: Threshold check: {relevance} >= 0.3 = {relevance >= 0.3}")
+        # print(f"🚪 MCP DEBUG: Threshold check: {relevance} >= 0.3 = {relevance >= 0.3}")
         if relevance < 0.3:
-            print("❌ MCP DEBUG: Relevance too low, skipping fetch")
+            # print("❌ MCP DEBUG: Relevance too low, skipping fetch")
             state.context_usage["todos_fetched"] = False
             state.decision_path.append("todo_context")
             return state
         
-        print("✅ MCP DEBUG: Relevance sufficient, proceeding with fetch")
+        # print("✅ MCP DEBUG: Relevance sufficient, proceeding with fetch")
         
         try:
             # Simulate MCP connection error for testing
@@ -145,14 +145,14 @@ class MCPTodoNode:
                 return state
             
             # Fetch todos from MCP server with optional date filter
-            print("🌐 MCP DEBUG: Calling _fetch_todos_from_mcp...")
+            # print("🌐 MCP DEBUG: Calling _fetch_todos_from_mcp...")
             todos = await self._fetch_todos_from_mcp(date_filter=date_filter)
-            print(f"📥 MCP DEBUG: Raw todos fetched: {len(todos)}")
+            # print(f"📥 MCP DEBUG: Raw todos fetched: {len(todos)}")
             
             # Filter todos based on conversation context
-            print("🔍 MCP DEBUG: Filtering todos by context...")
+            # print("🔍 MCP DEBUG: Filtering todos by context...")
             filtered_todos = self._filter_todos_by_context(todos, state)
-            print(f"✅ MCP DEBUG: Filtered todos: {len(filtered_todos)}")
+            # print(f"✅ MCP DEBUG: Filtered todos: {len(filtered_todos)}")
             
             # Update state
             state.todo_context = filtered_todos
@@ -172,28 +172,28 @@ class MCPTodoNode:
     
     async def _fetch_todos_from_mcp(self, date_filter: Optional[str] = None) -> List[Dict[str, Any]]:
         """Fetch todos from Todoist via MCP server."""
-        print("🔑 MCP DEBUG: Checking API token...")
+        # print("🔑 MCP DEBUG: Checking API token...")
         token = self._get_api_token()
         if not token:
-            print("❌ MCP DEBUG: No API token found, using mock data")
+            # print("❌ MCP DEBUG: No API token found, using mock data")
             # Fall back to mock data if no API token
             return self._get_mock_todos()
         
-        print(f"✅ MCP DEBUG: API token found: {token[:10]}...")
+        # print(f"✅ MCP DEBUG: API token found: {token[:10]}...")
         
         # Use a simpler approach with proper exception handling
         try:
             result = await self._call_mcp_safely(date_filter=date_filter)
             if result:
-                print(f"🎉 MCP DEBUG: Successfully fetched {len(result)} real todos")
+                # print(f"🎉 MCP DEBUG: Successfully fetched {len(result)} real todos")
                 return result
             else:
-                print("⚠️ MCP DEBUG: Empty result, using mock data")
+                # print("⚠️ MCP DEBUG: Empty result, using mock data")
                 return self._get_mock_todos()
                 
         except Exception as e:
             logger.error(f"Error fetching todos from MCP server: {e}")
-            print(f"❌ MCP DEBUG: MCP call failed: {e}")
+            # print(f"❌ MCP DEBUG: MCP call failed: {e}")
             return self._get_mock_todos()  # Fallback to mock data
     
     async def _call_mcp_safely(self, date_filter: Optional[str] = None) -> List[Dict[str, Any]]:
@@ -204,41 +204,41 @@ class MCPTodoNode:
         
         try:
             # Create the stdio connection
-            print("🔌 MCP DEBUG: Creating stdio connection...")
+            # print("🔌 MCP DEBUG: Creating stdio connection...")
             stdio_context = stdio.stdio_client(self.server_params)
             
             # Get the streams
             read_stream, write_stream = await stdio_context.__aenter__()
-            print("✅ MCP DEBUG: Stdio connection established")
+            # print("✅ MCP DEBUG: Stdio connection established")
             
             # Create the session
-            print("🤝 MCP DEBUG: Creating client session...")
+            # print("🤝 MCP DEBUG: Creating client session...")
             session = ClientSession(read_stream, write_stream)
             await session.__aenter__()
-            print("✅ MCP DEBUG: Client session established")
+            # print("✅ MCP DEBUG: Client session established")
             
             # Initialize the session
-            print("🚀 MCP DEBUG: Initializing session...")
+            # print("🚀 MCP DEBUG: Initializing session...")
             await session.initialize()
-            print("✅ MCP DEBUG: Session initialized")
+            # print("✅ MCP DEBUG: Session initialized")
             
             # Prepare parameters for get-tasks tool
             params = {}
             if date_filter:
                 params["filter"] = date_filter
-                print(f"📅 MCP DEBUG: Using date filter: {date_filter}")
+                # print(f"📅 MCP DEBUG: Using date filter: {date_filter}")
             
             # Call the get-tasks tool (note: hyphen, not underscore)
-            print("📋 MCP DEBUG: Calling get-tasks tool...")
+            # print("📋 MCP DEBUG: Calling get-tasks tool...")
             result = await session.call_tool("get-tasks", params)
-            print(f"✅ MCP DEBUG: get-tasks call completed")
+            # print(f"✅ MCP DEBUG: get-tasks call completed")
             
             if not result.content:
-                print("⚠️ MCP DEBUG: No content in result")
+                # print("⚠️ MCP DEBUG: No content in result")
                 return []
             
             # Parse the response - handle different MCP response formats
-            print("🔍 MCP DEBUG: Parsing response...")
+            # print("🔍 MCP DEBUG: Parsing response...")
             if isinstance(result.content, list):
                 # Content is a list of TextContent objects
                 tasks_data = []
@@ -254,7 +254,7 @@ class MCPTodoNode:
             else:
                 tasks_data = result.content
                 
-            print(f"📊 MCP DEBUG: Parsed {len(tasks_data)} tasks from response")
+            # print(f"📊 MCP DEBUG: Parsed {len(tasks_data)} tasks from response")
             
             # Convert to our format
             todos = []
@@ -275,29 +275,30 @@ class MCPTodoNode:
                     logger.error(f"Error processing task {task}: {e}")
                     continue
             
-            print(f"✅ MCP DEBUG: Converted {len(todos)} tasks to our format")
+            # print(f"✅ MCP DEBUG: Converted {len(todos)} tasks to our format")
             return todos
             
         except Exception as e:
-            print(f"❌ MCP DEBUG: Error in _call_mcp_safely: {e}")
+            # print(f"❌ MCP DEBUG: Error in _call_mcp_safely: {e}")
             raise e
             
         finally:
             # Properly clean up resources
-            print("🧹 MCP DEBUG: Cleaning up resources...")
+            # print("🧹 MCP DEBUG: Cleaning up resources...")
             try:
                 if session:
                     await session.__aexit__(None, None, None)
-                    print("✅ MCP DEBUG: Session closed")
+                    # print("✅ MCP DEBUG: Session closed")
             except Exception as e:
-                print(f"⚠️ MCP DEBUG: Error closing session: {e}")
-                
+                # print(f"⚠️ MCP DEBUG: Error closing session: {e}")
+                pass
             try:
                 if read_stream and write_stream:
                     await stdio_context.__aexit__(None, None, None)
-                    print("✅ MCP DEBUG: Stdio connection closed")
+                    # print("✅ MCP DEBUG: Stdio connection closed")
             except Exception as e:
-                print(f"⚠️ MCP DEBUG: Error closing stdio: {e}")
+                # print(f"⚠️ MCP DEBUG: Error closing stdio: {e}")
+                pass
     
     def _get_mock_todos(self) -> List[Dict[str, Any]]:
         """Get mock todos for testing or fallback."""
@@ -428,7 +429,7 @@ class MCPTodoNode:
                 }
             
             # Use the same safe method for testing
-            print("🔍 MCP DEBUG: Testing MCP status...")
+            # print("🔍 MCP DEBUG: Testing MCP status...")
             todos = await self._call_mcp_safely()
             
             if todos:

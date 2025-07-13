@@ -3,6 +3,7 @@
 from datetime import datetime
 from typing import List, Dict, Optional
 from pathlib import Path
+from langsmith import traceable
 
 from src.services.llm_service import AnthropicService
 from src.services.llm_factory import LLMFactory, LLMTier
@@ -51,6 +52,7 @@ class DeepThoughtsGenerator:
         output_dir = Path("docs/prototype/DeepThoughts")
         return output_dir / filename
 
+    @traceable(name="generate_deep_thoughts")
     async def generate_deep_thoughts(
         self,
         conversation_history: List[Dict[str, str]],
@@ -58,6 +60,8 @@ class DeepThoughtsGenerator:
         timestamp: Optional[datetime] = None,
         include_evals: bool = False,
         include_transcript: bool = False,
+        subjective_ratings: Optional[Dict[str, int]] = None,
+        automatic_scores: Optional[Dict[str, float]] = None,
     ) -> str:
         """Generate Deep Thoughts report and save to file.
 
@@ -65,6 +69,10 @@ class DeepThoughtsGenerator:
             conversation_history: List of conversation messages
             conversation_id: Unique identifier for the conversation
             timestamp: Optional timestamp for file naming
+            include_evals: Whether to include evaluation summary
+            include_transcript: Whether to include conversation transcript
+            subjective_ratings: Optional dict of subjective ratings (1-10)
+            automatic_scores: Optional dict of automatic evaluation scores (0-1)
 
         Returns:
             Deep Thoughts report content
@@ -78,6 +86,8 @@ class DeepThoughtsGenerator:
             conversation_id,
             include_evals=include_evals,
             include_transcript=include_transcript,
+            subjective_ratings=subjective_ratings,
+            automatic_scores=automatic_scores,
         )
 
         # Get output file path
@@ -126,12 +136,15 @@ class DeepThoughtsGenerator:
 
         return "\n\n".join(formatted_lines)
 
+    @traceable(name="deep_thoughts_analysis")
     async def _generate_analysis(
         self,
         conversation_text: str,
         conversation_id: str,
         include_evals: bool = False,
         include_transcript: bool = False,
+        subjective_ratings: Optional[Dict[str, int]] = None,
+        automatic_scores: Optional[Dict[str, float]] = None,
     ) -> str:
         """Generate Deep Thoughts analysis using the system prompt.
 
@@ -140,6 +153,8 @@ class DeepThoughtsGenerator:
             conversation_id: Unique identifier for the conversation
             include_evals: Whether to include evaluation summary
             include_transcript: Whether to include conversation transcript
+            subjective_ratings: Optional dict of subjective ratings (1-10)
+            automatic_scores: Optional dict of automatic evaluation scores (0-1)
 
         Returns:
             Deep Thoughts report content
@@ -191,7 +206,15 @@ conversation for reference.
                 temperature=temperature,
             )
 
-            return analysis_content
+            # Start with the main analysis
+            final_content = analysis_content
+
+            # Add full transcript if requested
+            if include_transcript:
+                final_content += "\n\n---\n\n## Full Conversation Transcript\n\n"
+                final_content += conversation_text
+
+            return final_content
 
         except Exception as e:
             # Fallback content if generation fails

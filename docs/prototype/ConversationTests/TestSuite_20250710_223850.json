@@ -1,0 +1,7 @@
+[
+  {
+    "test_name": "PM_coaching_session_1",
+    "error": "DeepThoughtsGenerator.generate_deep_thoughts() got an unexpected keyword argument 'notes'",
+    "timestamp": "2025-07-10T22:38:50.230466"
+  }
+]

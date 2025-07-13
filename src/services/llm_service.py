@@ -48,7 +48,7 @@ class AnthropicService:
         "claude-sonnet-4-20250514": {
             "input_cost": 0.000003,   # $3 per million input tokens (estimated)
             "output_cost": 0.000015,  # $15 per million output tokens (estimated)
-            "tier": "premium"
+            "tier": "standard"
         },
         "claude-3-haiku-20240307": {
             "input_cost": 0.00000025, # $0.25 per million input tokens
@@ -227,5 +227,5 @@ class AnthropicService:
     
     @classmethod
     def create_standard_service(cls, api_key: Optional[str] = None) -> 'AnthropicService':
-        """Create a standard AnthropicService using Sonnet model."""
-        return cls(api_key=api_key, model="claude-3-5-sonnet-20241022")
+        """Create a standard AnthropicService using Sonnet 4 model."""
+        return cls(api_key=api_key, model="claude-sonnet-4-20250514")

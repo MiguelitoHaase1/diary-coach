@@ -1,0 +1,213 @@
+[
+  {
+    "conversation_id": "test_20250710_224015",
+    "test_name": "PM_coaching_session_1",
+    "turn_count": 10,
+    "conversation_messages": [
+      {
+        "role": "user",
+        "content": "I'm feeling overwhelmed with my roadmap priorities. Everything seems urgent but I can't get alignment from stakeholders."
+      },
+      {
+        "role": "assistant",
+        "content": "What do you believe is at the core of this overwhelm, and how does it reflect your values or goals in this situation?"
+      },
+      {
+        "role": "user",
+        "content": "I guess the core of my overwhelm is that I want to deliver value, but with a 10-person team and tight deadlines, it feels impossible to please everyone. I'm constantly balancing stakeholder requests, and it just leads to paralysis. I value collaboration and transparency, but it feels like I'm just getting pulled in different directions. I know I need to prioritize, but every request seems equally urgent, and I can't let anyone down. It\u2019s frustrating\u2014sometimes I wonder if I\u2019m just overthinking it all."
+      },
+      {
+        "role": "assistant",
+        "content": "What do you believe would happen if you allowed yourself to let go of the need to please everyone in this situation?"
+      },
+      {
+        "role": "user",
+        "content": "I guess if I let go of the need to please everyone, I\u2019d have more mental space to focus on what really matters for our team and the product. But it\u2019s hard to imagine that not addressing every request wouldn\u2019t lead to someone feeling neglected. With a 10-person team and constant deadlines, it\u2019s like I\u2019m on a tightrope. I know I need to prioritize, but there\u2019s always that nagging fear of disappointing stakeholders. It just feels risky, you know? I get that I might be overthinking it, but it\u2019s tough to shift that mindset."
+      },
+      {
+        "role": "assistant",
+        "content": "What would it feel like to trust your instincts in prioritizing the most impactful requests, even if it means saying no to some stakeholders?"
+      },
+      {
+        "role": "user",
+        "content": "Trusting my instincts sounds nice, but the pressure feels immense with a 10-person team and looming deadlines. Saying no could lead to backlash or missed opportunities. I get that prioritization is key, but I worry about the impact of those decisions. I suppose it might feel freeing to focus on what truly matters, but the fear of disappointing stakeholders keeps creeping in. I know I need to shift my mindset, but it\u2019s tough when everything feels urgent. It feels like a tightrope walk\u2014one misstep could lead to chaos."
+      },
+      {
+        "role": "assistant",
+        "content": "What would it look like to define what truly matters for your team and product, even if it means saying no to some requests?"
+      },
+      {
+        "role": "user",
+        "content": "Honestly, defining what truly matters feels daunting. With only 10 people and tight deadlines, every request feels critical. But I guess if I could outline clear criteria for prioritization, it might help. I could focus on customer impact, alignment with our strategic goals, and team capacity. I know it\u2019s about finding that balance, but the thought of saying no still feels like a risk. I appreciate the push to think differently, but it\u2019s hard to shake off that urgency that everyone\u2019s requests carry. It feels like a lot to juggle."
+      },
+      {
+        "role": "assistant",
+        "content": "What if you took a moment to reflect on what success looks like for you in this context? How would defining that success help clarify your priorities and ease the pressure you're feeling?"
+      },
+      {
+        "role": "user",
+        "content": "Defining success feels like a moving target right now with a 10-person team and constant deadlines. I guess if I could outline success\u2014like delivering key features that drive customer satisfaction or hitting our quarterly goals\u2014it might help me filter requests better. But it\u2019s still intimidating. I don\u2019t want to overlook something that could really impact our clients or the business. I appreciate the nudge to think about this, but it\u2019s hard to step back when everything seems urgent. I need to figure out how to balance urgency with a clearer vision of success."
+      },
+      {
+        "role": "assistant",
+        "content": "What would it look like for you to define success in a way that aligns with your values and the needs of your team, while also allowing space for prioritization?"
+      },
+      {
+        "role": "user",
+        "content": "I get what you're saying about aligning success with my values and team needs, but it feels like a tall order right now. With only 10 of us and tight deadlines, I'm just trying to keep everything from falling apart. Defining success could help, but I worry it\u2019ll just add more pressure. I guess if I could create a simple framework that ties our goals to what truly matters, it might make prioritization clearer. But I still feel overwhelmed by the urgency of every request. Balancing that with a clearer vision seems tricky."
+      },
+      {
+        "role": "assistant",
+        "content": "What might it look like to create that simple framework for defining success, even if it feels overwhelming right now? How could you start small, perhaps by focusing on just one aspect of your roadmap to clarify the criteria for that specific area?"
+      },
+      {
+        "role": "user",
+        "content": "I see what you're getting at, but starting small still feels daunting, especially with a 10-person team juggling tight deadlines. I worry that even focusing on one aspect could open a floodgate of requests and make things messier. But maybe if I pick a specific feature, like a high-impact customer request, I could use that as a test case for this framework. It might help me see how prioritizing can actually reduce the chaos. Still, I\u2019m not entirely comfortable with saying no to anything right now. It just feels risky."
+      },
+      {
+        "role": "assistant",
+        "content": "What might happen if you allowed yourself to experiment with saying no to one or two requests this week? How could you communicate that decision while still honoring the value of those requests?"
+      },
+      {
+        "role": "user",
+        "content": "I get that experimenting with saying no could help, but it still feels risky in our tight-knit 10-person team. We\u2019re already stretched thin, and I worry about the fallout from rejecting requests, even if they\u2019re not aligned with our goals. Communicating that effectively without undermining the team\u2019s efforts is another challenge. I know it\u2019s about prioritization, but it feels like I\u2019m walking a tightrope. Maybe I could try saying no to one request this week, but I\u2019d need a solid way to frame it so it doesn\u2019t feel dismissive."
+      },
+      {
+        "role": "assistant",
+        "content": "What do you think would help you feel more secure about saying no to that one request?"
+      },
+      {
+        "role": "user",
+        "content": "Honestly, it\u2019s tough to feel secure about saying no when our team is so small and under pressure. I\u2019m constantly worried about team morale and the potential fallout. But if I can frame it around our goals and show how it aligns with what we\u2019re trying to achieve, that might help. Maybe if I clarify that we\u2019re prioritizing high-impact features over lower ones, it could make it easier. I\u2019m still not totally comfortable with it, but I can see how it might help us focus our efforts. Just hope it doesn\u2019t backfire."
+      },
+      {
+        "role": "assistant",
+        "content": "What do you think might shift for you if you approached saying no as an opportunity to create clarity and focus, rather than as a rejection?"
+      },
+      {
+        "role": "user",
+        "content": "stop"
+      }
+    ],
+    "deep_report": {
+      "deep_thoughts_content": "# Deep Thoughts: Analysis Failed\n\n## Core Problem\nUnable to generate Deep Thoughts analysis due to technical error: API call failed after 3 attempts: Error code: 403 - {'error': {'message': 'Project `proj_3lgfgabot665RcUQ9B1d5eyS` does not have access to model `gpt-4o`', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}\n\n## Fact Check\n\u274c Deep Thoughts generation failed\n\n## Just One More Thing...\nThe system needs debugging to provide the intended insights.\n\n## Hints\nTry running the analysis again, or check the system logs for more details.\n\n---\n*Conversation ID: test_20250710_224105*\n*Generated: 2025-07-10 22:41*",
+      "message_count": 21,
+      "coaching_turns": 10
+    },
+    "test_user_stats": {
+      "breakthrough_achieved": false,
+      "resistance_level": 0.7200000000000001,
+      "interaction_count": 1
+    },
+    "context_usage": {
+      "analyzed_messages": 10,
+      "llm_analysis": false,
+      "scoring_duration_ms": 0,
+      "context_sources_used": [
+        "todos",
+        "documents"
+      ],
+      "context_budget_used": 1096,
+      "context_attribution": {
+        "sources_used": [
+          "todos",
+          "documents"
+        ],
+        "todos_referenced": [
+          "OPUS/o1 task: Evaluator improvement - The evaluation approach needs to be improved. It's currently evaluating all 7 evals one sentence at a time, which doesn't make sense... rather I suggest running a full LLM-based conversation, and then rating all evals across the convo (including deep report)... not sentence by sentence, but across",
+          "Canonical document ---- what would be a part of it? Propose team, and get feedback",
+          "\u2018Org Health focus\u2019 for team => Teams group (and holiday readings)"
+        ],
+        "documents_referenced": [
+          "OpenAI_chatmemory"
+        ],
+        "memory_referenced": [],
+        "relevance_scores": {
+          "todos": 1.0,
+          "documents": 1.0
+        }
+      },
+      "prompt_length": 3162,
+      "todos_fetched": true,
+      "filter_applied": true,
+      "total_todos": 112,
+      "filtered_todos": 3,
+      "documents_loaded": true,
+      "skip_reason": "Low relevance score",
+      "memory_fetched": false,
+      "memory_fetch_reason": "Low relevance score",
+      "document_count": 2,
+      "filtered_count": 2,
+      "document_relevance_scores": {
+        "OpenAI_chatmemory": 1.0,
+        "Core_beliefs": 0.8214285714285714
+      },
+      "document_metadata": [
+        {
+          "filename": "Core_beliefs",
+          "full_path": "/Users/michaelhaase/Desktop/coding/diary-coach/docs/memory/Core_beliefs.md",
+          "size_chars": 12795,
+          "last_modified": "2025-06-30T09:26:12.383035"
+        },
+        {
+          "filename": "OpenAI_chatmemory",
+          "full_path": "/Users/michaelhaase/Desktop/coding/diary-coach/docs/memory/OpenAI_chatmemory.md",
+          "size_chars": 37595,
+          "last_modified": "2025-06-30T09:28:17.423184"
+        }
+      ],
+      "document_load_time_ms": 154,
+      "documents_chunked": true,
+      "total_chunks": 2,
+      "cache_hit": true,
+      "cache_hits_count": 2
+    },
+    "decision_path": [
+      "context_relevance_scorer",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "document_loader",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "document_loader",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "document_loader",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "document_loader",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "document_loader",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "document_loader",
+      "conversation_memory",
+      "implicit_context_coach"
+    ],
+    "timestamp": "2025-07-10T22:41:09.285021"
+  }
+]

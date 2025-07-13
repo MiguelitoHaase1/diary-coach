@@ -35,6 +35,7 @@ Sustainable growth comes from depth before breadth:
 - **Customer conflicts reveal market segmentation opportunities, not product failures**: When different customer groups request contradictory features, identify underlying jobs-to-be-done and serve your core segment exceptionally well
 - **Onboard manually (at first)**: Early in product life, manual 1-1 onboarding frees engineering, builds brand, and fosters user-centric culture
 - **Word of Mouth beats virality**: Digital products rarely go truly viral; focus on creating word-of-mouth effects
+- **Nail it before we scale it**: Ensure to not scale too early -- it's easier to nail any tasks at small scale first.
 
 ## Strategy & Vision
 

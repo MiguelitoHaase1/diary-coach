@@ -22,7 +22,6 @@ from src.evaluation.analyzers.morning import (
 from src.evaluation.analyzers.emotional import EmotionalPresenceAnalyzer
 from src.evaluation.analyzers.framework import FrameworkDisruptionAnalyzer
 from src.evaluation.reporting.deep_thoughts import DeepThoughtsGenerator
-from src.evaluation.reporting.eval_exporter import EvaluationExporter
 from src.services.llm_factory import LLMTier
 from src.evaluation.eval_command import EvalCommand
 
@@ -49,7 +48,6 @@ class EnhancedCLI(DiaryCoachCLI):
         # Initialize Deep Thoughts generator and Eval exporter
         # Use STANDARD tier (Claude Sonnet 4) for Deep Thoughts analysis
         self.deep_thoughts_generator = DeepThoughtsGenerator(tier=LLMTier.STANDARD)
-        self.eval_exporter = EvaluationExporter()
 
         # Initialize comprehensive eval command
         self.eval_command = EvalCommand(coach)
@@ -198,21 +196,6 @@ class EnhancedCLI(DiaryCoachCLI):
         # Generate in-memory evaluation only (no file generation)
         await self._generate_in_memory_evaluation(user_notes)
 
-        if self.current_eval:
-            effectiveness = self.current_eval.overall_score * 10
-            print(f"\nCoaching Effectiveness: {effectiveness:.1f}/10")
-
-            print("\nResponse Speed:")
-            print(f"- Median: {self.performance_tracker.get_median():.0f}ms")
-            percentile_80 = self.performance_tracker.get_percentile(80)
-            print(f"- 80th percentile: {percentile_80:.0f}ms")
-            under_1s = self.performance_tracker.percentage_under_threshold(1000)
-            print(f"- Under 1s: {under_1s:.0%}")
-
-            print("\nBehavioral Analysis:")
-            for score in self.current_eval.behavioral_scores:
-                print(f"- {score.analyzer_name}: {score.value * 10:.1f}/10")
-
         print(
             "\nType 'deep report' to generate Deep Thoughts + evaluation files, "
             "or 'exit' to quit."
@@ -319,30 +302,11 @@ class EnhancedCLI(DiaryCoachCLI):
                 )
             )
 
-            # Step 2: Generate evaluation export (Sonnet)
-            if self.current_eval:
-                print("\n📋 Generating evaluation report (Sonnet)...")
-                eval_content = await self.eval_exporter.export_evaluation_markdown(
-                    self.current_eval
-                )
-                eval_path = self.eval_exporter.get_output_filepath()
-                print(f"✅ Evaluation saved to: {eval_path}")
-
-                # Display evaluation content in terminal with Rich markdown rendering
-                print("\n")
-                self.console.print(
-                    Panel(
-                        Markdown(eval_content),
-                        title="📋 EVALUATION REPORT",
-                        border_style="green",
-                    )
-                )
+            # No separate evaluation reports per Session_6_8
 
             print("\n🎉 Deep report complete!")
             print("📁 Generated files:")
             print(f"   • Deep Thoughts: {deep_thoughts_path}")
-            if self.current_eval:
-                print(f"   • Evaluation: {eval_path}")
 
         except Exception as e:
             print(f"❌ Error generating deep report: {str(e)}")

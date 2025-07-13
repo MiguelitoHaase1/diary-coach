@@ -1,14 +1,67 @@
 # Diary Coach Project Status
 
-## Current Status: Session 6.7 Complete 🎉 – Evaluation Fixes & Linting Infrastructure
+## Current Status: Session 7.2 Complete – LangSmith Evaluator Fixes
 
-**Last Updated**: July 11, 2025
+**Last Updated**: July 13, 2025
 
 ## Project Overview
 
 Multi-agent text-first coaching system with eventual voice integration. Uses a Test-Driven Development (TDD) approach with comprehensive conversation quality evaluation. Built incrementally following three core principles: Compartmentalization, Continuous Improvement, and Learning While Building.
 
 ## Recent Sessions
+
+### Session 7.2: LangSmith Evaluator Fixes and Deep Thoughts Integration
+
+**Duration**: 1 increment (~45 minutes)
+**Approach**: Fix evaluator scoring issues and integrate proper Deep Thoughts generation
+**Result**: All 5 evaluators working with proper scores and Sonnet 4 Deep Thoughts
+
+#### Key Achievements 🎯
+* ✅ **Fixed Zero Scores**: Resolved JSON parsing issues that caused all evaluators to return 0
+* ✅ **Sonnet 4 Integration**: Updated Deep Thoughts generation to use claude-sonnet-4
+* ✅ **LangSmith Tracing**: Added full tracing for Deep Thoughts generation pipeline
+* ✅ **Clean UI**: Removed redundant evaluation display from prototype flow
+
+#### Technical Details
+- **JSON Parser**: Added robust extraction handling markdown blocks and control characters
+- **Model Fix**: Changed STANDARD tier from Claude 3.5 to claude-sonnet-4-20250514
+- **Scoring**: Standardized all evaluators to 0.0-1.0 graduated scoring
+- **Tracing**: Added @traceable decorators to key generation methods
+
+### Session 7.1: Evaluation System Update
+
+**Duration**: 1 increment (~30 minutes)
+**Approach**: Update evaluation system to use 5 focused criteria per Session_6_8.md
+**Result**: Simplified evaluation with 5 key metrics, removed separate eval reports
+
+#### Key Achievements 🎯
+* ✅ **New 5-Criteria System**: Replaced 7 evaluators with 5 focused ones (A-E)
+* ✅ **Removed Eval Reports**: No more separate EvalSummary markdown files
+* ✅ **Deep Thoughts Integration**: Evaluations now performed within Deep Thoughts
+* ✅ **Performance Fix**: Upgraded to STANDARD tier and increased token limit
+
+#### Technical Details
+- **New Evaluators**: Problem Definition, Crux Recognition, Today Accomplishment, Multiple Paths, Core Beliefs
+- **Binary Scores**: A, B, C are binary (0-1), D and E are continuous (0-1)
+- **Timeout Fix**: Switched from CHEAP tier with 800 tokens to STANDARD tier with 1500 tokens
+- **Code Quality**: Fixed all linting issues across modified files
+
+### Session 7.0: Prompt Reorganization for Coach Agent
+
+**Duration**: 1 increment (~20 minutes)
+**Approach**: Refactor coach agent to load all prompts from markdown files
+**Result**: Coach agent now uses dynamic prompt loading matching Deep Thoughts pattern
+
+#### Key Achievements 🎯
+* ✅ **Morning Protocol Extracted**: Moved hardcoded Python string to `coach_morning_protocol.md`
+* ✅ **PromptLoader Enhanced**: Added support for loading morning protocol
+* ✅ **Coach Agent Updated**: Changed to use property-based dynamic loading
+* ✅ **Pattern Consistency**: Now matches Deep Thoughts prompt organization
+
+#### Technical Details
+- **New File**: `src/agents/prompts/coach_morning_protocol.md` contains morning procedures
+- **Pattern**: All agent prompts now editable via markdown without Python changes
+- **Backward Compatible**: Used `@property` to maintain existing interface
 
 ### Session 6.6 Extended: Manual Evaluation System Fix 🎉
 
@@ -122,16 +175,16 @@ diary-coach/
 │   ├── interface/           # User interfaces
 │   ├── persistence/         # Data storage
 │   ├── orchestration/       # LangGraph orchestration and context management
-│   └── evaluation/          # Conversation quality evaluation
+│   └── evaluation/          # Conversation quality evaluation (5 criteria) ✅
 ├── tests/                   # Test suite
 ├── docs/                    # Documentation
 │   ├── status.md            # This file – project status tracking ✅
 │   ├── session_6_6/         # Session 6.6 artifacts ✅
-│   │   ├── Log_6_6_Evaluation_Fixes.md    # Manual evaluation fix log ✅
-│   │   └── Dojo_6_6_Evaluation_Fixes.md   # Hidden mock pattern dojo ✅
-│   └── session_6_7/         # Session 6.7 artifacts ✅
-│       ├── Log_6_7_Linting_Setup.md       # Linting infrastructure log ✅
-│       └── Dojo_6_7_Linting_Setup.md      # Discovered infrastructure dojo ✅
+│   ├── session_6_7/         # Session 6.7 artifacts ✅
+│   └── session_7/           # Session 7 artifacts
+│       ├── Log_7_0_Prompt_Reorganization.md # Coach prompt refactor log ✅
+│       ├── Log_7_1_Evaluation_System_Update.md # New 5-criteria system log ✅
+│       └── Log_7_2_Evaluator_Fixes.md # LangSmith evaluator fixes log ✅
 ├── scripts/                 # Evaluation and testing scripts
 └── pyproject.toml          # Modern Python packaging config
 
@@ -157,6 +210,8 @@ diary-coach/
 
 ## Next Steps
 
-- Continue monitoring manual evaluation system for accuracy
-- Consider adding pre-commit hooks for automatic linting
-- Expand test coverage for edge cases in evaluation system
+- Run comprehensive evaluation experiments with fixed evaluators
+- Monitor LangSmith dashboard for proper scoring distribution
+- Begin Session 7.3: Agent Architecture Foundation for parallel orchestration
+- Consider implementing direct Deep Thoughts score extraction (alternative approach)
+- Add pre-commit hooks for automatic linting

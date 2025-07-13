@@ -22,7 +22,7 @@ class ConversationTestRunner:
         """Initialize with LangSmith client and coaching infrastructure."""
         self.langsmith_client = langsmith_client or LangSmithClient()
         self.llm_service = LLMFactory.create_service(LLMTier.CHEAP)  # Use OpenAI for testing
-        self.deep_thoughts_generator = DeepThoughtsGenerator(tier=LLMTier.O3)  # Use GPT o3
+        self.deep_thoughts_generator = DeepThoughtsGenerator(tier=LLMTier.STANDARD)  # Use Sonnet 4
         self.coaching_graph: Optional[CompiledStateGraph] = None
         
     async def setup_conversation(self) -> Tuple[TestUserAgent, CompiledStateGraph]:
@@ -37,7 +37,14 @@ class ConversationTestRunner:
     
     @traceable(name="full_conversation_test")
     async def run_conversation_test(self, test_name: str = "PM_coaching_session") -> Dict[str, Any]:
-        """Run a complete coaching conversation test with LangSmith tracking."""
+        """Run a complete coaching conversation test with LangSmith tracking.
+        
+        Args:
+            test_name: Name of the test
+        
+        Returns:
+            Dictionary containing test results
+        """
         
         # Setup
         test_user, coaching_graph = await self.setup_conversation()
@@ -124,8 +131,16 @@ class ConversationTestRunner:
         
         return results
     
+    @traceable(name="generate_deep_report")
     async def _generate_deep_report(self, conversation_messages: List[Dict[str, str]]) -> Dict[str, Any]:
-        """Generate deep thoughts report for the conversation."""
+        """Generate deep thoughts report for the conversation.
+        
+        Args:
+            conversation_messages: List of conversation messages
+            
+        Returns:
+            Dictionary containing deep report information
+        """
         
         # Convert messages to conversation format
         conversation_text = "\n".join([
@@ -133,12 +148,15 @@ class ConversationTestRunner:
             for msg in conversation_messages
         ])
         
-        # Generate deep thoughts using correct method signature
+        # Generate deep thoughts report
+        timestamp = datetime.now()
+        
         deep_thoughts = await self.deep_thoughts_generator.generate_deep_thoughts(
             conversation_history=conversation_messages,
-            conversation_id=f"test_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+            conversation_id=f"test_{timestamp.strftime('%Y%m%d_%H%M%S')}",
             include_evals=False,
-            include_transcript=False
+            include_transcript=True,  # Always include transcript
+            timestamp=timestamp
         )
         
         return {
@@ -188,3 +206,30 @@ class ConversationTestRunner:
             json.dump(results, f, indent=2)
         
         return output_path
+    
+    def _save_manual_eval(self, content: str, timestamp: datetime) -> str:
+        """Save manual evaluation to dedicated directory.
+        
+        Args:
+            content: Full deep report content with subjective evaluation
+            timestamp: Timestamp for file naming
+            
+        Returns:
+            Path to saved file
+        """
+        import os
+        from pathlib import Path
+        
+        # Create manual_evals directory
+        manual_eval_dir = Path("docs/prototype/manual_evals")
+        manual_eval_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Generate filename
+        filename = f"ManualEval_{timestamp.strftime('%Y%m%d_%H%M')}.md"
+        filepath = manual_eval_dir / filename
+        
+        # Save content
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(content)
+        
+        return str(filepath)

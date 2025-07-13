@@ -1,0 +1,412 @@
+[
+  {
+    "conversation_id": "test_20250710_224131",
+    "test_name": "PM_coaching_session_1",
+    "turn_count": 10,
+    "conversation_messages": [
+      {
+        "role": "user",
+        "content": "I'm feeling overwhelmed with my roadmap priorities. Everything seems urgent but I can't get alignment from stakeholders."
+      },
+      {
+        "role": "assistant",
+        "content": "What do you believe is at the core of this overwhelm, and how might it be influencing your ability to align with your stakeholders?"
+      },
+      {
+        "role": "user",
+        "content": "I think the core of my overwhelm is that I\u2019m trying to juggle too many stakeholder requests at once, especially with our small team of six and tight timelines. I feel like everyone has a different priority, and it\u2019s hard to push back without feeling defensive. I know I need to find a way to get alignment, but right now, it just feels like an uphill battle. It\u2019s frustrating because I don\u2019t want to let anyone down, but I also can\u2019t keep spinning my wheels like this."
+      },
+      {
+        "role": "assistant",
+        "content": "What do you think would happen if you were to prioritize your own needs and boundaries in this situation?"
+      },
+      {
+        "role": "user",
+        "content": "If I prioritize my own needs, I\u2019m worried it\u2019ll come off as selfish, especially with our small team and tight timelines. Everyone else\u2019s demands feel urgent, and I don\u2019t want to be seen as pushing back. But I guess if I set clearer boundaries, it might help me focus on what really matters and create space for productive conversations. Maybe it\u2019s worth considering how I can communicate that without feeling defensive. It\u2019s just hard to see how that would realistically work in practice."
+      },
+      {
+        "role": "assistant",
+        "content": "What might it look like to express your own needs while still honoring the demands of your team?"
+      },
+      {
+        "role": "user",
+        "content": "I appreciate the suggestion, but it feels tricky. With just six of us on the team and everyone under pressure, expressing my needs could come off as if I\u2019m not a team player. I guess I could try framing it as a way to enhance our overall productivity\u2014like saying, \u201cIf I focus on this key priority, it\u2019ll help us all.\u201d But honestly, I\u2019m still not sure how to do that without sounding defensive or dismissive of others' requests. It\u2019s a delicate balance, and I\u2019m feeling a bit stuck."
+      },
+      {
+        "role": "assistant",
+        "content": "What do you think would happen if you started by sharing your perspective on the urgency of various tasks with your team? How might that shift the dynamics of your conversations and help you navigate those delicate boundaries?"
+      },
+      {
+        "role": "user",
+        "content": "I see where you're coming from, but sharing my perspective on urgency feels risky. With just six of us and tight timelines, I worry it might come off as me playing favorites or dismissing other priorities. I mean, everyone\u2019s under pressure, and I don\u2019t want to add to that. But maybe if I can frame it in a way that highlights how aligning on priorities could benefit everyone, it might lead to more constructive discussions. I just hope it doesn\u2019t backfire or make me seem like I\u2019m not a team player. It's a bit of a tightrope walk."
+      },
+      {
+        "role": "assistant",
+        "content": "What would it look like for you to authentically express your needs while still honoring the perspectives and demands of your team?"
+      },
+      {
+        "role": "user",
+        "content": "I guess I could start by being more transparent about my workload and how it aligns with our goals. If I say something like, \u201cI can commit to this project by next week, which will help us all move forward,\u201d it might open up the conversation. But I worry that if I\u2019m too direct, it could come off as me not valuing the team\u2019s needs. It feels like a balancing act\u2014acknowledging my perspective while also validating their concerns. I'm just not sure how to strike that balance without seeming like I'm dismissing their priorities."
+      },
+      {
+        "role": "assistant",
+        "content": "What do you think would happen if you expressed your current workload and priorities openly with the team, while also inviting their input on how to navigate the competing demands?"
+      },
+      {
+        "role": "user",
+        "content": "I appreciate that suggestion, but it still feels a bit daunting. With just six of us and looming deadlines, I worry that sharing my workload might come off as if I'm prioritizing my tasks over everyone else's. I'm also concerned about how to invite input without seeming dismissive. It feels like a lot to navigate, and I\u2019m just not sure how to manage everyone\u2019s expectations while being transparent. Maybe if I approach it as a collaborative discussion, it could lead to some clarity, but I still feel this tightrope walk is risky."
+      },
+      {
+        "role": "assistant",
+        "content": "What do you think would happen if you approached the conversation with curiosity about their priorities, while also sharing your perspective? How might that shift the dynamics and open up a space for mutual understanding?"
+      },
+      {
+        "role": "user",
+        "content": "I see your point about curiosity opening up dialogue, but I still feel hesitant. With just six of us and tight timelines, I worry that asking about their priorities might just lead to more confusion or conflict. It feels like I\u2019d be opening a can of worms. But maybe if I frame it as wanting to understand *all* our constraints better, it could help. I guess there might be a way to share my workload without it coming off as dismissive. I just wish it didn\u2019t feel so risky to navigate these conversations."
+      },
+      {
+        "role": "assistant",
+        "content": "What do you think might change in your experience of this situation if you approached it with genuine curiosity about your teammates' priorities and constraints?"
+      },
+      {
+        "role": "user",
+        "content": "I see your point about curiosity potentially leading to better dialogue, but honestly, it still feels overwhelming. With just six of us and deadlines looming, I\u2019m worried about adding more complexity to the situation. I guess if I approach it as wanting to understand everyone\u2019s constraints, it might help. I can see how that could lead to some clarity. But it feels like a big leap for me right now\u2014like I\u2019m risking my own priorities in the process. I appreciate your perspective, but I still need to think this through."
+      },
+      {
+        "role": "assistant",
+        "content": "What might it look like for you to approach this situation with curiosity while still honoring your own priorities?"
+      },
+      {
+        "role": "user",
+        "content": "I see what you mean about balancing curiosity with my priorities, but it's tough. With just six of us and deadlines looming, I feel like any distraction could derail our progress. Honoring my priorities while trying to understand everyone else\u2019s feels like a juggling act. I guess I could set aside a specific time to ask about their constraints without losing focus on our goals. But honestly, it still feels risky\u2014I don\u2019t want to end up in a lengthy debate when we need to push things forward. I appreciate your patience, but I\u2019m still trying to wrap my head around this."
+      },
+      {
+        "role": "assistant",
+        "content": "What do you think would happen if you committed to understanding one stakeholder's priorities first, while clearly stating your own?"
+      },
+      {
+        "role": "user",
+        "content": "stop"
+      }
+    ],
+    "deep_report": {
+      "deep_thoughts_content": "# Deep Thoughts: Analysis Failed\n\n## Core Problem\nUnable to generate Deep Thoughts analysis due to technical error: API call failed after 3 attempts: Error code: 403 - {'error': {'message': 'Project `proj_3lgfgabot665RcUQ9B1d5eyS` does not have access to model `o3`', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}\n\n## Fact Check\n\u274c Deep Thoughts generation failed\n\n## Just One More Thing...\nThe system needs debugging to provide the intended insights.\n\n## Hints\nTry running the analysis again, or check the system logs for more details.\n\n---\n*Conversation ID: test_20250710_224220*\n*Generated: 2025-07-10 22:42*",
+      "message_count": 21,
+      "coaching_turns": 10
+    },
+    "test_user_stats": {
+      "breakthrough_achieved": false,
+      "resistance_level": 0.8,
+      "interaction_count": 0
+    },
+    "context_usage": {
+      "analyzed_messages": 10,
+      "llm_analysis": false,
+      "scoring_duration_ms": 2,
+      "context_sources_used": [
+        "todos",
+        "documents"
+      ],
+      "context_budget_used": 1096,
+      "context_attribution": {
+        "sources_used": [
+          "todos",
+          "documents"
+        ],
+        "todos_referenced": [
+          "OPUS/o1 task: Evaluator improvement - The evaluation approach needs to be improved. It's currently evaluating all 7 evals one sentence at a time, which doesn't make sense... rather I suggest running a full LLM-based conversation, and then rating all evals across the convo (including deep report)... not sentence by sentence, but across"
+        ],
+        "documents_referenced": [
+          "OpenAI_chatmemory"
+        ],
+        "memory_referenced": [],
+        "relevance_scores": {
+          "todos": 1.0,
+          "documents": 0.65
+        }
+      },
+      "prompt_length": 3162,
+      "todos_fetched": true,
+      "filter_applied": true,
+      "total_todos": 112,
+      "filtered_todos": 1,
+      "documents_loaded": true,
+      "skip_reason": "Low relevance score",
+      "memory_fetched": false,
+      "memory_fetch_reason": "Low relevance score",
+      "document_count": 2,
+      "filtered_count": 2,
+      "document_relevance_scores": {
+        "OpenAI_chatmemory": 1.0,
+        "Core_beliefs": 0.8071895424836601
+      },
+      "document_metadata": [
+        {
+          "filename": "Core_beliefs",
+          "full_path": "/Users/michaelhaase/Desktop/coding/diary-coach/docs/memory/Core_beliefs.md",
+          "size_chars": 12795,
+          "last_modified": "2025-06-30T09:26:12.383035"
+        },
+        {
+          "filename": "OpenAI_chatmemory",
+          "full_path": "/Users/michaelhaase/Desktop/coding/diary-coach/docs/memory/OpenAI_chatmemory.md",
+          "size_chars": 37595,
+          "last_modified": "2025-06-30T09:28:17.423184"
+        }
+      ],
+      "document_load_time_ms": 161,
+      "documents_chunked": true,
+      "total_chunks": 2,
+      "cache_hit": true,
+      "cache_hits_count": 2
+    },
+    "decision_path": [
+      "context_relevance_scorer",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "document_loader",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "document_loader",
+      "conversation_memory",
+      "implicit_context_coach"
+    ],
+    "timestamp": "2025-07-10T22:42:23.924694"
+  },
+  {
+    "conversation_id": "test_20250710_224224",
+    "test_name": "PM_coaching_session_2",
+    "turn_count": 10,
+    "conversation_messages": [
+      {
+        "role": "user",
+        "content": "I'm feeling overwhelmed with my roadmap priorities. Everything seems urgent but I can't get alignment from stakeholders."
+      },
+      {
+        "role": "assistant",
+        "content": "What do you think is at the heart of the misalignment with your stakeholders?"
+      },
+      {
+        "role": "user",
+        "content": "Honestly, I think it\u2019s a mix of competing priorities and unclear communication. With a team of 200, everyone has their own agenda, and timelines are tight. I try to accommodate all requests, but it feels like I'm just juggling flaming torches. It\u2019s exhausting, and when I ask for clarity, I get vague answers that leave me more confused. I get that misalignment is part of the process, but it\u2019s frustrating when I\u2019m just trying to move projects forward. I guess I need to figure out a better way to facilitate those conversations."
+      },
+      {
+        "role": "assistant",
+        "content": "What impact does this feeling of frustration and overwhelm have on your ability to lead and make decisions effectively?"
+      },
+      {
+        "role": "user",
+        "content": "Honestly, it feels like I\u2019m stuck in quicksand. The frustration makes me hesitate in meetings, and I second-guess my decisions. With a team of 200 and tight timelines, I need to act decisively, but I find myself overanalyzing everything. When I do speak up, I worry about pushing back against stakeholders who seem set in their ways. I know I need to find a balance, but it\u2019s hard when I feel like I\u2019m constantly fighting to get everyone on the same page. It\u2019s exhausting and makes me question my effectiveness as a PM."
+      },
+      {
+        "role": "assistant",
+        "content": "What might it look like for you to lead those conversations with confidence, even amidst the overwhelm?"
+      },
+      {
+        "role": "user",
+        "content": "Leading conversations confidently feels like a tall order right now, especially with 200 people involved and everyone pushing their own agendas. I guess if I could set clear expectations upfront and guide discussions with specific data and priorities, it might help. But it\u2019s hard to imagine breaking through the noise when everyone seems so entrenched in their own timelines. I just don\u2019t want to come off as dismissive or out of touch. I appreciate the nudge, but it feels daunting to shift my approach that drastically."
+      },
+      {
+        "role": "assistant",
+        "content": "What do you think would happen if you approached these conversations by focusing first on the shared goals or outcomes that everyone cares about?"
+      },
+      {
+        "role": "user",
+        "content": "I get what you\u2019re saying about focusing on shared goals, but it feels tricky with so many different stakeholders and competing priorities. With a team of 200, everyone has their own agenda, and timelines are tight. I worry that if I try to steer the conversation that way, I might overlook specific needs or pushback from others. But I suppose if I started with common outcomes, it could align us better. It\u2019s just hard to visualize that shift when I\u2019m already feeling overwhelmed by the chaos."
+      },
+      {
+        "role": "assistant",
+        "content": "What do you think might happen if you approached these conversations with the intention of uncovering shared goals rather than accommodating individual agendas?"
+      },
+      {
+        "role": "user",
+        "content": "I see what you\u2019re getting at, but it feels like a risky shift, especially with 200 people and their competing priorities. If I focus on shared goals, I might miss critical individual needs, and I can\u2019t afford to alienate anyone. But maybe if I started asking questions about overarching outcomes, it could steer the conversation in a more productive direction. I guess there\u2019s potential in that, but I still worry about the logistics and managing the diverse opinions. It\u2019s a lot to juggle, and I\u2019m not sure I can pull it off just yet."
+      },
+      {
+        "role": "assistant",
+        "content": "What do you think might happen if you started those conversations by asking stakeholders about their most important goals and how they align with the project's objectives?"
+      },
+      {
+        "role": "user",
+        "content": "I see your point about asking stakeholders about their goals, but with 200 people and tight timelines, it feels overwhelming to gather everyone's input. I worry that if I dig too deep into individual agendas, we could end up in a rabbit hole. But I guess starting with those questions could help me understand the bigger picture better and maybe even find some common ground among the chaos. Just feels daunting to balance all those voices without losing focus. It's a lot to consider, but I can see how it might lead to clearer priorities."
+      },
+      {
+        "role": "assistant",
+        "content": "What would it look like for you to invite stakeholders to share their goals in a way that feels manageable and focused, rather than overwhelming?"
+      },
+      {
+        "role": "user",
+        "content": "I appreciate that question, but it still feels like a lot to manage with 200 people. Maybe we could do a survey or a focused workshop to gather input efficiently? It\u2019s just that timelines are so tight, and I don't want to get bogged down in too many voices. I can see the value in narrowing it down, but I still worry about missing critical inputs or creating pushback. I guess if we could streamline it somehow, it might work. Just need to find that balance without losing sight of our immediate goals."
+      },
+      {
+        "role": "assistant",
+        "content": "How might you create a structured approach to gather input from stakeholders that respects their agendas while also keeping your focus on the broader goals?"
+      },
+      {
+        "role": "user",
+        "content": "I see what you\u2019re saying about structure, but with our team of 200 and the tight timelines we\u2019re facing, it feels like a balancing act. Maybe I could organize a series of short, focused meetings with key stakeholders from different departments to gather their priorities. That way, we can respect individual agendas without getting overwhelmed. It\u2019s still daunting, but if I can keep the conversations targeted, it might just work. I guess I\u2019m starting to see how this could help align our efforts better without losing sight of what\u2019s urgent."
+      },
+      {
+        "role": "assistant",
+        "content": "That sounds like a promising approach. How would you feel about setting up those targeted conversations with key stakeholders? What do you think might be the first step in making that happen?"
+      },
+      {
+        "role": "user",
+        "content": "I see the value in targeted conversations, but I\u2019m still feeling that pressure with our timelines. Maybe I could start by identifying the top three departments that impact our immediate goals and set up brief 30-minute meetings with them. It feels more manageable that way. I guess I\u2019m realizing that if I can get a couple of focused conversations going, it might help me feel less overwhelmed and more aligned. But I\u2019m still a bit wary\u2014what if those meetings lead to more questions than answers?"
+      },
+      {
+        "role": "assistant",
+        "content": "It sounds like you're beginning to see a path forward, but the worry about those meetings leading to more questions is valid. What if, instead of seeing them as potential sources of confusion, you approached them as opportunities to clarify your understanding? How might you frame those conversations to ensure they lead to actionable insights rather than just additional complexity?"
+      },
+      {
+        "role": "user",
+        "content": "stop"
+      }
+    ],
+    "deep_report": {
+      "deep_thoughts_content": "# Deep Thoughts: Analysis Failed\n\n## Core Problem\nUnable to generate Deep Thoughts analysis due to technical error: API call failed after 3 attempts: Error code: 403 - {'error': {'message': 'Project `proj_3lgfgabot665RcUQ9B1d5eyS` does not have access to model `o3`', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}\n\n## Fact Check\n\u274c Deep Thoughts generation failed\n\n## Just One More Thing...\nThe system needs debugging to provide the intended insights.\n\n## Hints\nTry running the analysis again, or check the system logs for more details.\n\n---\n*Conversation ID: test_20250710_224313*\n*Generated: 2025-07-10 22:43*",
+      "message_count": 21,
+      "coaching_turns": 10
+    },
+    "test_user_stats": {
+      "breakthrough_achieved": false,
+      "resistance_level": 0.8,
+      "interaction_count": 0
+    },
+    "context_usage": {
+      "analyzed_messages": 10,
+      "llm_analysis": false,
+      "scoring_duration_ms": 2,
+      "context_sources_used": [
+        "todos"
+      ],
+      "context_budget_used": 632,
+      "context_attribution": {
+        "sources_used": [
+          "todos"
+        ],
+        "todos_referenced": [
+          "OPUS/o1 task: Evaluator improvement - The evaluation approach needs to be improved. It's currently evaluating all 7 evals one sentence at a time, which doesn't make sense... rather I suggest running a full LLM-based conversation, and then rating all evals across the convo (including deep report)... not sentence by sentence, but across",
+          "Make scheduling CODA doc: Schedule 30 minutesx2 for meditation/rest every day + deep work + less meetings (I can bring to Jabra)",
+          "GenAI Research: On the Edge computing software (for meeting vc equipment)\u2026 some compoments"
+        ],
+        "documents_referenced": [],
+        "memory_referenced": [],
+        "relevance_scores": {
+          "todos": 1.0
+        }
+      },
+      "prompt_length": 2698,
+      "todos_fetched": true,
+      "filter_applied": true,
+      "total_todos": 112,
+      "filtered_todos": 3,
+      "documents_loaded": false,
+      "skip_reason": "Low relevance score",
+      "memory_fetched": false,
+      "memory_fetch_reason": "Low relevance score",
+      "document_count": 2,
+      "filtered_count": 2,
+      "document_relevance_scores": {
+        "OpenAI_chatmemory": 1.0,
+        "Core_beliefs": 0.8414634146341464
+      },
+      "document_metadata": [
+        {
+          "filename": "Core_beliefs",
+          "full_path": "/Users/michaelhaase/Desktop/coding/diary-coach/docs/memory/Core_beliefs.md",
+          "size_chars": 12795,
+          "last_modified": "2025-06-30T09:26:12.383035"
+        },
+        {
+          "filename": "OpenAI_chatmemory",
+          "full_path": "/Users/michaelhaase/Desktop/coding/diary-coach/docs/memory/OpenAI_chatmemory.md",
+          "size_chars": 37595,
+          "last_modified": "2025-06-30T09:28:17.423184"
+        }
+      ],
+      "document_load_time_ms": 128,
+      "documents_chunked": true,
+      "total_chunks": 2,
+      "cache_hit": true,
+      "cache_hits_count": 2
+    },
+    "decision_path": [
+      "context_relevance_scorer",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "document_loader",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "document_loader",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "document_loader",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "document_loader",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "document_loader",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "conversation_memory",
+      "implicit_context_coach",
+      "context_relevance_scorer",
+      "todo_context",
+      "conversation_memory",
+      "implicit_context_coach"
+    ],
+    "timestamp": "2025-07-10T22:43:17.247953"
+  }
+]
