@@ -112,7 +112,7 @@ class MultiAgentCLI:
             print("  - Enhanced Coach: Orchestrates everything seamlessly")
             print("=" * 50)
             print(
-                "Commands: 'stop' for evaluation, 'report' to view, 'exit' to quit")
+                "Commands: 'stop' to end conversation, 'deep report' for evaluation, 'exit' to quit")
             print("=" * 50)
         else:
             print(
@@ -121,7 +121,7 @@ class MultiAgentCLI:
             print("Running in single-agent mode (Multi-agent features disabled)")
             print("=" * 50)
             print(
-                "Commands: 'stop' for evaluation, 'report' to view, 'exit' to quit")
+                "Commands: 'stop' to end conversation, 'deep report' for evaluation, 'exit' to quit")
             print("=" * 50)
 
         # Initialize all agents
@@ -137,7 +137,8 @@ class MultiAgentCLI:
         # Start LangSmith tracking
         if self.langsmith_tracker.client:
             from src.orchestration.state import ConversationState
-            state = ConversationState()
+            import uuid
+            state = ConversationState(conversation_id=str(uuid.uuid4()))
             await self.langsmith_tracker.track_conversation_start(state)
 
         # Run the main conversation loop
@@ -169,14 +170,11 @@ class MultiAgentCLI:
 
         if any(user_input.lower().strip() == cmd for cmd in stop_commands):
             await self._handle_stop_command()
-            return (
-                "Conversation evaluation complete. Type 'deep report' to "
-                "generate Deep Thoughts + evaluation files, or 'exit' to quit."
-            )
+            # Return empty string to let _handle_stop_command's print statements show
+            return ""
 
         if user_input.lower().strip() == "report":
-            await self._handle_report_command()
-            return "Evaluation report displayed above."
+            return "Please use 'deep report' to generate an evaluation."
 
         # Check for exit commands
         if user_input.lower().strip() in ["exit", "quit"]:
@@ -200,7 +198,7 @@ class MultiAgentCLI:
                     "Please start a conversation first."
                 )
             await self._handle_deep_report_command()
-            return "Deep Thoughts report with full evaluation generated successfully!"
+            return ""  # Let the method's print statements show
 
         # Normal message processing
         start_time = time.time()
@@ -314,20 +312,12 @@ class MultiAgentCLI:
             print("No conversation to evaluate.")
             return
             
-        # Run evaluation
-        self.current_eval = await self.eval_command.run_comprehensive_eval(
-            self.conversation_history
-        )
-        
-        # Display summary
-        if self.current_eval:
-            print("\n=== Conversation Evaluation ===")
-            print(f"Coaching Effectiveness: {self.current_eval.overall_score:.1f}/10")
-            
-            # Save light report
-            filename = f"docs/prototype/eval_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
-            await self.eval_command.save_report(self.current_eval, filename)
-            print(f"Light evaluation report saved to: {filename}")
+        # Simply mark that evaluation can be done
+        print("\n=== Conversation Stopped ===")
+        print(f"Total exchanges: {len(self.conversation_history) // 2}")
+        print("\nYou can now:")
+        print("  • Type 'deep report' to generate a Deep Thoughts evaluation")
+        print("  • Type 'exit' to quit without evaluation")
 
     async def _handle_report_command(self):
         """Handle report viewing command."""
@@ -341,26 +331,41 @@ class MultiAgentCLI:
 
     async def _handle_deep_report_command(self):
         """Handle deep report generation command."""
-        if not self.current_eval:
-            print("No evaluation available. Use 'stop' to evaluate first.")
-            return
-            
-        print("Generating Deep Thoughts analysis...")
+        print("\n🤔 Generating Deep Thoughts analysis...")
         
-        # Generate Deep Thoughts
-        deep_thoughts = await self.deep_thoughts_generator.generate_deep_thoughts(
-            self.current_eval,
-            self.conversation_history
+        # Generate conversation ID for this evaluation
+        conversation_id = f"cli_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        
+        # Generate Deep Thoughts with conversation history
+        report_content = await self.deep_thoughts_generator.generate_deep_thoughts(
+            conversation_history=self.conversation_history,
+            conversation_id=conversation_id,
+            include_evals=True,  # Include evaluation in the report
+            include_transcript=True  # Include full transcript
         )
         
-        # Update evaluation with Deep Thoughts
-        self.current_eval.deep_thoughts = deep_thoughts
+        # Get the output file path
+        output_path = self.deep_thoughts_generator.get_output_filepath()
         
-        # Save enhanced report
-        filename = f"docs/prototype/deep_eval_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
-        await self.eval_command.save_report(self.current_eval, filename)
-        print(f"Report upgraded with comprehensive AI reflection!")
-        print(f"Enhanced report saved to: {filename}")
+        print(f"\n✅ Deep Thoughts report generated successfully!")
+        print(f"📄 Report saved to: {output_path}")
+        
+        # Convert to Path for absolute path
+        from pathlib import Path
+        abs_path = Path(output_path).absolute()
+        print(f"\n💡 Full path: {abs_path}")
+        
+        # Display the report content in the CLI
+        print("\n" + "="*80)
+        print("DEEP THOUGHTS REPORT")
+        print("="*80 + "\n")
+        
+        # Use Rich to render the markdown report beautifully
+        self.console.print(Markdown(report_content))
+        
+        print("\n" + "="*80)
+        print(f"Report also saved to: {abs_path}")
+        print("="*80)
 
 
 async def main():

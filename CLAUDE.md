@@ -84,9 +84,7 @@ project/
 
 ### Update Rules
 - **After EVERY increment**: Update status.md
-- **When approach changes**: Update Session_x.md and roadmap.md  
-- **When you struggle**: Note in learning_ledger.md
-
+- **When approach changes**: Update Session_x.md and roadmap.md 
 
 ---
 
@@ -123,6 +121,7 @@ claude --model sonnet    # Default
 
 ### The Fourth Law: Clean Architecture Transitions
 When changing architecture or refactoring major components, **never leave orphaned code behind**.
+Meanwhile, make sure to read the Productvision.md, and keep the aspects of the left-behind product that is stated there!
 
 ### What to Clean Up
 When you modify or replace code:

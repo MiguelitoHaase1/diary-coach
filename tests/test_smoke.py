@@ -54,13 +54,12 @@ class TestSmoke:
     
     @pytest.mark.asyncio
     async def test_coach_handles_stop_command(self, mock_cli):
-        """Test evaluation command."""
+        """Test stop command handling."""
         # Add a message first
         await mock_cli.process_input("Hello")
-        
-        # Now stop
+        # Now stop - returns empty string and prints to stdout
         response = await mock_cli.process_input("stop")
-        assert "evaluation complete" in response.lower()
+        assert response == ""  # Stop command returns empty string
     
     @pytest.mark.asyncio
     async def test_coach_agent_request(self, mock_cli):

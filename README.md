@@ -1,236 +1,255 @@
-# Diary Coach - Multi-Agent Text-First Coaching System
+# The Daily Coach - Multi-Agent Personal Transformation System
 
-A sophisticated multi-agent conversational AI system designed to provide personalized coaching through text-based interactions, with comprehensive conversation evaluation across 7 coaching dimensions.
+A sophisticated multi-agent AI system that orchestrates natural cognitive strengths across voice and text modalities to help you identify and solve your most important daily challenges through personalized coaching conversations.
 
-## 🚀 Quick Start - Try the Prototype
+## 🌟 Product Vision
+
+The Daily Coach transforms how people solve their most pressing problems by leveraging the fundamental insight that different communication modalities serve different cognitive purposes. Voice unlocks exploration and rapid context gathering. Writing crystallizes insights into actionable wisdom. The magic happens in their strategic interplay.
+
+### Three-Phase Architecture
+
+**Phase 1: Quick Problem Identification**  
+Rapid, conversational problem surfacing to identify the one thing that, if solved today, would create the most momentum.
+
+**Phase 2: Deep Coaching Session**  
+Exploratory dialogue that builds rich context through natural conversation, probing questions, and surfacing relevant past experiences.
+
+**Phase 3: Comprehensive Written Report**  
+All context and insights synthesized into a carefully crafted document integrating personal values, professional context, and conversation history into clear, actionable insights.
+
+## 🚀 Quick Start
 
 ```bash
-# Set up your environment
+# Clone and set up
+git clone https://github.com/yourusername/diary-coach.git
+cd diary-coach
+python -m venv venv
 source venv/bin/activate
+pip install -r requirements.txt
 
-# Ensure you have your Anthropic API key
+# Configure environment
 echo "ANTHROPIC_API_KEY=your_key_here" >> .env
 
-# Run the coaching system (default: multi-agent mode)
+# For multi-agent features (optional):
+echo "TODOIST_API_TOKEN=your_todoist_token" >> .env
+echo "LANGSMITH_API_KEY=your_langsmith_key" >> .env
+
+# Run the coach
 python run_multi_agent.py
-
-# For single-agent mode (simpler, faster, no external integrations):
-DISABLE_MULTI_AGENT=true python run_multi_agent.py
 ```
 
-## 💬 How to Use
-
-Start a natural conversation with your AI coach:
+## 💬 Usage Experience
 
 ```
-🌅 Diary Coach Ready
-💡 Tips: Say 'stop', 'end conversation', or 'wrap up' to get your coaching evaluation
-   Then use 'deep report' for detailed AI analysis, or 'exit' to quit
+🌅 Daily Coach Ready
+Type 'help' for guidance, 'stop' to end session
 
 > good morning
-Good morning Michael! What's the one challenge you're ready to tackle today?
+Good morning Michael! I see you have 6 tasks due today. What's the 
+one challenge that, if solved, would create the most momentum?
 
-> I need to work on my product strategy
-That sounds important. What specifically about your product strategy needs your attention today?
+> I need to work on my product strategy but feeling overwhelmed
+I notice "Product roadmap review" is one of your tasks today. 
+What specifically about the strategy feels overwhelming right now?
 
-> wrap up
-=== Conversation Evaluation ===
-Coaching Effectiveness: 7.8/10
-Light evaluation report saved to: docs/prototype/eval_20250629_143022.md
+> stop
+=== Session Complete ===
+✅ Problem identified: Product strategy overwhelm
+✅ Root cause discovered: Too many competing priorities
+✅ Action plan created: Focus on user feedback integration first
 
-> deep report  # Optional: enhanced AI analysis
-Report upgraded with comprehensive AI reflection!
-
-> exit
-Goodbye! Have a transformative day! 🌟
+📄 Full report saved to: data/sessions/2025-07-19_session.md
 ```
 
 ## ✨ Core Features
 
-### 🤖 Intelligent Non-Directive Coaching
-- **Morning Specialization**: Time-aware coaching with morning-specific prompts and energy (6:00 AM - 11:59 AM)
-- **Client-Centered Approach**: Maintains client autonomy through powerful inquiry rather than advice-giving
-- **Context Awareness**: Maintains conversation history and builds on previous discussions
-- **Natural Interaction**: Responds to natural language without rigid command structures
-- **Flexible Architecture**: Single entry point with configurable multi-agent support
-- **Multi-Agent Features** (enabled by default):
-  - **Todoist Integration**: Accesses your real tasks and priorities
-  - **Memory Agent**: Recalls past conversations and patterns
-  - **Personal Content**: References your core beliefs and values
+### 🤖 Multi-Agent Coaching System
+- **Enhanced Coach Agent**: Orchestrates other agents during Stage 1 for rich context
+- **Memory Agent**: Recalls past conversations and identifies patterns
+- **Personal Content Agent**: Integrates your core beliefs and values
+- **MCP Agent**: Connects to external tools (Todoist, calendar, etc.)
+- **Smart Triggering**: Agents activate based on conversation context
+- **Rate Limiting**: Prevents overwhelming with excessive agent calls
 
-### 🧠 Deep Thoughts Generation
-- **Pinneable Insights**: Opus-powered analysis you'll want to revisit throughout the day
-- **Breakthrough Thinking**: Transforms conversations into actionable insights
-- **Comprehensive Analysis**: Includes evaluation summaries and full conversation transcripts
+### 🧠 Intelligent Coaching Capabilities
+- **Non-Directive Approach**: Facilitates self-discovery through powerful inquiry
+- **Morning Specialization**: Time-aware coaching adapted to morning energy
+- **Context Building**: Each conversation builds on complete personal history
+- **Values Integration**: Weaves your stated principles throughout guidance
+- **Deep Thoughts Generation**: Sonnet 4-powered synthesis for pinneable insights
 
-### 📊 Advanced 7-Dimension Evaluation System
-- **3-Tier LLM Architecture**: Strategic model selection for cost-effectiveness:
-  - **GPT-4o-mini**: Cheap testing during development (~$0.15/M tokens)
-  - **Claude Sonnet**: Standard operations and persona simulation (~$3/M tokens) 
-  - **Claude Opus**: Premium analysis for Deep Thoughts generation (~$15/M tokens)
+### 📊 Advanced Evaluation System
+- **5-Criteria Assessment** (New simplified system):
+  - A. Problem Definition & Scoping
+  - B. Crux Recognition
+  - C. Today's Specific Accomplishment
+  - D. Multiple Paths
+  - E. Core Beliefs & Values
+- **LangSmith Integration**: Full conversation tracing and evaluation
+- **Continuous Improvement**: Each session evaluated for coaching effectiveness
 
-- **7 Coaching Dimensions Measured**:
-  1. **Problem Significance Assessment**: Evaluates how effectively the coach helps clients assess problem importance, urgency, and priority
-  2. **Task Concretization**: Measures transformation of vague goals into specific, measurable, actionable tasks
-  3. **Solution Diversity**: Assesses facilitation of creative thinking and multiple solution generation
-  4. **Crux Identification**: Evaluates discovery of root causes and high-impact leverage points
-  5. **Crux Solution Exploration**: Measures depth of solutions targeting identified core issues
-  6. **Belief System Integration**: Assesses examination and transformation of limiting beliefs
-  7. **Non-Directive Coaching Style**: Evaluates adherence to client autonomy and self-discovery principles
+### 🔒 Privacy & Control
+- **Local Data Storage**: All conversations stored on your machine
+- **Data Portability**: Export and move your data between AI providers
+- **No Vendor Lock-in**: Open architecture works with multiple LLM providers
+- **Transparent Processing**: See exactly how your data is used
 
-- **Standardized Evaluation Framework**:
-  - 5-point rating scale with detailed rubrics
-  - Step-by-step evaluation process
-  - JSON output with scores, reasoning, strengths, and improvements
-  - Comprehensive behavioral analysis across all dimensions
+## 🏗️ Architecture
 
-### 🎯 Natural User Experience
-- **Multiple End Commands**: Natural ways to end conversations:
-  - `stop`, `stop here`, `end conversation`, `wrap up`, `that's enough`, `finish`
-  - `go to report`, `generate report`, `evaluate`, `evaluation`, `end session`
-- **Progressive Enhancement**: Start with light analysis, optionally enhance with deep AI insights
-- **Conversation Transcripts**: Full conversation history included in all reports
+### Multi-Agent Orchestration
+```
+User Input → Enhanced Coach → Agent Registry → Specialized Agents
+                ↓                                      ↓
+            Stage Detection                    Context Gathering
+                ↓                                      ↓
+            Rich Response ← Context Enhancement ← Agent Responses
+```
 
-### 📈 Quality Assurance
-- **Automated Testing**: 35+ tests covering all system components
-- **PM Persona Testing**: 3 enhanced personas test coaching against different resistance patterns:
-  - **ControlFreak**: Shows procrastination and fear of imperfection
-  - **FrameworkRigid**: Intellectual thinking over action
-  - **LegacyBuilder**: Vision obsession over daily execution
-- **Task-Specific Scenarios**: Concrete problem identification scenarios (file organization, user research, team communication)
-- **Conversation Generation**: Automated creation of realistic coaching scenarios for evaluation
-
-## 🏗️ Architecture Overview
-
-The system employs an **event-driven architecture** with specialized components:
-
-### Core Components
-- **Coach Agent**: Main conversational AI using Michael's coaching prompt and non-directive style
-- **Enhanced CLI**: Production-ready interface with natural language command processing
-- **Evaluation System**: 7-dimension behavioral analysis and performance tracking
-- **LLM Service**: Async wrapper for Anthropic API with cost tracking and retry logic
-
-### Evaluation Framework
-- **7 Behavioral Analyzers**: LLM-powered assessment across coaching dimensions
-- **Performance Tracker**: Response time monitoring and optimization insights
-- **Report Generator**: Markdown reports with conversation transcripts and AI reflection
-- **Persona Evaluator**: Tests coaching against realistic resistance patterns
+### Key Components
+- **MultiAgentCLI**: Unified entry point with configurable modes
+- **Agent Registry**: Dynamic agent discovery and coordination
+- **BaseAgent Interface**: Standardized agent communication protocol
+- **LangSmith Tracing**: Comprehensive observability for all interactions
 
 ## 📁 Project Structure
 
 ```
 diary-coach/
-├── src/                      # Source code
-│   ├── main.py              # Application entry point
-│   ├── agents/              # Coaching agent implementation
+├── run_multi_agent.py       # Main entry point
+├── src/
+│   ├── agents/              # Multi-agent implementations
+│   │   ├── coach_agent.py   # Enhanced coach with Stage 1 integration
+│   │   ├── memory_agent.py  # Conversation history and patterns
+│   │   ├── mcp_agent.py     # External tool integration
+│   │   └── registry.py      # Agent discovery system
 │   ├── interface/           # CLI and user interaction
-│   ├── evaluation/          # 7-dimension analysis system
-│   ├── services/           # External service integrations
-│   ├── events/             # Event-driven architecture
-│   └── persistence/        # Data storage
-├── tests/                   # Comprehensive test suite
-├── docs/                   # Documentation and session logs
-│   ├── status.md          # Current project status
-│   ├── session_*/         # Development session logs
-│   └── prototype/         # Generated evaluation reports
-└── venv/                  # Python virtual environment
+│   ├── evaluation/          # 5-criteria assessment system
+│   ├── config/              # Centralized configurations
+│   └── utils/               # Shared utilities
+├── tests/
+│   ├── agents/              # Agent-specific tests
+│   ├── integration/         # Multi-agent integration tests
+│   └── test_smoke.py        # Fast smoke tests (<1 second)
+├── scripts/
+│   ├── run_tests.py         # Smart test runner
+│   └── run_smoke_tests.py   # Ultra-fast test suite
+└── docs/
+    ├── status.md            # Current project state
+    ├── ProductVision.md     # Strategic product direction
+    └── session_*/           # Development session logs
 ```
 
 ## 🧪 Testing
 
 ```bash
-# Run all tests
+# Run fast tests only (default)
 pytest
 
+# Run all tests including slow integration tests
+pytest --slow
+
+# Run smoke tests (ultra-fast, <1 second)
+python scripts/run_smoke_tests.py
+
 # Run specific test categories
-pytest tests/interface/           # User interface tests
-pytest tests/evaluation/          # Evaluation system tests
-pytest tests/integration/         # End-to-end tests
+pytest tests/agents/ -v
+pytest tests/integration/ -v --slow
+
+# Run with coverage
+pytest --cov=src --cov-report=html
 ```
 
-## 📊 Development Approach
+### Test Categories
+- **Unit Tests**: Fast, isolated component tests (default)
+- **Integration Tests**: Multi-agent interaction tests (marked @pytest.mark.slow)
+- **Smoke Tests**: Critical path validation (<1 second total)
+- **E2E Tests**: Full system workflows with real LLMs
 
-This project follows **three core principles**:
+## 📈 Current Status: Session 8.9 Complete
 
-### 1. **Compartmentalization Through Incremental Development**
-Minimize cognitive load by breaking work into small, testable increments. Each session is decomposed into bite-sized tasks that can be independently tested and validated.
+### ✅ Multi-Agent System Operational
+- **Enhanced Coach**: Successfully integrates Memory, Personal Content, and MCP agents
+- **Real Todoist Integration**: Fetches and displays tasks with smart filtering
+- **Conversation Persistence**: Auto-saves all sessions for memory agent
+- **LangSmith Tracing**: Full observability for multi-agent interactions
+- **Test Suite Health**: All tests passing after comprehensive fixes
 
-### 2. **Continuous Improvement Through Evaluation**
-Set up testable evaluations to measure and improve AI collaboration effectiveness. Track what works, what doesn't, and refine based on empirical results.
-
-### 3. **Learning While Building**
-Transform development into education through comprehensive documentation. Every session generates logs and learning opportunities.
-
-## 📈 Current Status: Enhanced Evaluation System Live
-
-✅ **Production-Ready 7-Dimension Evaluation**
-- Natural language command processing
-- Comprehensive coaching effectiveness measurement
-- Two-tier analysis (light + deep reports)
-- Standardized JSON evaluation outputs
-- User-friendly CLI flow
-
-✅ **Professional Coaching Standards**
-- Non-directive coaching methodology
-- Root cause and leverage point identification
-- Belief system transformation support
-- Client autonomy and self-discovery focus
-
-✅ **Robust Technical Foundation**
-- Event-driven architecture ready for scaling
-- Comprehensive test coverage (80+ tests passing)
-- Production-ready error handling
-- Async operations with performance monitoring
-- Docker/Kubernetes deployment ready
+### 📊 System Metrics
+- **Test Coverage**: 30+ test files, 200+ tests passing
+- **Code Quality**: All files pass flake8 with 88-char limit
+- **Architecture**: Clean separation with no legacy code
+- **Performance**: Smoke tests run in <1 second
 
 ## 🔜 Next Steps
 
-- **Session 4**: Scale to Redis event bus for multi-user performance
-- **Session 5**: Multi-agent routing and orchestration
-- **Session 6**: Specialized coaching agents and personality variants
+### Immediate Priorities
+- [ ] Implement Stage 2 and Stage 3 coaching transitions
+- [ ] Add Deep Thoughts evaluation to multi-agent CLI
+- [ ] Create eval command for persona-based testing
+- [ ] Enhanced reporting with multi-agent metrics
 
-## 🔧 Development Requirements
+### Future Enhancements
+- [ ] Voice integration for Phase 1 exploration
+- [ ] Caching layer for external API calls
+- [ ] Agent health monitoring dashboard
+- [ ] User preference management
+- [ ] Extended MCP server support
+- [ ] Mobile companion app
 
-- **Python 3.13+**
-- **Anthropic API Key** (for Claude integration)
-- **Virtual Environment** (included in repo)
+## 🛠️ Configuration
+
+### Environment Variables
+```bash
+# Required
+ANTHROPIC_API_KEY=sk-ant-...
+
+# Optional for multi-agent features
+TODOIST_API_TOKEN=...         # From Todoist Settings > Integrations
+LANGSMITH_API_KEY=...         # For conversation tracing
+LANGSMITH_PROJECT=diary-coach # Project name in LangSmith
+
+# Optional modes
+DISABLE_MULTI_AGENT=true      # Use simple single-agent mode
+```
+
+### Agent Configuration
+Agents can be configured via `src/config/agents.yaml`:
+- Trigger patterns
+- Rate limits
+- Context priorities
+- Model selection
 
 ## 📚 Documentation
 
-- **[Project Status](docs/status.md)**: Detailed current state and achievements
-- **[Development Roadmap](docs/Roadmap.md)**: Multi-session development plan
-- **[Session Logs](docs/session_*)**: Detailed development session documentation
-- **[Learning Ledger](docs/learning_ledger.md)**: Knowledge tracking and gaps
-- **[Evaluation Templates](docs/Evaluations_new.md)**: Detailed 7-dimension coaching evaluation criteria
+- **[Project Status](docs/status.md)**: Detailed development history
+- **[Product Vision](docs/ProductVision.md)**: Strategic product direction
+- **[MCP Integration Guide](docs/MCP_howto.md)**: MCP server integration
+- **[Session Logs](docs/session_*)**: Development session documentation
+- **[CLAUDE.md](CLAUDE.md)**: AI development guidelines
 
-## 🎯 Project Goals
+## 🎯 Core Development Principles
 
-Build a sophisticated coaching system that:
-- Provides genuinely helpful non-directive coaching conversations
-- Continuously improves through 7-dimension behavioral analysis
-- Maintains natural, human-like interaction patterns
-- Supports client autonomy and self-discovery
-- Scales to support multiple users and specialized coaching domains
-- Serves as a learning platform for AI-powered conversation design
+1. **Working Software Only**: Every session produces runnable code
+2. **Tests Define Success**: Write tests first, implementation follows
+3. **Documentation Is Code**: Keep docs in sync or the build is broken
+4. **Privacy First**: User data sovereignty is non-negotiable
+5. **Quality Over Quantity**: One profound insight beats ten observations
+
+## 🤝 Contributing
+
+This project follows strict TDD principles:
+1. Write failing tests first
+2. Implement minimal code to pass
+3. Lint immediately with `python -m flake8`
+4. Update documentation with changes
+5. Ensure all tests pass before committing
 
 ---
 
-**Ready to start coaching?** 
+**Ready to transform your daily problem-solving?**
 
-For standard coaching:
 ```bash
-source venv/bin/activate && python -m src.main
+python run_multi_agent.py
 ```
 
-For multi-agent coaching with Todoist, memory, and personal content:
-```bash
-source venv/bin/activate && python run_multi_agent.py
-```
-
-Experience:
-- **Non-Directive Excellence**: Client-centered coaching that facilitates self-discovery
-- **7-Dimension Analysis**: Comprehensive evaluation across all coaching effectiveness metrics
-- **Deep Thoughts Reports**: Pinneable insights generated with Claude Opus 
-- **Smart Evaluation**: Cost-optimized analysis using the right model for each task
-- **Natural Commands**: Say "stop" for evaluation, "deep report" for comprehensive insights
-- **Multi-Agent Intelligence**: Real task data, conversation memory, and personal values integration
+Experience the power of multi-modal coaching that helps you identify and tackle what truly matters today.

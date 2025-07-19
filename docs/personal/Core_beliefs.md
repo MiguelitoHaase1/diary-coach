@@ -169,6 +169,7 @@ Personal excellence emerges from maintaining beginner's mind and prioritizing le
 - **Cultivate Beginner's Mind**: Approach creative work with fresh eyes and curiosity, questioning assumptions
 - **Learning Over Being Right**: Value curiosity and growth over defending positions; treat all criticism as valuable data
 - **Notice story moments**: Train attention to detail, empathy, and storytelling by noticing and recording concrete moments that seem significant
+- **When learning: Don't settle with cheatcodes**: When I try to learn, don't just learn the buzzwords and cheatcodes/party tricks that make me SEEM smart (pretending to learn). Strive for ACTUAL painful learning.
 
 ---
 

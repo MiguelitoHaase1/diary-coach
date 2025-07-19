@@ -142,7 +142,7 @@ async def test_get_tasks_today_filter(mock_mcp_node, mock_todos):
     response = await agent.handle_request(request)
     
     assert "CURRENT TASKS:" in response.content
-    assert "[High Priority] Finish Q4 planning" in response.content
+    assert "🔴 [DUE TODAY] Finish Q4 planning" in response.content
     assert "Due Today: 1" in response.content
     assert response.metadata["tasks_found"] == 1
     
@@ -226,17 +226,17 @@ async def test_task_formatting(mock_mcp_node, mock_todos):
     response = await agent.handle_request(request)
     
     # Check formatting
-    assert "[High Priority]" in response.content
+    assert "🔴 [DUE TODAY] Finish Q4 planning" in response.content  # Due today takes precedence
     assert "[Medium Priority]" in response.content
     assert "Project: Work" in response.content
-    assert f"Due: {datetime.now().date().isoformat()}" in response.content
+    # Due date is not shown for tasks due today
     
     # Low priority task should not have priority marker
     assert "Buy groceries" in response.content
     assert "[Low Priority] Buy groceries" not in response.content
     
     # Check metadata
-    assert response.metadata["high_priority_count"] == 1
+    assert response.metadata["high_priority_count"] == 0  # Due today takes precedence
     assert response.metadata["due_today_count"] == 1
     assert response.metadata["tasks_shown"] == 3
 
