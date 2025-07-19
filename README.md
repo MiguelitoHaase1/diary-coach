@@ -11,11 +11,11 @@ source venv/bin/activate
 # Ensure you have your Anthropic API key
 echo "ANTHROPIC_API_KEY=your_key_here" >> .env
 
-# For standard coaching (without multi-agent support):
-python -m src.main
-
-# For multi-agent coaching (with Todoist, memory, and personal content):
+# Run the coaching system (default: multi-agent mode)
 python run_multi_agent.py
+
+# For single-agent mode (simpler, faster, no external integrations):
+DISABLE_MULTI_AGENT=true python run_multi_agent.py
 ```
 
 ## 💬 How to Use
@@ -52,7 +52,8 @@ Goodbye! Have a transformative day! 🌟
 - **Client-Centered Approach**: Maintains client autonomy through powerful inquiry rather than advice-giving
 - **Context Awareness**: Maintains conversation history and builds on previous discussions
 - **Natural Interaction**: Responds to natural language without rigid command structures
-- **Multi-Agent Support** (via `run_multi_agent.py`):
+- **Flexible Architecture**: Single entry point with configurable multi-agent support
+- **Multi-Agent Features** (enabled by default):
   - **Todoist Integration**: Accesses your real tasks and priorities
   - **Memory Agent**: Recalls past conversations and patterns
   - **Personal Content**: References your core beliefs and values

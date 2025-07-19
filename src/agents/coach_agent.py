@@ -3,7 +3,7 @@
 from typing import List, Dict, Any, Optional
 from datetime import datetime, time
 from src.agents.base import BaseAgent, AgentCapability, AgentRequest, AgentResponse
-from src.events.schemas import UserMessage, AgentResponse as LegacyAgentResponse
+from src.events.schemas import UserMessage
 from src.services.llm_service import AnthropicService
 from src.agents.prompts import get_coach_system_prompt, get_coach_morning_protocol
 from src.orchestration.mcp_todo_node import MCPTodoNode
@@ -172,79 +172,6 @@ class DiaryCoach(BaseAgent):
                 return content
         return None
 
-    async def process_message(self, message: UserMessage) -> LegacyAgentResponse:
-        """Process a user message and generate a response."""
-        try:
-            # Add message to history
-            self.message_history.append({
-                "role": "user",
-                "content": message.content
-            })
-
-            # Get todo context if relevant
-            todo_context = await self._get_todo_context(message)
-
-            # Get system prompt with embedded context
-            system_prompt = self._get_system_prompt_with_context(todo_context)
-
-            # Prepare messages for LLM service
-            messages = self.message_history[:-1] + [
-                {"role": "user", "content": message.content}
-            ]
-
-            # Generate response using LLM service
-            response_content = await self.llm_service.generate_response(
-                messages=messages,
-                system_prompt=system_prompt,
-                max_tokens=2000,
-                temperature=0.7
-            )
-
-            # Update conversation state and extract info
-            if self._is_morning_time():
-                if (self.conversation_state == "general" and
-                        "morning" in message.content.lower()):
-                    self.conversation_state = "morning"
-                # Extract challenge and value regardless of when they appear
-                extracted_challenge = self._extract_morning_info(
-                    message.content, "challenge"
-                )
-                if extracted_challenge and not self.morning_challenge:
-                    self.morning_challenge = extracted_challenge
-                extracted_value = self._extract_morning_info(
-                    message.content, "value"
-                )
-                if extracted_value and not self.morning_value:
-                    self.morning_value = extracted_value
-
-            # Update history with response
-            self.message_history.append({
-                "role": "assistant",
-                "content": response_content
-            })
-
-            # Create response
-            response = LegacyAgentResponse(
-                agent_name="diary_coach",
-                content=response_content,
-                response_to=message.message_id,
-                conversation_id=message.conversation_id
-            )
-
-            return response
-
-        except Exception:
-            # Error handling - return fallback response
-            error_response = LegacyAgentResponse(
-                agent_name="diary_coach",
-                content=(
-                    "I'm having trouble processing your message right now. "
-                    "Could you try again?"
-                ),
-                response_to=message.message_id,
-                conversation_id=message.conversation_id
-            )
-            return error_response
 
     def reset_conversation(self):
         """Reset conversation state and history."""
@@ -268,7 +195,13 @@ class DiaryCoach(BaseAgent):
             AgentResponse with the result or error
         """
         try:
-            # Convert AgentRequest to UserMessage for internal processing
+            # Add message to history
+            self.message_history.append({
+                "role": "user",
+                "content": request.query
+            })
+
+            # Create UserMessage for todo context checking
             user_message = UserMessage(
                 content=request.query,
                 user_id=request.context.get("user_id", "michael"),
@@ -283,13 +216,52 @@ class DiaryCoach(BaseAgent):
                 )
             )
 
-            # Process through existing method
-            legacy_response = await self.process_message(user_message)
+            # Get todo context if relevant
+            todo_context = await self._get_todo_context(user_message)
 
-            # Convert back to new AgentResponse format
+            # Get system prompt with embedded context
+            system_prompt = self._get_system_prompt_with_context(todo_context)
+
+            # Prepare messages for LLM service
+            messages = self.message_history[:-1] + [
+                {"role": "user", "content": request.query}
+            ]
+
+            # Generate response using LLM service
+            response_content = await self.llm_service.generate_response(
+                messages=messages,
+                system_prompt=system_prompt,
+                max_tokens=2000,
+                temperature=0.7
+            )
+
+            # Update conversation state and extract info
+            if self._is_morning_time():
+                if (self.conversation_state == "general" and
+                        "morning" in request.query.lower()):
+                    self.conversation_state = "morning"
+                # Extract challenge and value regardless of when they appear
+                extracted_challenge = self._extract_morning_info(
+                    request.query, "challenge"
+                )
+                if extracted_challenge and not self.morning_challenge:
+                    self.morning_challenge = extracted_challenge
+                extracted_value = self._extract_morning_info(
+                    request.query, "value"
+                )
+                if extracted_value and not self.morning_value:
+                    self.morning_value = extracted_value
+
+            # Update history with response
+            self.message_history.append({
+                "role": "assistant",
+                "content": response_content
+            })
+
+            # Create response
             return AgentResponse(
                 agent_name=self.name,
-                content=legacy_response.content,
+                content=response_content,
                 metadata={
                     "conversation_state": self.conversation_state,
                     "morning_challenge": self.morning_challenge,

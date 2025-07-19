@@ -1,5 +1,6 @@
 """Enhanced Diary Coach agent with multi-agent collaboration capabilities."""
 
+import os
 from typing import List, Dict, Any, Optional, Set
 from datetime import datetime
 import logging
@@ -66,6 +67,9 @@ class EnhancedDiaryCoach(BaseAgent):
         self.agent_call_history: List[Dict[str, Any]] = []
         self.max_agent_calls_per_turn = 2  # Prevent over-calling
         self.recent_agent_calls: Set[str] = set()  # Track recent calls
+        
+        # Check if multi-agent mode is enabled
+        self.multi_agent_enabled = os.getenv("DISABLE_MULTI_AGENT", "false").lower() != "true"
 
     async def initialize(self) -> None:
         """Initialize the coach agent."""
@@ -158,6 +162,10 @@ class EnhancedDiaryCoach(BaseAgent):
         Returns:
             Agent response or None if failed
         """
+        # Return None if multi-agent is disabled
+        if not self.multi_agent_enabled:
+            return None
+            
         try:
             agent = agent_registry.get_agent(agent_name)
             if not agent:
