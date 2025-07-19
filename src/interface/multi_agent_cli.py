@@ -67,7 +67,7 @@ class MultiAgentCLI:
             self.mcp_agent = MCPAgent()
 
             # Register all agents
-            agent_registry.register_instance(coach)
+            agent_registry.register_instance(self.coach)
             agent_registry.register_instance(self.memory_agent)
             agent_registry.register_instance(self.personal_content_agent)
             agent_registry.register_instance(self.mcp_agent)
@@ -75,7 +75,7 @@ class MultiAgentCLI:
             print("🤖 Initializing Multi-Agent System...")
         else:
             # Only register the coach in single-agent mode
-            agent_registry.register_instance(coach)
+            agent_registry.register_instance(self.coach)
             print("🤖 Initializing Single-Agent Mode (Multi-agent disabled)...")
 
     async def _initialize_agents(self):
@@ -240,7 +240,7 @@ class MultiAgentCLI:
             response_content = response.content
             
             # Track performance
-            self.performance_tracker.track_response_time(time.time() - start_time)
+            await self.performance_tracker.track_response(start_time, time.time())
             
             # Add response to history
             self.conversation_history.append({
@@ -315,7 +315,7 @@ class MultiAgentCLI:
             return
             
         # Run evaluation
-        self.current_eval = await self.eval_command.evaluate_conversation(
+        self.current_eval = await self.eval_command.run_comprehensive_eval(
             self.conversation_history
         )
         

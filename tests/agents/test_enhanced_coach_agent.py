@@ -186,7 +186,7 @@ async def test_enhance_prompt_with_context(mock_llm_service):
     assert "You are a coach." in enhanced
     assert "RELEVANT PAST CONVERSATIONS:" in enhanced
     assert "CURRENT TASKS:" in enhanced
-    assert "Use this context naturally" in enhanced
+    assert "Integrate this real data naturally" in enhanced
 
 
 @pytest.mark.asyncio

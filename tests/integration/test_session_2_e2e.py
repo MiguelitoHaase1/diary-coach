@@ -6,23 +6,19 @@ import tempfile
 import shutil
 from datetime import datetime
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, AsyncMock
 
-from src.services.llm_service import AnthropicService
-from src.agents.coach_agent import DiaryCoach
-from src.interface.cli import DiaryCoachCLI
-from src.events.bus import EventBus
+from src.interface.multi_agent_cli import MultiAgentCLI
 from src.persistence.conversation_storage import ConversationStorage, Conversation
 
 
 class DiaryCoachSystem:
     """Complete diary coach system for integration testing."""
     
-    def __init__(self, llm_service, coach, cli, event_bus, conversation_storage):
-        self.llm_service = llm_service
-        self.coach = coach
+    def __init__(self, cli, conversation_storage):
         self.cli = cli
-        self.event_bus = event_bus
+        self.coach = cli.coach
+        self.event_bus = cli.event_bus
         self.conversation_storage = conversation_storage
         self.running = True
 
@@ -38,29 +34,25 @@ def temp_storage_dir():
 @pytest.fixture
 async def mock_diary_coach_system(temp_storage_dir):
     """Create complete mocked diary coach system."""
-    # Mock LLM service with realistic responses
-    llm_service = MagicMock(spec=AnthropicService)
-    llm_service.session_cost = 0.0
-    llm_service.total_cost = 0.0
-    llm_service.total_tokens = 0
+    # Set environment to disable multi-agent for simpler testing
+    os.environ["DISABLE_MULTI_AGENT"] = "true"
     
-    # Create coach with mocked LLM
-    coach = DiaryCoach(llm_service=llm_service)
+    # Create CLI which will create its own coach and event bus
+    cli = MultiAgentCLI()
     
-    # Create event bus
-    event_bus = EventBus()
-    
-    # Create CLI
-    cli = DiaryCoachCLI(coach=coach, event_bus=event_bus)
+    # Mock the LLM service in the coach
+    mock_llm = MagicMock()
+    mock_llm.generate_response = AsyncMock(return_value="I hear you. Tell me more.")
+    mock_llm.session_cost = 0.0
+    mock_llm.total_cost = 0.0
+    mock_llm.total_tokens = 0
+    cli.coach.llm_service = mock_llm
     
     # Create conversation storage
     conversation_storage = ConversationStorage(base_path=temp_storage_dir)
     
     return DiaryCoachSystem(
-        llm_service=llm_service,
-        coach=coach,
         cli=cli,
-        event_bus=event_bus,
         conversation_storage=conversation_storage
     )
 
@@ -72,26 +64,17 @@ async def real_diary_coach_system(temp_storage_dir):
     if not api_key:
         pytest.skip("ANTHROPIC_API_KEY not set - skipping real API tests")
     
-    # Real LLM service
-    llm_service = AnthropicService(api_key=api_key)
+    # Set environment to disable multi-agent for simpler testing
+    os.environ["DISABLE_MULTI_AGENT"] = "true"
     
-    # Create coach with real LLM
-    coach = DiaryCoach(llm_service=llm_service)
-    
-    # Create event bus
-    event_bus = EventBus()
-    
-    # Create CLI
-    cli = DiaryCoachCLI(coach=coach, event_bus=event_bus)
+    # Create CLI which will use real API
+    cli = MultiAgentCLI()
     
     # Create conversation storage
     conversation_storage = ConversationStorage(base_path=temp_storage_dir)
     
     return DiaryCoachSystem(
-        llm_service=llm_service,
-        coach=coach,
         cli=cli,
-        event_bus=event_bus,
         conversation_storage=conversation_storage
     )
 
@@ -105,7 +88,7 @@ class TestSession2EndToEnd:
         system = mock_diary_coach_system
         
         # Mock realistic morning conversation responses
-        system.llm_service.generate_response.side_effect = [
+        system.cli.coach.llm_service.generate_response.side_effect = [
             "Good morning Michael! What's the one challenge you're ready to tackle today that could shift everything?",
             "That sounds significant. What core value do you want to fight for today? Tell me a bit more about it.",
             "That's powerful. How does fighting for your integrity feel in your body right now?"
@@ -141,7 +124,7 @@ class TestSession2EndToEnd:
         system = mock_diary_coach_system
         
         # Mock conversation responses
-        system.llm_service.generate_response.side_effect = [
+        system.cli.coach.llm_service.generate_response.side_effect = [
             "Good morning Michael! What challenge are you ready to tackle today?",
             "That's meaningful. What core value do you want to fight for today?",
             "Good evening Michael! How did being more present with your family actually unfold today?",
@@ -166,12 +149,12 @@ class TestSession2EndToEnd:
         system = mock_diary_coach_system
         
         # Mock responses
-        system.llm_service.generate_response.side_effect = [
+        system.cli.coach.llm_service.generate_response.side_effect = [
             "Good morning Michael! What's your challenge today?",
             "That sounds important. What value drives that?"
         ]
-        system.llm_service.session_cost = 0.0025
-        system.llm_service.total_tokens = 150
+        system.cli.coach.llm_service.session_cost = 0.0025
+        system.cli.coach.llm_service.total_tokens = 150
         
         # Have a conversation
         await system.cli.process_input("good morning")
@@ -183,8 +166,8 @@ class TestSession2EndToEnd:
             started_at=datetime.now(),
             messages=system.coach.message_history,
             metadata={
-                "total_tokens": system.llm_service.total_tokens,
-                "total_cost": system.llm_service.session_cost,
+                "total_tokens": system.cli.coach.llm_service.total_tokens,
+                "total_cost": system.cli.coach.llm_service.session_cost,
                 "morning_challenge": system.coach.morning_challenge
             }
         )
@@ -205,7 +188,7 @@ class TestSession2EndToEnd:
         system = mock_diary_coach_system
         
         # Mock API error
-        system.llm_service.generate_response.side_effect = Exception("API Error: Rate limited")
+        system.cli.coach.llm_service.generate_response.side_effect = Exception("API Error: Rate limited")
         
         response = await system.cli.process_input("good morning")
         assert "error" in response.lower() or "try again" in response.lower()
@@ -217,7 +200,7 @@ class TestSession2EndToEnd:
         system = mock_diary_coach_system
         
         # Mock responses that should follow style guide
-        system.llm_service.generate_response.return_value = (
+        system.cli.coach.llm_service.generate_response.return_value = (
             "That's an interesting perspective. What feels most alive about that idea right now?"
         )
         
@@ -244,12 +227,12 @@ class TestSession2EndToEnd:
         assert response.count("?") >= 1  # Should ask a question
         
         # Verify cost tracking
-        assert system.llm_service.session_cost > 0
-        assert system.llm_service.total_tokens > 0
+        assert system.cli.coach.llm_service.session_cost > 0
+        assert system.cli.coach.llm_service.total_tokens > 0
         
         print(f"Real API Response: {response}")
-        print(f"Cost: ${system.llm_service.session_cost:.4f}")
-        print(f"Tokens: {system.llm_service.total_tokens}")
+        print(f"Cost: ${system.cli.coach.llm_service.session_cost:.4f}")
+        print(f"Tokens: {system.cli.coach.llm_service.total_tokens}")
 
     @pytest.mark.integration
     @pytest.mark.asyncio
@@ -280,19 +263,19 @@ class TestSession2EndToEnd:
         system = mock_diary_coach_system
         
         # Verify all components are properly initialized
-        assert system.llm_service is not None
+        assert system.cli.coach.llm_service is not None
         assert system.coach is not None
         assert system.cli is not None
         assert system.event_bus is not None
         assert system.conversation_storage is not None
         
         # Verify coach has LLM service
-        assert system.coach.llm_service == system.llm_service
+        assert system.coach.llm_service == system.cli.coach.llm_service
         
         # Verify CLI has coach
         assert system.cli.coach == system.coach
         
         # Test component interaction
-        system.llm_service.generate_response.return_value = "Hello Michael!"
+        system.cli.coach.llm_service.generate_response.return_value = "Hello Michael!"
         response = await system.cli.process_input("test")
         assert response == "Hello Michael!"

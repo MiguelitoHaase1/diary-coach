@@ -4,7 +4,8 @@ import pytest
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock
 from src.agents.coach_agent import DiaryCoach
-from src.events.schemas import UserMessage, AgentResponse
+from src.events.schemas import UserMessage
+from src.agents.base import AgentRequest
 from src.services.llm_service import AnthropicService
 
 
@@ -30,8 +31,11 @@ class TestDiaryCoach:
             "Good morning Michael! What's the one challenge you're ready to tackle today that could shift everything?"
         )
         
-        user_message = UserMessage(content="good morning", user_id="michael", timestamp=datetime.now())
-        response = await coach.process_message(user_message)
+        response = await coach.handle_request(AgentRequest(
+            from_agent="test",
+            to_agent="coach",
+            query="good morning",
+            context={"user_id": "michael"}))
         
         # Must include name and single question
         assert "Good morning Michael!" in response.content
@@ -50,14 +54,23 @@ class TestDiaryCoach:
         
         # Morning conversation
         morning_message = UserMessage(content="good morning", user_id="michael", timestamp=datetime.now())
-        await coach.process_message(morning_message)
+        await coach.handle_request(AgentRequest(
+            from_agent="test",
+            to_agent="coach",
+            query=morning_message)
         
         challenge_message = UserMessage(content="I want to be more present with my family", user_id="michael", timestamp=datetime.now())
-        await coach.process_message(challenge_message)
+        await coach.handle_request(AgentRequest(
+            from_agent="test",
+            to_agent="coach",
+            query=challenge_message)
         
         # Evening should reference morning
         evening_message = UserMessage(content="good evening", user_id="michael", timestamp=datetime.now())
-        response = await coach.process_message(evening_message)
+        response = await coach.handle_request(AgentRequest(
+            from_agent="test",
+            to_agent="coach",
+            query=evening_message)
         
         assert "Good evening Michael!" in response.content
         # Should reference morning discussion
@@ -71,7 +84,10 @@ class TestDiaryCoach:
         )
         
         user_message = UserMessage(content="What should I focus on?", user_id="michael", timestamp=datetime.now())
-        response = await coach.process_message(user_message)
+        response = await coach.handle_request(AgentRequest(
+            from_agent="test",
+            to_agent="coach",
+            query=user_message)
         
         # Style validation
         assert "•" not in response.content
@@ -89,7 +105,10 @@ class TestDiaryCoach:
         
         # First message should set morning state
         morning_msg = UserMessage(content="good morning", user_id="michael", timestamp=datetime.now())
-        await coach.process_message(morning_msg)
+        await coach.handle_request(AgentRequest(
+            from_agent="test",
+            to_agent="coach",
+            query=morning_msg)
         
         # Check state changed to morning if it's morning time
         if coach._is_morning_time():
@@ -99,7 +118,10 @@ class TestDiaryCoach:
         
         # Challenge response - the extraction logic looks for "challenge" keyword
         challenge_msg = UserMessage(content="My challenge is to set better boundaries", user_id="michael", timestamp=datetime.now())
-        await coach.process_message(challenge_msg)
+        await coach.handle_request(AgentRequest(
+            from_agent="test",
+            to_agent="coach",
+            query=challenge_msg)
         
         # The extraction logic is basic - it only stores if "challenge" is in the content
         # This is a limitation of the current implementation, not a test failure
@@ -108,11 +130,14 @@ class TestDiaryCoach:
         
         # Value response - the extraction logic only works with "value" keyword
         value_msg = UserMessage(content="My core value is integrity", user_id="michael", timestamp=datetime.now())
-        response = await coach.process_message(value_msg)
+        response = await coach.handle_request(AgentRequest(
+            from_agent="test",
+            to_agent="coach",
+            query=value_msg)
         
         # Verify we have all 6 messages in history
         assert len(coach.message_history) == 6  # 3 user + 3 assistant messages
-        assert response.agent_name == "diary_coach"
+        assert response.agent_name == "coach"
 
     @pytest.mark.asyncio
     async def test_system_prompt_integration(self, coach, mock_llm_service):
@@ -120,7 +145,10 @@ class TestDiaryCoach:
         mock_llm_service.generate_response.return_value = "Good morning Michael!"
         
         user_message = UserMessage(content="good morning", user_id="michael", timestamp=datetime.now())
-        await coach.process_message(user_message)
+        await coach.handle_request(AgentRequest(
+            from_agent="test",
+            to_agent="coach",
+            query=user_message)
         
         # Verify the system prompt was used
         call_args = mock_llm_service.generate_response.call_args
@@ -145,10 +173,16 @@ class TestDiaryCoach:
         
         # Send two messages
         msg1 = UserMessage(content="good morning", user_id="michael", timestamp=datetime.now())
-        await coach.process_message(msg1)
+        await coach.handle_request(AgentRequest(
+            from_agent="test",
+            to_agent="coach",
+            query=msg1)
         
         msg2 = UserMessage(content="I'm struggling with focus", user_id="michael", timestamp=datetime.now())
-        await coach.process_message(msg2)
+        await coach.handle_request(AgentRequest(
+            from_agent="test",
+            to_agent="coach",
+            query=msg2)
         
         # Should have message history
         assert len(coach.message_history) == 4  # 2 user + 2 assistant messages
@@ -168,13 +202,22 @@ class TestDiaryCoach:
         ]
         
         # Morning greeting
-        await coach.process_message(UserMessage(content="good morning", user_id="michael", timestamp=datetime.now()))
+        await coach.handle_request(AgentRequest(
+            from_agent="test",
+            to_agent="coach",
+            query=UserMessage(content="good morning", user_id="michael", timestamp=datetime.now()))
         
         # Challenge identification
-        await coach.process_message(UserMessage(content="I need to have a difficult conversation", user_id="michael", timestamp=datetime.now()))
+        await coach.handle_request(AgentRequest(
+            from_agent="test",
+            to_agent="coach",
+            query=UserMessage(content="I need to have a difficult conversation", user_id="michael", timestamp=datetime.now()))
         
         # Further exploration should eventually lead to value question
-        response = await coach.process_message(UserMessage(content="I'm worried about how they'll react", user_id="michael", timestamp=datetime.now()))
+        response = await coach.handle_request(AgentRequest(
+            from_agent="test",
+            to_agent="coach",
+            query=UserMessage(content="I'm worried about how they'll react", user_id="michael", timestamp=datetime.now()))
         
         # The third response should contain the value question
         assert "value" in response.content.lower() or "fight for" in response.content.lower()
