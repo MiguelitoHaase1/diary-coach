@@ -5,6 +5,7 @@ from enum import Enum
 
 from src.services.llm_service import AnthropicService
 from src.services.openai_service import OpenAIService, OPENAI_AVAILABLE
+from src.config import get_model_for_tier, ModelProvider
 
 
 class LLMTier(Enum):
@@ -37,23 +38,33 @@ class LLMFactory:
         Raises:
             ValueError: If tier is not supported or required dependencies missing
         """
+        tier_str = tier.value
+        
         if tier == LLMTier.CHEAP:
             if not OPENAI_AVAILABLE:
                 # Fallback to cheap Anthropic model
-                return AnthropicService.create_cheap_service(api_key)
-            return OpenAIService(api_key=openai_key, model="gpt-4o-mini")
+                model = get_model_for_tier(tier_str, ModelProvider.ANTHROPIC)
+                return AnthropicService(api_key, model=model)
+            model = get_model_for_tier(tier_str, ModelProvider.OPENAI)
+            return OpenAIService(api_key=openai_key, model=model)
         
         elif tier == LLMTier.STANDARD:
-            return AnthropicService.create_standard_service(api_key)
+            model = get_model_for_tier(tier_str, ModelProvider.ANTHROPIC)
+            return AnthropicService(api_key, model=model)
         
         elif tier == LLMTier.PREMIUM:
-            return AnthropicService.create_premium_service(api_key)
+            model = get_model_for_tier(tier_str, ModelProvider.ANTHROPIC)
+            return AnthropicService(api_key, model=model)
         
         elif tier == LLMTier.O3:
             if not OPENAI_AVAILABLE:
                 # Fallback to premium Anthropic model
-                return AnthropicService.create_premium_service(api_key)
-            return OpenAIService(api_key=openai_key, model="gpt-4o")  # Use GPT-4o (fallback until o3 access granted)
+                model = get_model_for_tier("premium", ModelProvider.ANTHROPIC)
+                return AnthropicService(api_key, model=model)
+            # TODO: Switch to "o3-mini" once access is granted
+            # For now, use gpt-4o-2024-11-20 (latest available version)
+            model = get_model_for_tier("premium", ModelProvider.OPENAI)
+            return OpenAIService(api_key=openai_key, model=model)
         
         else:
             raise ValueError(f"Unsupported LLM tier: {tier}")

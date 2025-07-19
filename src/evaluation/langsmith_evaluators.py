@@ -14,6 +14,7 @@ from langsmith.evaluation import RunEvaluator
 from langsmith.schemas import Run, Example
 
 from src.services.llm_factory import LLMFactory, LLMTier
+from src.utils.json_parser import parse_llm_score
 
 
 class BaseCoachingEvaluator(RunEvaluator, ABC):
@@ -66,31 +67,9 @@ class BaseCoachingEvaluator(RunEvaluator, ABC):
             # Use higher token limit for JSON response
             result = await self.llm_service.generate_response(messages, max_tokens=1500)
 
-            # Extract JSON from the response (handle markdown code blocks)
-            json_str = result.strip()
-            if "```json" in json_str:
-                json_str = json_str.split("```json")[1].split("```")[0].strip()
-            elif "```" in json_str:
-                json_str = json_str.split("```")[1].split("```")[0].strip()
-
-            # Parse JSON response
-            try:
-                parsed = json.loads(json_str)
-            except json.JSONDecodeError:
-                # Try to extract JSON object from text
-                import re
-                # More robust regex to match JSON objects with nested content
-                json_match = re.search(r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}', result, re.DOTALL)
-                if json_match:
-                    json_text = json_match.group()
-                    # Clean up any control characters
-                    json_text = json_text.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
-                    parsed = json.loads(json_text)
-                else:
-                    raise ValueError("Could not parse JSON from response")
-
-            # Ensure score is float
-            score = float(parsed.get("score", 0))
+            # Use centralized JSON parser
+            parsed = parse_llm_score(result)
+            score = parsed["score"]
 
             return {
                 "key": self.key,

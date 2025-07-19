@@ -11,8 +11,11 @@ source venv/bin/activate
 # Ensure you have your Anthropic API key
 echo "ANTHROPIC_API_KEY=your_key_here" >> .env
 
-# Run the coaching prototype
+# For standard coaching (without multi-agent support):
 python -m src.main
+
+# For multi-agent coaching (with Todoist, memory, and personal content):
+python run_multi_agent.py
 ```
 
 ## 💬 How to Use
@@ -49,6 +52,10 @@ Goodbye! Have a transformative day! 🌟
 - **Client-Centered Approach**: Maintains client autonomy through powerful inquiry rather than advice-giving
 - **Context Awareness**: Maintains conversation history and builds on previous discussions
 - **Natural Interaction**: Responds to natural language without rigid command structures
+- **Multi-Agent Support** (via `run_multi_agent.py`):
+  - **Todoist Integration**: Accesses your real tasks and priorities
+  - **Memory Agent**: Recalls past conversations and patterns
+  - **Personal Content**: References your core beliefs and values
 
 ### 🧠 Deep Thoughts Generation
 - **Pinneable Insights**: Opus-powered analysis you'll want to revisit throughout the day
@@ -207,10 +214,22 @@ Build a sophisticated coaching system that:
 
 ---
 
-**Ready to start coaching?** Run `source venv/bin/activate && python -m src.main` and experience:
+**Ready to start coaching?** 
 
+For standard coaching:
+```bash
+source venv/bin/activate && python -m src.main
+```
+
+For multi-agent coaching with Todoist, memory, and personal content:
+```bash
+source venv/bin/activate && python run_multi_agent.py
+```
+
+Experience:
 - **Non-Directive Excellence**: Client-centered coaching that facilitates self-discovery
 - **7-Dimension Analysis**: Comprehensive evaluation across all coaching effectiveness metrics
 - **Deep Thoughts Reports**: Pinneable insights generated with Claude Opus 
 - **Smart Evaluation**: Cost-optimized analysis using the right model for each task
 - **Natural Commands**: Say "stop" for evaluation, "deep report" for comprehensive insights
+- **Multi-Agent Intelligence**: Real task data, conversation memory, and personal values integration

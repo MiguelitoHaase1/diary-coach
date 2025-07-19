@@ -1,12 +1,132 @@
 # Diary Coach Project Status
 
-## Current Status: Session 7.2 Complete – LangSmith Evaluator Fixes
+## Current Status: Session 8.7 – LangSmith Integration & Test Infrastructure Complete
 
-**Last Updated**: July 13, 2025
+**Last Updated**: July 19, 2025
 
 ## Project Overview
 
 Multi-agent text-first coaching system with eventual voice integration. Uses a Test-Driven Development (TDD) approach with comprehensive conversation quality evaluation. Built incrementally following three core principles: Compartmentalization, Continuous Improvement, and Learning While Building.
+
+## Recent Sessions
+
+### Session 8.7: LangSmith Integration & Test Infrastructure
+
+**Duration**: 1 increment (~90 minutes)
+**Approach**: Fix LangSmith tracing and build comprehensive test infrastructure
+**Result**: Full LangSmith integration restored with 826 lines of integration tests
+
+#### Key Achievements 🎯
+* ✅ **LangSmith Tracing Fixed**: Multi-agent system now sends traces to diary-coach-debug
+* ✅ **@traceable Decorators**: Added to coach agent methods for detailed tracking
+* ✅ **Agent Communication Tracking**: All inter-agent calls logged in LangSmith
+* ✅ **Comprehensive Test Suite**: 3 test modules covering all integration scenarios
+* ✅ **Test Execution Script**: Easy test running with `run_integration_tests.sh`
+
+#### Technical Details
+- **Environment Variables**: Added LANGSMITH_API_KEY and LANGSMITH_PROJECT to .env.example
+- **Test Patterns**: Established MockLLMService and agent_system fixtures
+- **Coverage**: E2E workflows, agent collaboration, LangSmith tracking
+- **Async Testing**: All tests use @pytest.mark.asyncio pattern
+- **Clean Code**: All files pass flake8 linting with 88-char limit
+
+### Session 8.6: Multi-Agent System Integration Fixes
+
+**Duration**: 1 increment (~90 minutes)
+**Approach**: Debug and fix multi-agent system integration issues
+**Result**: Fully operational multi-agent coaching with real Todoist tasks
+
+#### Key Achievements 🎯
+* ✅ **Morning Context Fixed**: Coach responds to "good morning" regardless of time
+* ✅ **Todoist Integration Working**: Successfully fetches and displays 119 tasks
+* ✅ **Date Filtering Fixed**: Properly identifies 6 tasks due today
+* ✅ **Task Display Enhanced**: Due-today tasks highlighted with 🔴 marker
+* ✅ **Import Errors Resolved**: Fixed CLI initialization and factory methods
+
+#### Technical Details
+- **Context Detection**: Uses greeting patterns instead of system clock
+- **Date Field Handling**: Supports both `date` and `due.date` field structures
+- **Smart Filtering**: Detects general queries ("my todos") vs specific searches
+- **Debug Logging**: Comprehensive MCP debug output for troubleshooting
+- **Documentation**: Created multi-agent setup guide with prerequisites
+
+### Session 8.5: Enhanced Coach Agent with Stage 1 Integration
+
+**Duration**: 2 increments (~2 hours)
+**Approach**: Create enhanced coach that calls other agents during Stage 1
+**Result**: Coach successfully integrates Memory, Personal Content, and MCP agents
+
+#### Key Achievements 🎯
+* ✅ **Enhanced Coach Implementation**: New coach with multi-agent capabilities
+* ✅ **Agent Trigger Logic**: Smart detection of when to call each agent
+* ✅ **Context Injection**: Agent responses properly enhance coach prompts
+* ✅ **Rate Limiting**: Prevents excessive agent calls (max 2 per turn)
+* ✅ **CLI Integration**: Multi-agent CLI with initialization sequence
+
+#### Technical Details
+- **Agent Registry**: All agents register for discovery
+- **Request/Response Pattern**: Standardized inter-agent communication
+- **Context Enhancement**: Agent data prominently marked in prompts
+- **Trigger Keywords**: Specific patterns activate each agent type
+- **Debug Interface**: Shows which agents were consulted
+
+### Session 8.2: Memory Agent Implementation with Conversation Saving
+
+**Duration**: 1 increment (~45 minutes)
+**Approach**: Implement Memory Agent with automatic conversation persistence
+**Result**: Fully functional Memory Agent with conversation saving and DeepThoughts import
+
+#### Key Achievements 🎯
+* ✅ **Conversation Auto-Save**: Enhanced CLI saves all conversations on stop command
+* ✅ **DeepThoughts Import**: Extracted 2 historical conversations from prototype files
+* ✅ **Memory Agent Tested**: All 4 test scenarios passing with real data
+* ✅ **Pattern Analysis**: Agent extracts challenges, values, topics, and emotions
+* ✅ **Search Functionality**: Natural language queries map to specific search types
+
+#### Technical Details
+- **Storage Format**: JSON files in `data/conversations/` directory
+- **Message Format**: Includes type (user/assistant), content, and timestamp
+- **Pattern Extraction**: Analyzes for challenges, values, emotions, and topics
+- **Search Algorithm**: Relevance scoring based on term matches
+- **Error Handling**: Gracefully handles missing transcripts in legacy files
+
+### Session 8.0: Pre-Session 8 Test Failure Analysis
+
+**Duration**: 1 increment (~30 minutes)
+**Approach**: Investigate test failures from Session 7.3 refactoring
+**Result**: Clear action plan with 26 failures categorized and prioritized
+
+#### Key Findings 🔍
+* 📊 **88% Pass Rate**: 201 passing, 26 failing tests after refactoring
+* 🎯 **Root Cause**: DiaryCoach not updated to use new BaseAgent interface
+* 📝 **Prompt Mismatches**: Tests expect old "Ritual Protocol" sections
+* 🗑️ **Deleted Modules**: Several test files reference removed code
+* ✅ **Clear Path**: Only 3 critical fixes needed before Session 8
+
+#### Fix Prioritization
+- **Phase 1 (Critical)**: Update DiaryCoach inheritance, fix prompts, remove obsolete tests
+- **Phase 2 (Medium)**: Persona evaluators, core integration tests
+- **Phase 3 (Defer)**: Memory, MCP, and tracing tests (rewrite in Session 8)
+
+### Session 7.3: Pre-Session 8 Architecture Refactoring
+
+**Duration**: 1 increment (~90 minutes)
+**Approach**: Major refactoring to prepare codebase for 7-agent architecture
+**Result**: Clean, modular codebase ready for multi-agent implementation
+
+#### Key Achievements 🎯
+* ✅ **Removed Deprecated Code**: Deleted 5 eval scripts and old 7-metric system artifacts
+* ✅ **Created BaseAgent Interface**: Comprehensive agent abstraction with registry
+* ✅ **Centralized Configurations**: Model configs, prompts, and constants in dedicated modules
+* ✅ **Standardized Utilities**: Async helpers, JSON parsing, and error handling patterns
+* ✅ **Cleaned Technical Debt**: Removed incomplete LangGraph migration and mock data
+
+#### Technical Details
+- **New Modules**: `src/config/`, `src/utils/`, `src/agents/registry.py`
+- **BaseAgent**: Supports capabilities, request/response pattern, and lifecycle management
+- **Prompt System**: Enhanced with contexts, priorities, and dynamic loading
+- **Model Config**: Centralized pricing, tiers, and provider mappings
+- **Code Quality**: Fixed critical linting issues (88-char limit maintained)
 
 ## Recent Sessions
 
@@ -181,10 +301,13 @@ diary-coach/
 │   ├── status.md            # This file – project status tracking ✅
 │   ├── session_6_6/         # Session 6.6 artifacts ✅
 │   ├── session_6_7/         # Session 6.7 artifacts ✅
-│   └── session_7/           # Session 7 artifacts
-│       ├── Log_7_0_Prompt_Reorganization.md # Coach prompt refactor log ✅
-│       ├── Log_7_1_Evaluation_System_Update.md # New 5-criteria system log ✅
-│       └── Log_7_2_Evaluator_Fixes.md # LangSmith evaluator fixes log ✅
+│   ├── session_7/           # Session 7 artifacts
+│   │   ├── Log_7_0_Prompt_Reorganization.md # Coach prompt refactor log ✅
+│   │   ├── Log_7_1_Evaluation_System_Update.md # New 5-criteria system log ✅
+│   │   └── Log_7_2_Evaluator_Fixes.md # LangSmith evaluator fixes log ✅
+│   └── session_8/           # Session 8 artifacts
+│       ├── Log_8_0_Test_Failure_Analysis.md # Pre-session test analysis ✅
+│       └── Log_8_7_LangSmith_Integration_Tests.md # Test infrastructure log ✅
 ├── scripts/                 # Evaluation and testing scripts
 └── pyproject.toml          # Modern Python packaging config
 
@@ -210,8 +333,56 @@ diary-coach/
 
 ## Next Steps
 
-- Run comprehensive evaluation experiments with fixed evaluators
-- Monitor LangSmith dashboard for proper scoring distribution
-- Begin Session 7.3: Agent Architecture Foundation for parallel orchestration
-- Consider implementing direct Deep Thoughts score extraction (alternative approach)
-- Add pre-commit hooks for automatic linting
+### Multi-Agent System Complete ✅
+The multi-agent coaching system is now fully operational with:
+- ✅ Enhanced Coach Agent with Stage 1 integration
+- ✅ Memory Agent with conversation persistence
+- ✅ Personal Content Agent with core beliefs access
+- ✅ MCP Agent with Todoist integration (119 tasks, 6 due today)
+- ✅ Agent Registry for discovery and coordination
+- ✅ Multi-Agent CLI with proper initialization
+
+### Completed in Session 8.7
+- ✅ Integration tests for multi-agent interactions (826 lines of tests)
+- ✅ LangSmith tracing for multi-agent system
+- ✅ Test execution script for easy testing
+
+### Remaining Features to Integrate
+- [ ] Deep Thoughts Evaluation in multi-agent CLI
+- [ ] Eval Command for persona-based testing
+- [ ] Enhanced reporting with multi-agent metrics
+- [ ] Learning ledger automatic updates
+
+### Recommended Improvements
+- [ ] Implement caching for Todoist data to reduce API calls
+- [ ] Add user preferences for task display (show more/fewer tasks)
+- [ ] Create agent health monitoring dashboard
+- [ ] Add conversation context to improve agent relevance scoring
+- [ ] Implement Stage 2 and Stage 3 transitions
+- [ ] Add voice integration capabilities
+- [ ] Performance testing with concurrent agent calls
+
+### Usage Instructions
+```bash
+# Standard coaching (no multi-agent features)
+python -m src.main
+
+# Multi-agent coaching with Todoist, memory, and beliefs
+python run_multi_agent.py
+
+# Run integration tests
+./run_integration_tests.sh
+
+# Run specific test modules
+python -m pytest tests/integration/test_multi_agent_e2e.py -v
+python -m pytest tests/integration/test_agent_collaboration.py -v
+python -m pytest tests/integration/test_multi_agent_langsmith.py -v
+```
+
+### Required Environment Variables
+```
+ANTHROPIC_API_KEY=your_anthropic_key
+TODOIST_API_TOKEN=your_todoist_token  # Get from Todoist settings
+LANGSMITH_API_KEY=your_langsmith_key  # For tracing (optional)
+LANGSMITH_PROJECT=diary-coach-debug    # LangSmith project name
+```

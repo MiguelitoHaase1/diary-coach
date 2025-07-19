@@ -116,46 +116,88 @@ Build a multi-agent coaching system prioritizing personal experience and voice i
 - Memory persistence and intelligent recall
 - 42+ tests validating all functionality
 
-**Lessons Learned**: MCP integration attempted but proved that dedicated agent architecture (Session 7) is necessary for clean separation of concerns.
+**Lessons Learned**: MCP integration attempted but proved that dedicated agent architecture (Session 8) is necessary for clean separation of concerns.
 
-### Session 7: Parallel Multi-Agent Orchestration with MCP (4-5 hours)
+### Session 7: LangSmith Evaluator Fix & Sonnet 4 Deep Thoughts (4-5 hours) ✅
 
-**Goal**: Implement parallel orchestration with dedicated MCP agent for zero-latency context enhancement
+**Goal**: Fix the broken evaluation system and integrate Sonnet 4 for Deep Thoughts generation
 
 **Topics**:
-- Parallel orchestration pattern (fast coach path + slow context path)
-- Dedicated MCP Agent for all external data fetching
-- Progressive enhancement with streaming responses
-- Error isolation between coaching and data fetching
-- Context caching and optimization strategies
+- Debug and fix LangSmith evaluator integration issues
+- Remove hardcoded mock scores (0.6) from evaluation reports
+- Simplify from 7 evaluators to 5 focused criteria
+- Integrate Claude Sonnet 4 for Deep Thoughts generation
+- Improve JSON parsing for LLM evaluation outputs
+- Remove separate evaluation markdown files
 
 **Key Deliverables**:
-- Parallel orchestrator with immediate coach responses
-- MCP Agent handling Todoist, Calendar, and other integrations
-- Progressive context enhancement without blocking
-- Robust error handling with graceful degradation
-- Performance monitoring for both paths
+- Working LangSmith evaluators with proper aevaluate() integration
+- Robust JSON parsing handling markdown and control characters
+- Simplified 5-criteria evaluation system (A-E)
+- Claude Sonnet 4 generating enhanced Deep Thoughts reports
+- Evaluations integrated within Deep Thoughts, not separate files
+- Comprehensive evaluation how-to guide documenting lessons learned
+
+**Lessons Learned**: 
+- Never mock external services (especially LangSmith Run objects)
+- Always evaluate full conversations, not single messages
+- Use appropriate model tiers (STANDARD for evaluations)
+- Parse LLM outputs robustly with fallback patterns
+
+### Session 8: Three-Stage Multi-Agent System (4-5 hours)
+
+**Goal**: Implement sophisticated multi-agent system with staged orchestration and 6 specialized agents
+
+**Topics**:
+- Sevel-agent architecture: Coach, MCP, Orchestrator, Personal Content, Memory, Reporter, Evaluator
+- Three-stage conversation flow with progressive agent involvement
+- Coach-led initial exploration with on-demand agent calls
+- Orchestrator activation after problem identification
+- Deep report generation with multi-agent collaboration
+- Integrated evaluation within Deep Thoughts
+
+**Key Deliverables**:
+- Memory Agent: Pre-conversation context loading from past chats
+- MCP Agent: Todoist/Calendar integration with upfront sync
+- Coach Agent: Autonomous early conversation with agent-calling capability
+- Orchestrator Agent: Coordinates information gathering after problem clarity
+- Reporter agent: Writes up the final deep thinking report
+- Personal Content Agent: Accesses user's personal documentation
+- Evaluator Agent: Assesses conversation and Deep Thoughts quality
+- Define concrete triggers between phases (e.g., specific coach prompts answered)
 
 **Architecture**:
 ```
-User Message
-    ↓
-Parallel Orchestrator
-    ├─→ Coach Agent (fast path)
-    │     ↓
-    │   Immediate Response Stream
-    │
-    └─→ Context Orchestrator (slow path)
-          ├─→ Relevance Scorer
-          ├─→ MCP Agent (todos, calendar, etc.)
-          └─→ Memory Agent
-                ↓
-             Context Package
-                ↓
-         Progressive Enhancement
+UPFRONT PREPARATION:
+Memory Agent ─┐
+              ├─→ Coach Agent (pre-loaded with context)
+MCP Agent ────┘
+
+STAGE 1 - EXPLORATION (No Orchestrator):
+User ←→ Coach Agent
+         │
+         └─→ Can call: [Memory, MCP, Personal Content]
+
+STAGE 2 - FOCUSED GATHERING (Problem identified):
+User ←→ Coach Agent ←─ Orchestrator Agent
+                           │
+                           ├─→ Personal Content Agent
+                           ├─→ Memory Agent
+                           └─→ MCP Agent
+
+STAGE 3 - SYNTHESIS & EVALUATION:
+Reporter Agent → Deep Thoughts Report
+    ├─→ All Agent Inputs via orchestrator agent
+    └─→ Evaluator Agent → Scores embedded in report
 ```
 
-### Session 8: Advanced State Evolution (3-4 hours)
+**Stage Transitions**:
+- **Upfront**: Automatic context loading before conversation
+- **Stage 1 → 2**: When user identifies problem, crux, and today's task
+- **Stage 2 → 3**: After sufficient information gathering
+- **Output**: Single Deep Thoughts report with integrated evaluations
+
+### Session 9: Advanced State Evolution (3-4 hours)
 
 **Goal**: Implement multi-session state management and synthesis
 
@@ -175,7 +217,7 @@ Parallel Orchestrator
 
 ## Phase 3: Voice Revolution (9-11 hours)
 
-### Session 9: Performance Optimization for Voice (3-4 hours)
+### Session 10: Performance Optimization for Voice (3-4 hours)
 
 **Goal**: Optimize LangGraph execution for voice latency requirements
 
@@ -193,7 +235,7 @@ Parallel Orchestrator
 - Performance dashboard in LangSmith
 - Cost optimization via execution analysis
 
-### Session 10: Voice Integration Architecture (3-4 hours)
+### Session 11: Voice Integration Architecture (3-4 hours)
 
 **Goal**: Add LiveKit voice layer to LangGraph system
 
@@ -211,7 +253,7 @@ Parallel Orchestrator
 - Voice metrics in LangSmith
 - Seamless voice/text state continuity
 
-### Session 11: Voice UX Enhancement (2-3 hours)
+### Session 12: Voice UX Enhancement (2-3 hours)
 
 **Goal**: Create natural voice interactions with graph-based flow control
 
@@ -231,7 +273,7 @@ Parallel Orchestrator
 
 ## Phase 4: Production & Scale (14-16 hours)
 
-### Session 12: Evening & Weekly Synthesis (4-5 hours)
+### Session 13: Evening & Weekly Synthesis (4-5 hours)
 
 **Goal**: Create evening reflection and weekly synthesis capabilities
 
@@ -249,7 +291,7 @@ Parallel Orchestrator
 - Date selection interface for report synthesis
 - Sentiment tracking across sessions
 
-### Session 13: Production Observability (3-4 hours)
+### Session 14: Production Observability (3-4 hours)
 
 **Goal**: Complete monitoring and debugging infrastructure
 
@@ -267,7 +309,7 @@ Parallel Orchestrator
 - A/B testing framework
 - Automated error recovery
 
-### Session 14: Scale & Multi-User Support (3-4 hours)
+### Session 15: Scale & Multi-User Support (3-4 hours)
 
 **Goal**: Production deployment with concurrent users
 
@@ -285,7 +327,7 @@ Parallel Orchestrator
 - Cost tracking per user/session
 - Load test results with bottleneck analysis
 
-### Session 15: Continuous Learning System (3-4 hours)
+### Session 16: Continuous Learning System (3-4 hours)
 
 **Goal**: Build feedback loops for system improvement
 
@@ -321,7 +363,7 @@ The attempted MCP integration in Session 6 revealed critical architectural requi
 3. **Testing Challenges**: Integrated MCP makes coaching logic hard to test
 4. **Error Isolation**: MCP failures shouldn't break coaching conversations
 
-### Session 7 Parallel Orchestration Benefits
+### Session 8 Parallel Orchestration Benefits
 The parallel architecture solves all Session 6 pain points:
 1. **Zero Latency**: Coach responds immediately while context loads
 2. **Progressive Enhancement**: Initial response enhanced when context arrives

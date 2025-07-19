@@ -13,5 +13,8 @@ comprehensive coaching experiences:
 """
 
 from .base import BaseAgent
+from .memory_agent import MemoryAgent
+from .personal_content_agent import PersonalContentAgent
+from .mcp_agent import MCPAgent
 
-__all__ = ["BaseAgent"]
+__all__ = ["BaseAgent", "MemoryAgent", "PersonalContentAgent", "MCPAgent"]

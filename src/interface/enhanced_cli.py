@@ -1,5 +1,7 @@
 """Enhanced CLI interface with evaluation capabilities."""
 
+import os
+import json
 import time
 from datetime import datetime
 from typing import Optional, List, Dict, Any
@@ -11,16 +13,6 @@ from src.agents.coach_agent import DiaryCoach
 from src.events.bus import EventBus
 from src.events.schemas import UserMessage
 from src.evaluation.performance_tracker import PerformanceTracker
-from src.evaluation.reporting.reporter import EvaluationReporter
-from src.evaluation.analyzers.specificity import SpecificityPushAnalyzer
-from src.evaluation.analyzers.action import ActionOrientationAnalyzer
-from src.evaluation.analyzers.morning import (
-    ProblemSelectionAnalyzer,
-    ThinkingPivotAnalyzer,
-    ExcitementBuilderAnalyzer,
-)
-from src.evaluation.analyzers.emotional import EmotionalPresenceAnalyzer
-from src.evaluation.analyzers.framework import FrameworkDisruptionAnalyzer
 from src.evaluation.reporting.deep_thoughts import DeepThoughtsGenerator
 from src.services.llm_factory import LLMTier
 from src.evaluation.eval_command import EvalCommand
@@ -40,30 +32,16 @@ class EnhancedCLI(DiaryCoachCLI):
         self.performance_tracker = PerformanceTracker()
         self.conversation_history: List[Dict[str, Any]] = []
         self.current_eval = None
-        self.evaluation_reporter = EvaluationReporter()
 
         # Initialize Rich console for markdown rendering
         self.console = Console()
 
         # Initialize Deep Thoughts generator and Eval exporter
-        # Use STANDARD tier (Claude Sonnet 4) for Deep Thoughts analysis
-        self.deep_thoughts_generator = DeepThoughtsGenerator(tier=LLMTier.STANDARD)
+        # Use PREMIUM tier (Claude Opus 4) for Deep Thoughts analysis
+        self.deep_thoughts_generator = DeepThoughtsGenerator(tier=LLMTier.PREMIUM)
 
         # Initialize comprehensive eval command
         self.eval_command = EvalCommand(coach)
-
-        # Initialize analyzers with LLM service (all 7 evaluators)
-        self.analyzers = [
-            # Morning-specific analyzers
-            ProblemSelectionAnalyzer(llm_service=coach.llm_service),
-            ThinkingPivotAnalyzer(llm_service=coach.llm_service),
-            ExcitementBuilderAnalyzer(llm_service=coach.llm_service),
-            # General analyzers
-            SpecificityPushAnalyzer(llm_service=coach.llm_service),
-            ActionOrientationAnalyzer(llm_service=coach.llm_service),
-            EmotionalPresenceAnalyzer(llm_service=coach.llm_service),
-            FrameworkDisruptionAnalyzer(llm_service=coach.llm_service),
-        ]
 
     async def process_input(self, user_input: str) -> Optional[str]:
         """Process user input with performance tracking and evaluation.
@@ -181,6 +159,11 @@ class EnhancedCLI(DiaryCoachCLI):
             print("No conversation to evaluate.")
             return
 
+        # Save conversation to disk
+        saved_path = self._save_conversation()
+        if saved_path:
+            print(f"\n💾 Conversation saved to: {saved_path}")
+
         # Display evaluation summary first
         print("\n=== Conversation Evaluation ===")
         print(f"Total Cost: ${self.get_session_cost():.4f}")
@@ -214,41 +197,21 @@ class EnhancedCLI(DiaryCoachCLI):
 
     async def _generate_in_memory_evaluation(self, user_notes: str) -> None:
         """Generate in-memory evaluation without file creation."""
-        from src.evaluation.generator import GeneratedConversation
-
-        # Convert conversation history to GeneratedConversation format
-        conversation = GeneratedConversation(
-            messages=self.conversation_history,
-            persona_type="Real User",  # Real user, not a persona
-            scenario="CLI Session",
-            timestamp=datetime.now(),
-            final_resistance_level=0.5,  # Unknown for real user
-            breakthrough_achieved=False,  # Unknown for real user
-        )
-
-        # Prepare performance data
-        performance_data = {
-            "response_times_ms": self.performance_tracker.response_times,
-            "percentile_80": self.performance_tracker.get_percentile(80),
-            "responses_under_1s_percentage": (
-                self.performance_tracker.percentage_under_threshold(1000)
-            ),
-        }
-
-        # Generate light evaluation report (in memory only)
+        # Store user notes for deep report (no actual evaluation generated)
         try:
-            self.current_eval = await self.evaluation_reporter.generate_light_report(
-                conversation=conversation,
-                user_notes=user_notes,
-                analyzers=self.analyzers,
-                performance_data=performance_data,
-            )
-
-            # Store user notes for deep report
-            self.current_eval.user_notes = user_notes
+            # Create a simple evaluation object to store user notes
+            self.current_eval = type(
+                "SimpleEval",
+                (),
+                {
+                    "user_notes": user_notes,
+                    "overall_score": self._calculate_effectiveness_score() / 10,
+                    "behavioral_scores": [],
+                },
+            )()
 
         except Exception as e:
-            print(f"Error generating evaluation: {e}")
+            print(f"Error storing evaluation notes: {e}")
             # Fallback to simple evaluation
             await self._generate_simple_evaluation()
 
@@ -388,6 +351,49 @@ class EnhancedCLI(DiaryCoachCLI):
                 score += 0.5
 
         return min(score, 10.0)
+
+    def _save_conversation(self) -> str:
+        """Save the current conversation to disk.
+
+        Returns:
+            Path to the saved conversation file
+        """
+        if not self.conversation_history:
+            return ""
+
+        # Create conversations directory if it doesn't exist
+        conversations_dir = "data/conversations"
+        os.makedirs(conversations_dir, exist_ok=True)
+
+        # Generate filename with timestamp
+        timestamp = datetime.now()
+        filename = f"conversation_{timestamp.strftime('%Y%m%d_%H%M%S')}.json"
+        filepath = os.path.join(conversations_dir, filename)
+
+        # Prepare conversation data
+        conversation_data = {
+            "conversation_id": f"session_{timestamp.strftime('%Y%m%d_%H%M')}",
+            "timestamp": timestamp.isoformat(),
+            "messages": [
+                {
+                    "type": msg["role"],
+                    "content": msg["content"],
+                    "timestamp": msg["timestamp"].isoformat()
+                }
+                for msg in self.conversation_history
+            ],
+            "metadata": {
+                "total_messages": len(self.conversation_history),
+                "session_cost": self.get_session_cost(),
+                "median_response_time": self.performance_tracker.get_median()
+            }
+        }
+
+        # Save to file
+        with open(filepath, 'w') as f:
+            json.dump(conversation_data, f, indent=2)
+
+        return filepath
 
     async def run(self) -> None:
         """Run the interactive CLI loop without per-message cost display."""

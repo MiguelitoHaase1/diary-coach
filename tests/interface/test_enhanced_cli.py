@@ -56,15 +56,7 @@ class TestEnhancedCLI:
         
         # Process stop command - should trigger evaluation but not exit
         with patch('builtins.print') as mock_print, \
-             patch.object(enhanced_cli, '_get_input', return_value="Test notes"), \
-             patch.object(enhanced_cli.evaluation_reporter, 'generate_light_report') as mock_light_report:
-            
-            # Mock the evaluation report
-            mock_eval = Mock()
-            mock_eval.save_as_markdown = Mock()
-            mock_eval.overall_score = 0.75
-            mock_eval.behavioral_scores = []
-            mock_light_report.return_value = mock_eval
+             patch.object(enhanced_cli, '_get_input', return_value="Test notes"):
             
             result3 = await enhanced_cli.process_input("stop")
             assert result3 is not None  # Stop now returns a message instead of None
@@ -78,12 +70,8 @@ class TestEnhancedCLI:
         # Test that we can now use deep report command
         with patch('builtins.print') as mock_print, \
              patch.object(enhanced_cli, '_get_input', return_value="skip"), \
-             patch.object(enhanced_cli.evaluation_reporter, 'generate_deep_report') as mock_deep_report:
-            
-            # Mock the deep evaluation report
-            mock_deep_eval = Mock()
-            mock_deep_eval.save_as_markdown = Mock()
-            mock_deep_report.return_value = mock_deep_eval
+             patch.object(enhanced_cli.deep_thoughts_generator, 'generate_deep_thoughts', return_value="Deep thoughts content"), \
+             patch.object(enhanced_cli.deep_thoughts_generator, 'get_output_filepath', return_value="test_path.md"):
             
             result4 = await enhanced_cli.process_input("deep report")
             assert result4 is not None

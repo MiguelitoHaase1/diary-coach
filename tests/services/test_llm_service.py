@@ -11,7 +11,7 @@ class TestAnthropicService:
     @pytest.mark.asyncio
     async def test_anthropic_service_basic_call(self):
         """Test basic LLM call with mocked response."""
-        service = AnthropicService(api_key="test", model="claude-3-sonnet-20240229")
+        service = AnthropicService(api_key="test", model="claude-sonnet-4-20250514")
         
         # Mock the anthropic client
         mock_response = MagicMock()

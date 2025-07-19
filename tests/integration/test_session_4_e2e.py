@@ -103,15 +103,15 @@ Consider asking yourself: what would happen if the files stayed disorganized for
         for command in test_commands:
             with patch.object(enhanced_cli, '_get_input', return_value="skip"), \
                  patch.object(enhanced_cli.deep_thoughts_generator, 'generate_deep_thoughts', new=AsyncMock(return_value="content")), \
-                 patch.object(enhanced_cli.eval_exporter, 'export_evaluation_markdown', new=AsyncMock(return_value="content")):
+                 patch.object(enhanced_cli.deep_thoughts_generator, 'generate_deep_thoughts', new=AsyncMock(return_value="content")):
                 result = await enhanced_cli.process_input(command)
                 # Should handle the command (not return an error)
                 assert result is not None
                 assert "deep" in result.lower() or "report" in result.lower()
 
     @pytest.mark.asyncio 
-    async def test_eval_export_command(self, enhanced_cli, mock_llm_service):
-        """'export eval' saves evaluation to Evals folder.""" 
+    async def test_deep_thoughts_generation(self, enhanced_cli, mock_llm_service):
+        """Deep thoughts generation after conversation.""" 
         # First have a conversation
         mock_llm_service.generate_response.side_effect = [
             "Good morning, Michael!",
@@ -121,12 +121,8 @@ Consider asking yourself: what would happen if the files stayed disorganized for
         await enhanced_cli.process_input("good morning")
         await enhanced_cli.process_input("I need help with priorities")
         
-        # Mock the evaluation exporter
-        with patch('src.evaluation.reporting.eval_exporter.EvaluationExporter') as mock_exporter:
-            mock_instance = AsyncMock()
-            mock_exporter.return_value = mock_instance
-            mock_instance.export_evaluation_markdown.return_value = "Exported content"
-            
+        # Mock the deep thoughts generator
+        with patch.object(enhanced_cli.deep_thoughts_generator, 'generate_deep_thoughts', new=AsyncMock(return_value="Deep thoughts content")):
             # Trigger stop command to generate evaluation
             with patch.object(enhanced_cli, '_get_input', return_value="Test notes"):
                 result = await enhanced_cli.process_input("stop")
@@ -134,28 +130,12 @@ Consider asking yourself: what would happen if the files stayed disorganized for
                 # Should generate evaluation
                 assert "evaluation" in result.lower()
 
-    @pytest.mark.asyncio
-    async def test_morning_analyzer_integration(self, enhanced_cli, mock_llm_service):
-        """Morning analyzers are properly integrated with evaluation system."""
-        # Mock LLM response for conversation
-        mock_llm_service.generate_response.return_value = "Good morning, Michael! What's your biggest challenge today?"
-        
-        # Verify morning analyzers are included in the CLI
-        analyzer_names = [analyzer.name for analyzer in enhanced_cli.analyzers]
-        
-        # Should include morning-specific analyzers
-        assert "ProblemSelection" in analyzer_names
-        assert "ThinkingPivot" in analyzer_names  
-        assert "ExcitementBuilder" in analyzer_names
-        
-        # Should also include general analyzers
-        assert "SpecificityPush" in analyzer_names
-        assert "ActionOrientation" in analyzer_names
-        
-        # Verify total count is correct (3 morning + 2 general = 5)
-        assert len(enhanced_cli.analyzers) == 5
-        
-        print(f"✅ All analyzers integrated: {analyzer_names}")
+    # @pytest.mark.asyncio
+    # async def test_morning_analyzer_integration(self, enhanced_cli, mock_llm_service):
+    #     """Morning analyzers are properly integrated with evaluation system."""
+    #     # This test is for the old 7-analyzer system that was removed in Session 7
+    #     # The new system uses 5 criteria integrated into Deep Thoughts
+    #     pass
 
     @pytest.mark.asyncio
     async def test_file_organization_structure(self, enhanced_cli):
@@ -181,11 +161,7 @@ Consider asking yourself: what would happen if the files stayed disorganized for
             dt_filepath = generator.get_output_filepath(datetime(2025, 1, 30, 14, 30, 45))
             assert "DeepThoughts_20250130_1430.md" in dt_filepath
             
-            # Test Eval filename  
-            from src.evaluation.reporting.eval_exporter import EvaluationExporter
-            exporter = EvaluationExporter()
-            eval_filepath = exporter.get_output_filepath(datetime(2025, 1, 30, 14, 30, 45))
-            assert "Eval_20250130_1430.md" in eval_filepath
+            # No longer test Eval filename since eval_exporter is deprecated
 
     @pytest.mark.asyncio
     async def test_morning_time_detection(self, enhanced_cli, mock_llm_service):
@@ -252,17 +228,13 @@ Consider asking yourself: what would happen if the files stayed disorganized for
 
         # Step 3: Generate deep report
         with patch.object(enhanced_cli, 'deep_thoughts_generator') as mock_dt_instance, \
-             patch.object(enhanced_cli, 'eval_exporter') as mock_exp_instance, \
              patch.object(enhanced_cli, '_get_input', return_value="skip"):
             
             mock_dt_instance.generate_deep_thoughts = AsyncMock(return_value="Deep thoughts content")
             mock_dt_instance.get_output_filepath.return_value = "docs/prototype/DeepThoughts/test.md"
-            mock_exp_instance.export_evaluation_markdown = AsyncMock(return_value="Eval content")
-            mock_exp_instance.get_output_filepath.return_value = "docs/prototype/Evals/test.md"
             
             result = await enhanced_cli.process_input("deep report")
             assert "deep" in result.lower()
 
-            # Verify both generators were called
+            # Verify deep thoughts generator was called
             mock_dt_instance.generate_deep_thoughts.assert_called_once()
-            mock_exp_instance.export_evaluation_markdown.assert_called_once()

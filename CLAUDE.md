@@ -17,7 +17,18 @@ Stale docs = broken build. Update docs with every increment or session fails.
 - **Change only what the test requires** - resist the urge to refactor, unless I explicitly ask you to --- but feel free to ask me explicitly to refactor a part if you find it useful
 - **Functions do one thing** - if you need "and" to describe it, split it
 - **88 character line limit** - readability over cleverness
-- **Lint before commit** - run `python -m flake8` and fix all issues
+- **Lint continuously** - run `python -m flake8` after EVERY file creation/edit
+- **No legacy code left behind** - see Legacy Code Prevention section below
+
+### Linting Workflow
+1. **After creating new file**: Immediately run `python -m flake8 <filename>`
+2. **After editing file**: Run linter before any tests
+3. **Fix all issues**: Don't proceed until lint passes
+4. **Common fixes**:
+   - Line too long: Split at logical points, use parentheses for continuation
+   - Trailing whitespace: Remove with `sed -i '' 's/[[:space:]]*$//' <file>`
+   - Missing newline: Add with `echo "" >> <file>`
+   - Unused imports: Remove immediately
 
 ---
 
@@ -25,7 +36,7 @@ Stale docs = broken build. Update docs with every increment or session fails.
 
 ### Start Session
 1. Read `docs/session_x/Session_x.md` 
-2. Check `docs/status.md` for current state
+2. Check `docs/status.md` for current state (potentially also check log markdowns under 'docs/session_x/...')
 3. List human setup tasks upfront:
    ```
    🔴 HUMAN SETUP REQUIRED:
@@ -38,15 +49,15 @@ Stale docs = broken build. Update docs with every increment or session fails.
 For each ~10 line increment:
 1. **Test First**: Write failing test
 2. **Code Minimal**: Just enough to pass
-3. **Log Actions**: Update `Log_x_y.md` 
+3. **Lint Immediately**: Run `python -m flake8` on new/modified files
 4. **Run Suite**: All tests must pass
+5. **Log Actions**: Update `Log_x_y.md` only after lint + tests pass
 
 ### End Session
 1. Update `docs/status.md` 
-2. Create `Dojo_x_y.md` for learning opportunities
-3. Commit with format: `feat(session-x): implement increment y`
-4. Push to GitHub
-5. List human improvement tasks thereafter:
+2. Commit with format: `feat(session-x): implement increment y`
+3. Push to GitHub
+4. List human improvement tasks thereafter:
    ```
    🔴 HUMAN SETUP REQUIRED:
    - [ ] Particular prompts to iterate on and improve: [link]
@@ -68,8 +79,7 @@ project/
 │   ├── learning_ledger.md # Your knowledge gaps/strengths
 │   └── session_x/
 │       ├── Session_x.md  # Session spec & approach
-│       ├── Log_x_y.md    # Action-by-action record
-│       └── Dojo_x_y.md   # Learning opportunity
+│       ├── Log_x_y.md    # Action-by-action record, including learning opportunities for me
 ```
 
 ### Update Rules
@@ -77,18 +87,6 @@ project/
 - **When approach changes**: Update Session_x.md and roadmap.md  
 - **When you struggle**: Note in learning_ledger.md
 
----
-
-## Dojo Format
-
-```markdown
-# Dojo Session X.Y
-
-**Context**: [What we built and what went wrong]
-**Concept**: [The principle that would have helped]
-**Value**: [Why this matters beyond this project]
-**Also Consider**: [2-3 other topics from this increment]
-```
 
 ---
 
@@ -118,6 +116,58 @@ claude --model opus      # Complex reasoning
 claude --model sonnet    # Default
 /model opus             # Switch mid-session
 ```
+
+---
+
+## Legacy Code Prevention
+
+### The Fourth Law: Clean Architecture Transitions
+When changing architecture or refactoring major components, **never leave orphaned code behind**.
+
+### What to Clean Up
+When you modify or replace code:
+1. **Tests**: Update or remove tests for deleted/changed functionality
+2. **Database schemas**: Remove unused tables, columns, or migrations
+3. **Config files**: Delete obsolete configuration entries
+4. **Documentation**: Update or remove docs for changed features
+5. **Dead imports**: Remove unused imports and dependencies
+6. **Old implementations**: Delete replaced classes, functions, modules
+7. **Mock data**: Remove test fixtures for deleted features
+
+### Clean Transition Checklist
+For every major change:
+- [ ] Grep for all references to removed components
+- [ ] Update or delete related tests
+- [ ] Remove database artifacts
+- [ ] Clean up configuration files
+- [ ] Update documentation
+- [ ] Run full test suite to catch stragglers
+- [ ] Check for orphaned files in directory structure
+
+### Examples
+```python
+# ❌ WRONG: Leaving old code commented out
+# class OldAnalyzer:  # Replaced by new system
+#     def analyze(self):
+#         pass
+
+# ✅ RIGHT: Delete it completely
+# If needed later, it's in git history
+
+# ❌ WRONG: Keeping tests for deleted features
+def test_old_analyzer():  # But OldAnalyzer is gone!
+    pass
+
+# ✅ RIGHT: Delete the test or rewrite for new system
+```
+
+### Proactive Cleanup
+Before completing any increment:
+1. Ask: "What did I replace or remove?"
+2. Search: Find all references to those items
+3. Clean: Update or delete each reference
+4. Test: Ensure nothing broke
+5. Document: Note major deletions in commit message
 
 ---
 
@@ -153,9 +203,45 @@ A more detailed description of MCP integration approaches is given in @docs/MCP_
 
 ---
 
+## Evaluation System Principles
+
+### Core Rules
+1. **Never Mock External Services**: Always use real LangSmith/evaluation infrastructure
+2. **Parse LLM Output Robustly**: Handle markdown, JSON blocks, and control characters
+3. **Evaluate Full Conversations**: Never evaluate single messages in isolation
+4. **Use Appropriate Model Tiers**: STANDARD tier (Sonnet) for evaluations, not CHEAP
+5. **Keep Criteria Focused**: 5 clear criteria > 7 complex analyzers
+
+### Implementation Pattern
+```python
+# ✅ RIGHT: Proper LangSmith integration
+results = await aevaluate(
+    target_function,
+    data=dataset_name,
+    evaluators=langsmith_evaluators,
+    experiment_prefix="coaching_eval"
+)
+
+# ❌ WRONG: Mock Run objects or hardcoded scores
+mock_run = Run(id=str(uuid.uuid4()), ...)  # Never do this
+behavioral_scores = [("Specificity", 0.6, "Mock")]  # Never hardcode
+```
+
+### JSON Parsing Pattern
+```python
+# Always handle LLM formatting quirks
+if "```json" in result:
+    json_str = result.split("```json")[1].split("```")[0]
+# Include regex fallback for embedded JSON
+```
+
+---
+
 ## Remember
 
 - **No session ends without runnable software**
 - **Documentation drift = technical debt**
 - **Small increments compound into big features**
 - **Your learning matters as much as the code**
+- **Real services over mocks, always**
+- **Clean transitions = no orphaned code**

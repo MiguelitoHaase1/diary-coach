@@ -18,15 +18,8 @@ logger = logging.getLogger(__name__)
 class MCPTodoNode:
     """MCP client node for fetching todos from Todoist via official Doist MCP server."""
     
-    def __init__(self, mock_error: bool = False, mock_empty: bool = False):
-        """Initialize MCP Todo Node.
-        
-        Args:
-            mock_error: If True, simulate connection errors for testing
-            mock_empty: If True, simulate empty response for testing
-        """
-        self.mock_error = mock_error
-        self.mock_empty = mock_empty
+    def __init__(self):
+        """Initialize MCP Todo Node."""
         self.mcp_session = None
         # Configure MCP server path - try to detect installed location
         self.server_params = self._get_server_params()
@@ -132,17 +125,7 @@ class MCPTodoNode:
         # print("✅ MCP DEBUG: Relevance sufficient, proceeding with fetch")
         
         try:
-            # Simulate MCP connection error for testing
-            if self.mock_error:
-                raise Exception("MCP connection failed")
-            
-            # Simulate empty response for testing
-            if self.mock_empty:
-                state.todo_context = []
-                state.context_usage["todos_fetched"] = True
-                state.context_usage["empty_response"] = True
-                state.decision_path.append("todo_context")
-                return state
+            # No more mock behavior - use real MCP only
             
             # Fetch todos from MCP server with optional date filter
             # print("🌐 MCP DEBUG: Calling _fetch_todos_from_mcp...")
@@ -150,9 +133,10 @@ class MCPTodoNode:
             # print(f"📥 MCP DEBUG: Raw todos fetched: {len(todos)}")
             
             # Filter todos based on conversation context
-            # print("🔍 MCP DEBUG: Filtering todos by context...")
+            print("🔍 MCP DEBUG: Filtering todos by context...")
+            print(f"📝 MCP DEBUG: Latest message: {state.messages[-1] if state.messages else 'No messages'}")
             filtered_todos = self._filter_todos_by_context(todos, state)
-            # print(f"✅ MCP DEBUG: Filtered todos: {len(filtered_todos)}")
+            print(f"✅ MCP DEBUG: Filtered todos: {len(filtered_todos)} (from {len(todos)} total)")
             
             # Update state
             state.todo_context = filtered_todos
@@ -172,29 +156,34 @@ class MCPTodoNode:
     
     async def _fetch_todos_from_mcp(self, date_filter: Optional[str] = None) -> List[Dict[str, Any]]:
         """Fetch todos from Todoist via MCP server."""
-        # print("🔑 MCP DEBUG: Checking API token...")
+        print("🔑 MCP DEBUG: Checking API token...")
         token = self._get_api_token()
         if not token:
-            # print("❌ MCP DEBUG: No API token found, using mock data")
+            print("❌ MCP DEBUG: No API token found, using mock data")
             # Fall back to mock data if no API token
             return self._get_mock_todos()
         
-        # print(f"✅ MCP DEBUG: API token found: {token[:10]}...")
+        print(f"✅ MCP DEBUG: API token found: {token[:10]}...")
         
         # Use a simpler approach with proper exception handling
         try:
             result = await self._call_mcp_safely(date_filter=date_filter)
             if result:
-                # print(f"🎉 MCP DEBUG: Successfully fetched {len(result)} real todos")
+                print(f"🎉 MCP DEBUG: Successfully fetched {len(result)} real todos")
                 return result
             else:
-                # print("⚠️ MCP DEBUG: Empty result, using mock data")
+                print("⚠️ MCP DEBUG: Empty result, using mock data")
                 return self._get_mock_todos()
                 
         except Exception as e:
             logger.error(f"Error fetching todos from MCP server: {e}")
-            # print(f"❌ MCP DEBUG: MCP call failed: {e}")
+            print(f"❌ MCP DEBUG: MCP call failed: {e}")
             return self._get_mock_todos()  # Fallback to mock data
+    
+    def _get_mock_todos(self) -> List[Dict[str, Any]]:
+        """Return empty list instead of mock data to avoid confusion."""
+        print("⚠️ MCP DEBUG: Returning empty todo list (no mock data)")
+        return []
     
     async def _call_mcp_safely(self, date_filter: Optional[str] = None) -> List[Dict[str, Any]]:
         """Safely call MCP server with proper error handling."""
@@ -204,12 +193,12 @@ class MCPTodoNode:
         
         try:
             # Create the stdio connection
-            # print("🔌 MCP DEBUG: Creating stdio connection...")
+            print("🔌 MCP DEBUG: Creating stdio connection...")
             stdio_context = stdio.stdio_client(self.server_params)
             
             # Get the streams
             read_stream, write_stream = await stdio_context.__aenter__()
-            # print("✅ MCP DEBUG: Stdio connection established")
+            print("✅ MCP DEBUG: Stdio connection established")
             
             # Create the session
             # print("🤝 MCP DEBUG: Creating client session...")
@@ -226,10 +215,12 @@ class MCPTodoNode:
             params = {}
             if date_filter:
                 params["filter"] = date_filter
-                # print(f"📅 MCP DEBUG: Using date filter: {date_filter}")
+                print(f"📅 MCP DEBUG: Using date filter: {date_filter}")
+            else:
+                print("📅 MCP DEBUG: No date filter applied")
             
             # Call the get-tasks tool (note: hyphen, not underscore)
-            # print("📋 MCP DEBUG: Calling get-tasks tool...")
+            print("📋 MCP DEBUG: Calling get-tasks tool...")
             result = await session.call_tool("get-tasks", params)
             # print(f"✅ MCP DEBUG: get-tasks call completed")
             
@@ -258,13 +249,37 @@ class MCPTodoNode:
             
             # Convert to our format
             todos = []
+            today = datetime.now().date().isoformat()
+            print(f"📅 MCP DEBUG: Today's date is {today}")
+            
+            today_count = 0
             for task in tasks_data:
                 try:
+                    # Try multiple date field locations
+                    due_date = None
+                    
+                    # First try direct 'date' field
+                    if task.get("date"):
+                        due_date = task.get("date")
+                        print(f"📅 MCP DEBUG: Found date in 'date' field: {due_date}")
+                    # Then try 'due.date' structure
+                    elif task.get("due", {}).get("date"):
+                        due_date = task.get("due", {}).get("date")
+                        print(f"📅 MCP DEBUG: Found date in 'due.date' field: {due_date}")
+                    
+                    # Debug: print first few tasks to see structure
+                    if len(todos) < 3:
+                        print(f"🔍 MCP DEBUG: Task structure sample: {json.dumps(task, indent=2)[:500]}...")
+                    
+                    if due_date == today:
+                        today_count += 1
+                        print(f"📌 MCP DEBUG: Found task due today: {task.get('content')[:50]}...")
+                    
                     todo = {
                         "id": task.get("id"),
                         "content": task.get("content"),
                         "priority": self._map_priority(task.get("priority", 1)),
-                        "due_date": task.get("due", {}).get("date") if task.get("due") else None,
+                        "due_date": due_date,
                         "project": task.get("project_name", "Inbox"),
                         "labels": task.get("labels", []),
                         "created_date": task.get("created_at"),
@@ -275,7 +290,7 @@ class MCPTodoNode:
                     logger.error(f"Error processing task {task}: {e}")
                     continue
             
-            # print(f"✅ MCP DEBUG: Converted {len(todos)} tasks to our format")
+            print(f"✅ MCP DEBUG: Converted {len(todos)} tasks, {today_count} due today")
             return todos
             
         except Exception as e:
@@ -300,42 +315,7 @@ class MCPTodoNode:
                 # print(f"⚠️ MCP DEBUG: Error closing stdio: {e}")
                 pass
     
-    def _get_mock_todos(self) -> List[Dict[str, Any]]:
-        """Get mock todos for testing or fallback."""
-        return [
-            {
-                "id": "mock_1",
-                "content": "Finish API integration for Q4 project",
-                "priority": "high",
-                "due_date": "2025-07-10",
-                "project": "Q4 Development",
-                "labels": ["work", "coding"]
-            },
-            {
-                "id": "mock_2", 
-                "content": "Review team meeting prep materials",
-                "priority": "medium",
-                "due_date": "2025-07-08",
-                "project": "Team Management",
-                "labels": ["meeting", "management"]
-            },
-            {
-                "id": "mock_3",
-                "content": "Update project documentation",
-                "priority": "low",
-                "due_date": "2025-07-12",
-                "project": "Documentation",
-                "labels": ["docs", "writing"]
-            },
-            {
-                "id": "mock_4",
-                "content": "Prepare presentation for client meeting",
-                "priority": "high", 
-                "due_date": "2025-07-09",
-                "project": "Client Relations",
-                "labels": ["presentation", "client"]
-            }
-        ]
+    # Removed mock todo functionality - use real MCP only
     
     def _map_priority(self, todoist_priority: int) -> str:
         """Map Todoist priority (1-4) to our priority system."""
@@ -357,11 +337,41 @@ class MCPTodoNode:
     def _filter_todos_by_context(self, todos: List[Dict[str, Any]], state: ContextState) -> List[Dict[str, Any]]:
         """Filter todos based on conversation context."""
         if not state.messages:
-            return todos
+            return todos[:10]  # Return top 10 if no context
         
         # Get the latest message for context
         latest_message = state.messages[-1]
         content = latest_message.get("content", "").lower()
+        
+        # Check if user is asking for general todo list
+        general_queries = ["my todos", "my tasks", "what are my", "show me my", "list my", "today"]
+        is_general_query = any(query in content for query in general_queries)
+        
+        if is_general_query:
+            print("📋 MCP DEBUG: General todo query detected, returning all todos")
+            # For general queries, prioritize by due date and priority
+            today = datetime.now().date().isoformat()
+            todos_with_scores = []
+            
+            for todo in todos:
+                score = 0
+                # Prioritize tasks due today
+                if todo.get("due_date") == today:
+                    score += 10
+                # Then by priority
+                if todo.get("priority") == "high":
+                    score += 5
+                elif todo.get("priority") == "medium":
+                    score += 3
+                
+                todos_with_scores.append({
+                    **todo,
+                    "relevance_score": score
+                })
+            
+            # Sort by score
+            todos_with_scores.sort(key=lambda x: x["relevance_score"], reverse=True)
+            return todos_with_scores[:10]  # Return top 10
         
         # Extract keywords from conversation
         keywords = self._extract_keywords(content)

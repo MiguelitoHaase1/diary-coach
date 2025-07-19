@@ -1,14 +1,32 @@
 """Prompt management utilities for consistent prompt loading across the system."""
 
-import os
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, List
+from dataclasses import dataclass
+from enum import Enum
+
+
+class PromptContext(Enum):
+    """Available prompt contexts for dynamic selection."""
+    MORNING = "morning"
+    EVENING = "evening"
+    DEFAULT = "default"
+
+
+@dataclass
+class PromptMetadata:
+    """Metadata for a prompt file."""
+    name: str
+    path: Path
+    context: Optional[PromptContext] = None
+    priority: int = 0
 
 
 class PromptLoader:
     """Centralized prompt loader to ensure consistency across all agents."""
     
     _cache: Dict[str, str] = {}
+    _registry: Dict[str, PromptMetadata] = {}
     
     @classmethod
     def load_prompt(cls, prompt_name: str) -> str:
@@ -60,6 +78,37 @@ class PromptLoader:
     def clear_cache(cls) -> None:
         """Clear the prompt cache (useful for testing)."""
         cls._cache.clear()
+    
+    @classmethod
+    def register_prompt(cls, name: str, path: Path, 
+                       context: Optional[PromptContext] = None,
+                       priority: int = 0) -> None:
+        """Register a prompt in the system.
+        
+        Args:
+            name: Unique identifier for the prompt
+            path: Path to the prompt file
+            context: Optional context for the prompt
+            priority: Priority for context-based selection
+        """
+        cls._registry[name] = PromptMetadata(
+            name=name, path=path, context=context, priority=priority
+        )
+    
+    @classmethod
+    def get_available_prompts(cls) -> List[str]:
+        """Get list of all available prompt names."""
+        prompts_dir = Path(__file__).parent
+        return [p.stem for p in prompts_dir.glob("*.md")]
+    
+    @classmethod
+    def get_prompts_by_context(cls, context: PromptContext) -> List[PromptMetadata]:
+        """Get all prompts for a specific context, sorted by priority."""
+        prompts = [
+            meta for meta in cls._registry.values() 
+            if meta.context == context
+        ]
+        return sorted(prompts, key=lambda x: x.priority, reverse=True)
 
 
 # Convenience functions for easy imports

@@ -22,7 +22,7 @@ class ConversationTestRunner:
         """Initialize with LangSmith client and coaching infrastructure."""
         self.langsmith_client = langsmith_client or LangSmithClient()
         self.llm_service = LLMFactory.create_service(LLMTier.CHEAP)  # Use OpenAI for testing
-        self.deep_thoughts_generator = DeepThoughtsGenerator(tier=LLMTier.STANDARD)  # Use Sonnet 4
+        self.deep_thoughts_generator = DeepThoughtsGenerator(tier=LLMTier.PREMIUM)  # Use Opus 4
         self.coaching_graph: Optional[CompiledStateGraph] = None
         
     async def setup_conversation(self) -> Tuple[TestUserAgent, CompiledStateGraph]:

@@ -181,13 +181,6 @@ Additionally, include an Evaluation Summary section with:
 - Overall coaching effectiveness score (1-10) with brief justification
 """
 
-            if include_transcript:
-                enhanced_sections += """
-
-Additionally, include a Conversation Transcript section with the full
-conversation for reference.
-"""
-
             user_prompt += enhanced_sections
 
         try:
@@ -206,15 +199,10 @@ conversation for reference.
                 temperature=temperature,
             )
 
-            # Start with the main analysis
-            final_content = analysis_content
-
-            # Add full transcript if requested
-            if include_transcript:
-                final_content += "\n\n---\n\n## Full Conversation Transcript\n\n"
-                final_content += conversation_text
-
-            return final_content
+            # Return the analysis content directly
+            # The LLM already includes the transcript in the appendix as per
+            # system prompt
+            return analysis_content
 
         except Exception as e:
             # Fallback content if generation fails

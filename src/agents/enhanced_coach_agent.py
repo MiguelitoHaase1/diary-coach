@@ -1,0 +1,421 @@
+"""Enhanced Diary Coach agent with multi-agent collaboration capabilities."""
+
+from typing import List, Dict, Any, Optional, Set
+from datetime import datetime
+import logging
+
+from src.agents.base import BaseAgent, AgentCapability, AgentRequest, AgentResponse
+from src.events.schemas import UserMessage, AgentResponse as LegacyAgentResponse
+from src.services.llm_service import AnthropicService
+from src.agents.prompts import get_coach_system_prompt, get_coach_morning_protocol
+from src.agents.registry import agent_registry
+
+# Try to import LangSmith for tracing
+try:
+    from langsmith import traceable
+    LANGSMITH_AVAILABLE = True
+except ImportError:
+    # Create a no-op decorator if LangSmith is not available
+    def traceable(name=None, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    LANGSMITH_AVAILABLE = False
+
+
+logger = logging.getLogger(__name__)
+
+
+class EnhancedDiaryCoach(BaseAgent):
+    """Enhanced coach with ability to call other agents during Stage 1."""
+
+    @property
+    def SYSTEM_PROMPT(self) -> str:
+        """Load the system prompt from the master prompt file."""
+        base_prompt = get_coach_system_prompt()
+        # Add agent context enhancement
+        try:
+            with open("src/agents/prompts/coach_agent_context.md", "r") as f:
+                context_enhancement = f.read()
+            return base_prompt + "\n\n" + context_enhancement
+        except Exception:
+            return base_prompt
+
+    @property
+    def MORNING_PROMPT_ADDITION(self) -> str:
+        """Load the morning protocol from the master prompt file."""
+        return get_coach_morning_protocol()
+
+    def __init__(self, llm_service: AnthropicService):
+        """Initialize the enhanced diary coach.
+
+        Args:
+            llm_service: Anthropic service for LLM calls
+        """
+        super().__init__(
+            name="coach",
+            capabilities=[AgentCapability.CONVERSATION]
+        )
+        self.llm_service = llm_service
+        self.conversation_state = "general"  # general, morning
+        self.morning_challenge: Optional[str] = None
+        self.morning_value: Optional[str] = None
+        self.message_history: List[Dict[str, str]] = []
+
+        # Agent collaboration tracking
+        self.agent_call_history: List[Dict[str, Any]] = []
+        self.max_agent_calls_per_turn = 2  # Prevent over-calling
+        self.recent_agent_calls: Set[str] = set()  # Track recent calls
+
+    async def initialize(self) -> None:
+        """Initialize the coach agent."""
+        self.is_initialized = True
+        logger.info("Enhanced coach agent initialized with multi-agent support")
+
+    def _is_morning_context(self, message_content: str) -> bool:
+        """Check if user is in morning context based on their message."""
+        morning_greetings = [
+            "good morning", "morning", "gm", "g'morning",
+            "goodmorning", "mornin"
+        ]
+        content_lower = message_content.lower().strip()
+        return any(greeting in content_lower for greeting in morning_greetings)
+
+    def _get_system_prompt(self) -> str:
+        """Get the appropriate system prompt based on conversation context."""
+        base_prompt = self.SYSTEM_PROMPT
+        # Check recent messages for morning context
+        if self.message_history:
+            # Check last few user messages for morning greeting
+            recent_user_messages = [
+                msg for msg in self.message_history[-6:]
+                if msg.get("role") == "user"
+            ]
+            if any(self._is_morning_context(msg["content"])
+                   for msg in recent_user_messages):
+                return base_prompt + "\n\n" + self.MORNING_PROMPT_ADDITION
+        return base_prompt
+
+    async def _should_call_agent(
+        self, agent_type: str, message_content: str
+    ) -> bool:
+        """Determine if an agent should be called based on message content.
+
+        Args:
+            agent_type: Type of agent (memory, personal_content, mcp)
+            message_content: User's message content
+
+        Returns:
+            Boolean indicating if agent should be called
+        """
+        content_lower = message_content.lower()
+
+        # Check if we've called this agent recently
+        if agent_type in self.recent_agent_calls:
+            logger.debug(f"Skipping {agent_type} - called recently")
+            return False
+
+        # Agent-specific triggers
+        if agent_type == "memory":
+            triggers = [
+                "remember when", "last time", "previously", "before",
+                "past conversation", "we discussed", "you mentioned"
+            ]
+            should_call = any(trigger in content_lower for trigger in triggers)
+
+        elif agent_type == "personal_content":
+            triggers = [
+                "belief", "value", "core", "philosophy", "principle",
+                "my approach", "I believe", "important to me"
+            ]
+            should_call = any(trigger in content_lower for trigger in triggers)
+
+        elif agent_type == "mcp":
+            triggers = [
+                "task", "todo", "priorit", "should i work", "what to do",
+                "today", "deadline", "project", "focus on", "tackle"
+            ]
+            should_call = any(trigger in content_lower for trigger in triggers)
+        else:
+            should_call = False
+
+        logger.debug(
+            f"Should call {agent_type}? {should_call} "
+            f"(message: {message_content[:50]}...)")
+        return should_call
+
+    @traceable(name="call_agent")
+    async def _call_agent(
+        self, agent_name: str, query: str, context: Dict[str, Any]
+    ) -> Optional[AgentResponse]:
+        """Call another agent and get response.
+
+        Args:
+            agent_name: Name of agent to call
+            query: Query for the agent
+            context: Context to pass to agent
+
+        Returns:
+            Agent response or None if failed
+        """
+        try:
+            agent = agent_registry.get_agent(agent_name)
+            if not agent:
+                logger.warning(f"Agent {agent_name} not found in registry")
+                return None
+
+            request = AgentRequest(
+                from_agent=self.name,
+                to_agent=agent_name,
+                query=query,
+                context=context
+            )
+
+            response = await agent.handle_request(request)
+
+            # Track the call
+            self.agent_call_history.append({
+                "timestamp": datetime.now(),
+                "agent": agent_name,
+                "query": query,
+                "success": response.error is None
+            })
+
+            # Mark as recently called
+            self.recent_agent_calls.add(agent_name)
+
+            return response
+
+        except Exception as e:
+            logger.error(f"Error calling agent {agent_name}: {e}")
+            return None
+
+    @traceable(name="gather_agent_context")
+    async def _gather_agent_context(
+        self, message: UserMessage
+    ) -> Dict[str, Any]:
+        """Gather context from relevant agents based on message.
+
+        Args:
+            message: User message to analyze
+
+        Returns:
+            Dictionary of agent contexts
+        """
+        agent_context = {}
+        calls_made = 0
+
+        # Determine which agents to call
+        agents_to_call = []
+
+        if await self._should_call_agent("memory", message.content):
+            agents_to_call.append(("memory", "memory"))
+
+        if await self._should_call_agent("personal_content", message.content):
+            agents_to_call.append(("personal_content", "personal_content"))
+
+        if await self._should_call_agent("mcp", message.content):
+            agents_to_call.append(("mcp", "mcp"))
+
+        # Limit calls per turn
+        agents_to_call = agents_to_call[:self.max_agent_calls_per_turn]
+
+        # Make the calls
+        for agent_name, context_key in agents_to_call:
+            if calls_made >= self.max_agent_calls_per_turn:
+                break
+
+            # Prepare query with date context for MCP agent
+            query = message.content
+            if agent_name == "mcp":
+                content_lower = message.content.lower()
+                # Check if user is asking about today/priorities
+                keywords = ["today", "priorit", "should i work", "focus"]
+                if any(word in content_lower for word in keywords):
+                    # Enhance query to explicitly ask for today's tasks
+                    query = (
+                        f"{message.content} (focus on tasks due today)")
+
+            response = await self._call_agent(
+                agent_name,
+                query,
+                {
+                    "conversation_id": message.conversation_id,
+                    "messages": self.message_history[-5:],  # Last 5 messages
+                    # Add today's date
+                    "current_date": datetime.now().date().isoformat()
+                }
+            )
+
+            if response and not response.error:
+                agent_context[context_key] = {
+                    "content": response.content,
+                    "metadata": response.metadata
+                }
+                calls_made += 1
+
+        return agent_context
+
+    def _enhance_prompt_with_context(
+        self, base_prompt: str, agent_context: Dict[str, Any]
+    ) -> str:
+        """Enhance the system prompt with agent context.
+
+        Args:
+            base_prompt: Base system prompt
+            agent_context: Context from agents
+
+        Returns:
+            Enhanced prompt
+        """
+        if not agent_context:
+            return base_prompt
+
+        context_sections = []
+
+        if "memory" in agent_context:
+            context_sections.append(
+                f"RELEVANT PAST CONVERSATIONS:\n{agent_context['memory']['content']}"
+            )
+
+        if "personal_content" in agent_context:
+            context_sections.append(
+                f"PERSONAL CONTEXT:\n{agent_context['personal_content']['content']}"
+            )
+
+        if "mcp" in agent_context:
+            context_sections.append(
+                f"CURRENT TASKS:\n{agent_context['mcp']['content']}"
+            )
+
+        if context_sections:
+            context_block = "\n\n".join(context_sections)
+            return (
+                f"{base_prompt}\n\n"
+                f"## IMPORTANT: Current Context from Agents\n\n"
+                f"{context_block}\n\n"
+                f"## Context Usage Instructions:\n"
+                f"- When user asks 'what should I work on' or about tasks: "
+                f"Reference the ACTUAL tasks above, not examples\n"
+                f"- When user asks about beliefs/values: Use the ACTUAL personal "
+                f"context above\n"
+                f"- Integrate this real data naturally into your coaching questions\n"
+                f"- NEVER make up example tasks or beliefs when real data is provided"
+            )
+
+        return base_prompt
+
+    @traceable(name="enhanced_coach_process_message")
+    async def process_message(self, message: UserMessage) -> LegacyAgentResponse:
+        """Process a user message and generate a coaching response.
+
+        Args:
+            message: The user's message
+
+        Returns:
+            The coach's response
+        """
+        logger.info(
+            f"EnhancedDiaryCoach.process_message: {message.content}")
+
+        # Update message history
+        self.message_history.append({
+            "role": "user",
+            "content": message.content
+        })
+
+        # Gather context from agents if in Stage 1
+        agent_context = await self._gather_agent_context(message)
+
+        # Get base system prompt
+        base_prompt = self._get_system_prompt()
+
+        # Enhance prompt with agent context
+        system_prompt = self._enhance_prompt_with_context(base_prompt, agent_context)
+
+        # Debug logging
+        logger.info(f"Enhanced coach: agents_called={list(agent_context.keys())}")
+        if agent_context:
+            logger.info("Agent context being used in prompt")
+            for agent, data in agent_context.items():
+                logger.info(f"  {agent}: {data['content'][:100]}...")
+
+        # Generate response
+        response_content = await self.llm_service.generate_response(
+            messages=self.message_history,
+            system_prompt=system_prompt,
+            max_tokens=200,
+            temperature=0.7
+        )
+
+        # Update message history
+        self.message_history.append({
+            "role": "assistant",
+            "content": response_content
+        })
+
+        # Track conversation state
+        if (self._is_morning_context(message.content) and
+                self.conversation_state == "general"):
+            self.conversation_state = "morning"
+
+        # Clear recent calls periodically (every 3 turns)
+        # 3 user + 3 assistant messages
+        if len(self.message_history) % 6 == 0:
+            self.recent_agent_calls.clear()
+
+        # Store metadata for testing
+        self._last_response_metadata = {
+            "conversation_state": self.conversation_state,
+            "morning_challenge": self.morning_challenge,
+            "morning_value": self.morning_value,
+            "agents_called": list(agent_context.keys()),
+            "agent_calls_made": len(agent_context)
+        }
+
+        return LegacyAgentResponse(
+            agent_name=self.name,
+            content=response_content,
+            response_to=message.message_id,
+            timestamp=datetime.now(),
+            conversation_id=message.conversation_id
+        )
+
+    async def handle_request(self, request: AgentRequest) -> AgentResponse:
+        """Handle a request from another agent or the orchestrator."""
+        try:
+            # Convert to UserMessage
+            user_message = UserMessage(
+                content=request.query,
+                user_id=request.context.get("user_id", "michael"),
+                conversation_id=request.context.get("conversation_id", "default"),
+                message_id=request.context.get(
+                    "message_id", str(datetime.now().timestamp())
+                ),
+                timestamp=datetime.fromisoformat(
+                    request.context.get("timestamp", datetime.now().isoformat())
+                )
+            )
+
+            # Process through enhanced method
+            legacy_response = await self.process_message(user_message)
+
+            # Convert back with metadata
+            metadata = getattr(self, '_last_response_metadata', {})
+            return AgentResponse(
+                agent_name=self.name,
+                content=legacy_response.content,
+                metadata=metadata,
+                request_id=request.request_id,
+                timestamp=datetime.now()
+            )
+        except Exception as e:
+            logger.error(f"Error in enhanced coach: {e}")
+            return AgentResponse(
+                agent_name=self.name,
+                content="I'm having trouble processing your request right now.",
+                metadata={},
+                request_id=request.request_id,
+                timestamp=datetime.now(),
+                error=str(e)
+            )

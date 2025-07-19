@@ -92,8 +92,9 @@ class TestMorningCoach:
     @pytest.mark.asyncio
     async def test_morning_coach_detects_morning_time(self, coach, mock_llm_service):
         """Coach should detect morning time and use morning-specific prompts."""
-        with patch('datetime.datetime') as mock_datetime:
+        with patch('src.agents.coach_agent.datetime') as mock_datetime:
             mock_datetime.now.return_value = datetime(2025, 1, 30, 7, 45)  # 7:45 AM
+            mock_datetime.fromisoformat = datetime.fromisoformat
             
             mock_llm_service.generate_response.return_value = (
                 "Good morning, Michael! What adventure awaits you today?"
@@ -106,11 +107,11 @@ class TestMorningCoach:
             call_args = mock_llm_service.generate_response.call_args
             system_prompt = call_args[1]["system_prompt"]
             
-            # Should contain morning-specific elements from MorningPrompt.md
+            # Should contain morning-specific elements
             morning_indicators = [
-                "singles out the *true* biggest problem",
-                "witty creative format", 
-                "What core value do you want to fight for today?"
+                "Morning Ritual Protocol",
+                "What feels like the most important problem to solve today?",
+                "find problem"
             ]
             
             # At least one morning indicator should be present
@@ -120,8 +121,9 @@ class TestMorningCoach:
     @pytest.mark.asyncio
     async def test_evening_coach_maintains_original_behavior(self, coach, mock_llm_service):
         """Coach should still use original prompts for evening conversations."""
-        with patch('datetime.datetime') as mock_datetime:
+        with patch('src.agents.coach_agent.datetime') as mock_datetime:
             mock_datetime.now.return_value = datetime(2025, 1, 30, 19, 30)  # 7:30 PM
+            mock_datetime.fromisoformat = datetime.fromisoformat
             
             mock_llm_service.generate_response.return_value = (
                 "Good evening Michael! How did that challenge from this morning actually unfold?"
@@ -134,7 +136,7 @@ class TestMorningCoach:
             call_args = mock_llm_service.generate_response.call_args
             system_prompt = call_args[1]["system_prompt"]
             
-            # Should contain evening elements but not morning-specific ones
-            assert "Good evening Michael!" in system_prompt
-            assert "Morning Ritual Protocol" in system_prompt
-            assert "Evening Ritual Protocol" in system_prompt
+            # Should NOT contain morning-specific elements in evening
+            assert "Morning Ritual Protocol" not in system_prompt
+            # Should still have base coaching prompt
+            assert "Daily Transformation Diary Coach" in system_prompt
