@@ -1,74 +1,90 @@
 # Claude Code: System Guide
 
-## The Three Laws
+## I. Core Philosophy
 
-### 1. Working Software Only
+### The Four Laws
+
+#### 1. Working Software Only
+
 Every session produces software and tests that run in realistic settings. No mocks, mock-runs, no scaffolding without a sandbox test of functionality.
 
-### 2. Tests Define Success  
+#### 2. Tests Define Success
+
 Write tests first. Implementation follows. Red tests block progress.
 
-### 3. Documentation Is Code
+#### 3. Documentation Is Code
+
 Stale docs = broken build. Update docs with every increment or session fails.
 
----
+#### 4. Clean Architecture Transitions
 
-## Increment Discipline
-- **Change only what the test requires** - resist the urge to refactor, unless I explicitly ask you to --- but feel free to ask me explicitly to refactor a part if you find it useful
-- **Functions do one thing** - if you need "and" to describe it, split it
-- **88 character line limit** - readability over cleverness
-- **Lint continuously** - run `python -m flake8` after EVERY file creation/edit
-- **No legacy code left behind** - see Legacy Code Prevention section below
-
-### Linting Workflow
-1. **After creating new file**: Immediately run `python -m flake8 <filename>`
-2. **After editing file**: Run linter before any tests
-3. **Fix all issues**: Don't proceed until lint passes
-4. **Common fixes**:
-   - Line too long: Split at logical points, use parentheses for continuation
-   - Trailing whitespace: Remove with `sed -i '' 's/[[:space:]]*$//' <file>`
-   - Missing newline: Add with `echo "" >> <file>`
-   - Unused imports: Remove immediately
+When changing architecture or refactoring major components, never leave orphaned code behind. Meanwhile, make sure to keep the most endearing aspects of the left-behind product - e.g., as defined in a product vision markdown in the repo!
 
 ---
 
-## Session Workflow
+## II. Operating Procedures
 
-### Start Session
-1. Read `docs/session_x/Session_x.md` 
-2. Check `docs/status.md` for current state (potentially also check log markdowns under 'docs/session_x/...')
-3. List human setup tasks upfront:
-   ```
-   🔴 HUMAN SETUP REQUIRED:
-   - [ ] Create .env with: [keys]
-   - [ ] Install: [dependencies]
-   - [ ] Configure: [services]
-   ```
+### A. Session Workflow
 
-### Execute Increments
-For each ~10 line increment:
+#### Starting a Session
+
+1. **ALWAYS CHECK FOR VIRTUAL ENVIRONMENT FIRST**:
+   ```bash
+   # Check if venv exists
+   ls -la | grep venv
+   # If it exists, activate it:
+   source venv/bin/activate
+   # If not, create one:
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+2. Read `docs/session_x/Session_x.md`
+3. Check `docs/status.md` for current state (potentially also check log markdowns under 'docs/session_x/...')
+4. List human setup tasks upfront:
+    
+    ```
+    🔴 HUMAN SETUP REQUIRED:
+    - [ ] Create .env with: [keys]
+    - [ ] Install: [dependencies]
+    - [ ] Configure: [services]
+    ```
+    
+
+#### Executing Increments
+
+For each increment within a session:
+
 1. **Test First**: Write failing test
 2. **Code Minimal**: Just enough to pass
 3. **Lint Immediately**: Run `python -m flake8` on new/modified files
 4. **Run Suite**: All tests must pass
 5. **Log Actions**: Update `Log_x_y.md` only after lint + tests pass
+6. **Turn over the microphone**: Always, engage the user after each increment, before moving on to the next one
 
-### End Session
-1. Update `docs/status.md` 
+Also, at any point in an increment, turn over the microphone before making any major decisions, or if you are stuck on something for too many tries, e.g., API errors or similar difficulties that reoccur.
+
+#### When Things Fail
+1. **Fail Fast**: Broken increment = immediate stop
+2. **Document Failure**: Log what broke and why
+3. **Clean Rollback**: Never leave partial implementations
+
+#### Ending a Session
+
+1. Update `docs/status.md`
 2. Commit with format: `feat(session-x): implement increment y`
 3. Push to GitHub
 4. List human improvement tasks thereafter:
-   ```
-   🔴 HUMAN SETUP REQUIRED:
-   - [ ] Particular prompts to iterate on and improve: [link]
-   - [ ] Particular classes to iterate on and improve: [link]
-   - [ ] Other configurations to still adapt and improve: [xyz]
-   ```
+    
+    ```
+    🔴 HUMAN SETUP REQUIRED:
+    - [ ] Particular prompts to iterate on and improve: [link]
+    - [ ] Particular classes to iterate on and improve: [link]
+    - [ ] Other configurations to still adapt and improve: [xyz]
+    ```
+    
 
-
----
-
-## Documentation Structure
+#### Documentation Structure
 
 ```
 project/
@@ -79,71 +95,63 @@ project/
 │   ├── learning_ledger.md # Your knowledge gaps/strengths
 │   └── session_x/
 │       ├── Session_x.md  # Session spec & approach
-│       ├── Log_x_y.md    # Action-by-action record, including learning opportunities for me
+│       ├── Log_x_y.md    # Action-by-action record, including learning opportunities
 ```
 
-### Update Rules
-- **After EVERY increment**: Update status.md
-- **When approach changes**: Update Session_x.md and roadmap.md 
+**Update Rules:**
 
----
+- After EVERY increment: Update status.md and write the log file (log_x_y.md)
+- When approach changes: Update Session_x.md and roadmap.md
 
-## Quick Reference
+### B. Increment Discipline
 
-### Testing
-```bash
-# JavaScript
-npm test -- --watch
-npm run test:unit
+#### Python Execution Protocol
 
-# Python  
-pytest tests/session_x/
-pytest -k test_increment_y
-```
+**CRITICAL**: Before running ANY Python command:
+1. **Check for venv**: `ls -la | grep venv`
+2. **Activate it**: `source venv/bin/activate`
+3. **Verify activation**: The prompt should show `(venv)` prefix
+4. **Only then run Python commands**
 
-### Git Commits
-```bash
-git commit -m "feat(session-x): implement increment y"
-git commit -m "test(session-x): add tests for increment y"
-git commit -m "docs(session-x): update status and logbook"
-```
+Common commands after activation:
+- `python run_multi_agent.py` - Run the multi-agent coaching system
+- `python -m pytest` - Run tests
+- `python -m flake8 <file>` - Lint a file
+- `python scripts/run_automated_eval_experiment.py` - Run evaluations
 
-### Model Selection
-```bash
-claude --model opus      # Complex reasoning
-claude --model sonnet    # Default
-/model opus             # Switch mid-session
-```
+#### Code Standards
 
----
+- **Change only what the test requires** - resist the urge to refactor, unless explicitly asked
+- **Functions do one thing** - if you need "and" to describe it, split it
+- **88 character line limit** - readability over cleverness
+- **No legacy code left behind** - see Clean Transitions below
 
-## Legacy Code Prevention
+#### Linting Protocol
 
-### The Fourth Law: Clean Architecture Transitions
-When changing architecture or refactoring major components, **never leave orphaned code behind**.
-Meanwhile, make sure to read the Productvision.md, and keep the aspects of the left-behind product that is stated there!
+1. **After creating new file**: Immediately run `python -m flake8 <filename>`
+2. **After editing file**: Run linter before any tests
+3. **Fix all issues**: Don't proceed until lint passes
+4. **Common fixes**:
+    - Line too long: Split at logical points, use parentheses for continuation
+    - Trailing whitespace: Remove with `sed -i '' 's/[[:space:]]*$//' <file>`
+    - Missing newline: Add with `echo "" >> <file>`
+    - Unused imports: Remove immediately
 
-### What to Clean Up
-When you modify or replace code:
-1. **Tests**: Update or remove tests for deleted/changed functionality
-2. **Database schemas**: Remove unused tables, columns, or migrations
-3. **Config files**: Delete obsolete configuration entries
-4. **Documentation**: Update or remove docs for changed features
-5. **Dead imports**: Remove unused imports and dependencies
-6. **Old implementations**: Delete replaced classes, functions, modules
-7. **Mock data**: Remove test fixtures for deleted features
+#### Clean Transitions
 
-### Clean Transition Checklist
-For every major change:
-- [ ] Grep for all references to removed components
-- [ ] Update or delete related tests
-- [ ] Remove database artifacts
-- [ ] Clean up configuration files
-- [ ] Update documentation
-- [ ] Run full test suite to catch stragglers
-- [ ] Check for orphaned files in directory structure
+When modifying or replacing code:
 
-### Examples
+1. **Grep for all references** to removed components
+2. **Update or delete** related tests
+3. **Remove database artifacts** (unused tables, columns, migrations)
+4. **Clean up configuration files** for obsolete entries
+5. **Update documentation** for changed features
+6. **Delete dead imports** and dependencies
+7. **Remove old implementations** completely
+8. **Write-up changes in the log file**, so one can know which aspects of the old code was dropped/de-prioritized
+
+**Example:**
+
 ```python
 # ❌ WRONG: Leaving old code commented out
 # class OldAnalyzer:  # Replaced by new system
@@ -152,95 +160,55 @@ For every major change:
 
 # ✅ RIGHT: Delete it completely
 # If needed later, it's in git history
-
-# ❌ WRONG: Keeping tests for deleted features
-def test_old_analyzer():  # But OldAnalyzer is gone!
-    pass
-
-# ✅ RIGHT: Delete the test or rewrite for new system
 ```
 
-### Proactive Cleanup
-Before completing any increment:
-1. Ask: "What did I replace or remove?"
-2. Search: Find all references to those items
-3. Clean: Update or delete each reference
-4. Test: Ensure nothing broke
-5. Document: Note major deletions in commit message
+#### Git Commit Standards
 
----
-
-## MCP (Model Context Protocol) Integration
-A more detailed description of MCP integration approaches is given in @docs/MCP_howto.md
-
-### MCP Rules
-
-1. **Use Real MCP Servers**: Never mock. Find established servers on GitHub first.
-2. **Test in Isolation**: Create `mcp_sandbox.py` to verify connection before integration.
-3. **Read Server Docs**: Tool names use hyphens (`get-tasks`), responses are TextContent objects.
-4. **Ensure Injection**: Data must reach the LLM prompt, not just be fetched:
-   ```python
-   # ❌ WRONG
-   todos = await mcp.get_todos()
-   return llm.generate(prompt)  # Todos never used!
-   
-   # ✅ RIGHT  
-   todos = await mcp.get_todos()
-   enhanced_prompt = inject_context(prompt, todos)
-   return llm.generate(enhanced_prompt)
-   ```
-5. **Build Debug Tools**: Add connection status logging and prompt injection verification.
-6. **Fail Loudly**: No silent fallbacks to mock data.
-
-### MCP Workflow
 ```bash
-# 1. Clone and build server
-# 2. Test with mcp_sandbox.py
-# 3. Verify data reaches LLM
-# 4. Add observability
+git commit -m "feat(session-x): implement increment y"
+git commit -m "test(session-x): add tests for increment y"
+git commit -m "docs(session-x): update status and logbook"
 ```
 
 ---
 
-## Evaluation System Principles
+## III. Domain-Specific Guidance
 
-### Core Rules
+### A. MCP (Model Context Protocol) Integration
+
+#### The Seven MCP Laws
+
+1. **Real Servers Only**: Never mock MCP data or bypass with direct API calls. Always use an actual MCP server.
+    
+2. **Research First**: Search for reputable MCP servers before building. Check GitHub stars, recent commits, and community adoption.
+    
+3. **Read, Then Code**: Study the MCP server's README thoroughly. Note:
+    
+    - Exact tool names (often use hyphens: `get-tasks` not `get_tasks`)
+    - Response formats (TextContent objects vs direct JSON)
+    - Environment variable names (API_KEY vs API_TOKEN)
+4. **E2E Test Setup**: Start with a test that validates the complete flow - not just fetching, but ensuring data reaches the LLM.
+    
+5. **Sandbox Before Integration**: Create `mcp_sandbox.py` to verify connection, auth, and data retrieval BEFORE touching main codebase.
+    
+6. **Architecture First**: Map the data flow completely:
+    
+    ```
+    MCP Server → Client → Agent → System Prompt → LLM
+                                     ↑
+                               INJECTION POINT
+    ```
+    
+7. **Observability Required**: Build debug tools immediately - connection status, raw response logging, injection verification.
+    
+_Note: For detailed MCP integration approaches, see @docs/MCP_howto.md_
+
+### B. Evaluation System Integration
+
+#### Core Principles
+
 1. **Never Mock External Services**: Always use real LangSmith/evaluation infrastructure
-2. **Parse LLM Output Robustly**: Handle markdown, JSON blocks, and control characters
-3. **Evaluate Full Conversations**: Never evaluate single messages in isolation
-4. **Use Appropriate Model Tiers**: STANDARD tier (Sonnet) for evaluations, not CHEAP
-5. **Keep Criteria Focused**: 5 clear criteria > 7 complex analyzers
-
-### Implementation Pattern
-```python
-# ✅ RIGHT: Proper LangSmith integration
-results = await aevaluate(
-    target_function,
-    data=dataset_name,
-    evaluators=langsmith_evaluators,
-    experiment_prefix="coaching_eval"
-)
-
-# ❌ WRONG: Mock Run objects or hardcoded scores
-mock_run = Run(id=str(uuid.uuid4()), ...)  # Never do this
-behavioral_scores = [("Specificity", 0.6, "Mock")]  # Never hardcode
-```
-
-### JSON Parsing Pattern
-```python
-# Always handle LLM formatting quirks
-if "```json" in result:
-    json_str = result.split("```json")[1].split("```")[0]
-# Include regex fallback for embedded JSON
-```
-
----
-
-## Remember
-
-- **No session ends without runnable software**
-- **Documentation drift = technical debt**
-- **Small increments compound into big features**
-- **Your learning matters as much as the code**
-- **Real services over mocks, always**
-- **Clean transitions = no orphaned code**
+2. **Stay in the driver seat:** Generally, make our own evals via our own LLMs as judges, rather than delegating core logic to a service (e.g., LangSmith). Use the external services for monitoring and dashboarding, not the core logic of evals.
+3. **Parse LLM Output Robustly**: Handle markdown, JSON blocks, and control characters
+4. **Evaluate Full Product experiences**: Try to evaluate the totality - e.g., full conversation, not single messages in isolation
+5. **Keep Criteria Focused**: 5 clear criteria maximum, ideally need to be clear if they fail or succeed

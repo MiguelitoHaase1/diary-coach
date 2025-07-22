@@ -1,0 +1,22 @@
+[
+  {
+    "scenario": "productivity_challenge",
+    "error": "'AgentRegistry' object has no attribute 'register'"
+  },
+  {
+    "scenario": "leadership_growth",
+    "error": "'AgentRegistry' object has no attribute 'register'"
+  },
+  {
+    "scenario": "work_life_balance",
+    "error": "'AgentRegistry' object has no attribute 'register'"
+  },
+  {
+    "scenario": "career_transition",
+    "error": "'AgentRegistry' object has no attribute 'register'"
+  },
+  {
+    "scenario": "team_conflict",
+    "error": "'AgentRegistry' object has no attribute 'register'"
+  }
+]

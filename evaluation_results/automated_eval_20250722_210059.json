@@ -1,0 +1,22 @@
+[
+  {
+    "scenario": "productivity_challenge",
+    "error": "AsyncClient.__init__() got an unexpected keyword argument 'proxies'"
+  },
+  {
+    "scenario": "leadership_growth",
+    "error": "AsyncClient.__init__() got an unexpected keyword argument 'proxies'"
+  },
+  {
+    "scenario": "work_life_balance",
+    "error": "AsyncClient.__init__() got an unexpected keyword argument 'proxies'"
+  },
+  {
+    "scenario": "career_transition",
+    "error": "AsyncClient.__init__() got an unexpected keyword argument 'proxies'"
+  },
+  {
+    "scenario": "team_conflict",
+    "error": "AsyncClient.__init__() got an unexpected keyword argument 'proxies'"
+  }
+]

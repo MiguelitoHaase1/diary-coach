@@ -6,7 +6,7 @@ import redis.asyncio as redis
 
 
 @pytest.fixture
-async def mock_redis():
+def mock_redis():
     """Create a mock Redis client for testing"""
     mock_client = AsyncMock()
     mock_pubsub = AsyncMock()

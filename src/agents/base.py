@@ -17,6 +17,12 @@ class AgentCapability(Enum):
     ORCHESTRATION = "orchestration"
     REPORTING = "reporting"
     EVALUATION = "evaluation"
+    AGENT_COORDINATION = "agent_coordination"
+    PARALLEL_EXECUTION = "parallel_execution"
+    STAGE_MANAGEMENT = "stage_management"
+    REPORT_GENERATION = "report_generation"
+    SYNTHESIS = "synthesis"
+    QUALITY_ASSESSMENT = "quality_assessment"
 
 
 @dataclass

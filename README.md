@@ -35,6 +35,7 @@ echo "TODOIST_API_TOKEN=your_todoist_token" >> .env
 echo "LANGSMITH_API_KEY=your_langsmith_key" >> .env
 
 # Run the coach
+source venv/bin/activate  # Make sure virtual environment is active
 python run_multi_agent.py
 ```
 
@@ -253,3 +254,59 @@ python run_multi_agent.py
 ```
 
 Experience the power of multi-modal coaching that helps you identify and tackle what truly matters today.
+
+---
+
+## 📊 Evaluation & Quality Tracking
+
+The diary coach automatically tracks coaching quality through LangSmith experiments:
+
+### Running with Evaluation Tracking (Recommended)
+
+```bash
+# Standard multi-agent coaching with automatic evaluation tracking
+source venv/bin/activate && python run_multi_agent.py
+
+# After your conversation, type 'deep report' to:
+# 1. Generate Deep Thoughts synthesis
+# 2. Evaluate the session quality (5 criteria)
+# 3. Send results to LangSmith as an experiment
+```
+
+### Automated Testing with Simulated Users
+
+```bash
+# Run automated evaluation with 5 test scenarios
+python scripts/run_automated_eval_experiment.py
+
+# This simulates different user personas:
+# - Overwhelmed professional
+# - New team lead
+# - Work-life balance issues
+# - Career transition
+# - Team conflict resolution
+```
+
+### Viewing Results
+
+1. Go to your [LangSmith dashboard](https://smith.langchain.com)
+2. Look for project: `diary-coach-evaluations`
+3. View experiments named `manual_coaching_session_[timestamp]`
+4. Track quality trends over time
+
+### Evaluation Metrics
+
+Each session is scored on:
+- **A**: Problem Definition (binary)
+- **B**: Crux Recognition (binary)
+- **C**: Today Accomplishment (binary)
+- **D**: Multiple Paths (0-1 scale)
+- **E**: Core Beliefs (0-1 scale)
+
+---
+
+**Quick one-liner to start with evaluation tracking:**
+```bash
+source venv/bin/activate && python run_multi_agent.py
+# Type 'deep report' after your conversation to trigger evaluation
+```

@@ -70,6 +70,10 @@ class EnhancedDiaryCoach(BaseAgent):
         
         # Check if multi-agent mode is enabled
         self.multi_agent_enabled = os.getenv("DISABLE_MULTI_AGENT", "false").lower() != "true"
+        
+        # Stage management
+        self.current_stage = 1  # Start in Stage 1 (exploration)
+        self.problem_identified = False
 
     async def initialize(self) -> None:
         """Initialize the coach agent."""
@@ -198,6 +202,101 @@ class EnhancedDiaryCoach(BaseAgent):
             logger.error(f"Error calling agent {agent_name}: {e}")
             return None
 
+    async def _check_stage_transition(self) -> bool:
+        """Check with orchestrator if we should transition to Stage 2.
+        
+        Returns:
+            True if we should transition to Stage 2
+        """
+        if not self.multi_agent_enabled or self.current_stage == 2:
+            return False
+            
+        # Check if orchestrator is available
+        orchestrator = agent_registry.get_agent("orchestrator")
+        if not orchestrator:
+            return False
+            
+        # Build conversation history for orchestrator
+        conversation_history = []
+        for i in range(0, len(self.message_history), 2):
+            if i < len(self.message_history):
+                conversation_history.append(self.message_history[i])
+            if i + 1 < len(self.message_history):
+                conversation_history.append(self.message_history[i + 1])
+        
+        # Ask orchestrator about stage transition
+        request = AgentRequest(
+            from_agent=self.name,
+            to_agent="orchestrator",
+            query="check_stage_transition",
+            context={
+                "conversation_history": conversation_history,
+                "coach_requests_orchestration": self.problem_identified
+            }
+        )
+        
+        try:
+            response = await orchestrator.handle_request(request)
+            should_transition = response.content.lower() == "true"
+            
+            if should_transition:
+                self.current_stage = 2
+                logger.info("Transitioned to Stage 2 - Orchestrated gathering")
+                
+            return should_transition
+        except Exception as e:
+            logger.error(f"Error checking stage transition: {e}")
+            return False
+    
+    async def _gather_stage2_context(self, message: UserMessage) -> Dict[str, Any]:
+        """Gather context using orchestrator in Stage 2.
+        
+        Args:
+            message: User message
+            
+        Returns:
+            Aggregated context from all agents
+        """
+        orchestrator = agent_registry.get_agent("orchestrator")
+        if not orchestrator:
+            logger.warning("Orchestrator not available for Stage 2")
+            return {}
+            
+        request = AgentRequest(
+            from_agent=self.name,
+            to_agent="orchestrator",
+            query="coordinate_agents",
+            context={
+                "query_context": {
+                    "current_focus": message.content,
+                    "conversation_id": message.conversation_id,
+                    "message_history": self.message_history[-10:]  # Last 10 messages
+                }
+            }
+        )
+        
+        try:
+            response = await orchestrator.handle_request(request)
+            
+            if response.metadata and "agent_responses" in response.metadata:
+                # Convert orchestrator format to our expected format
+                agent_context = {}
+                for agent_name, agent_data in response.metadata["agent_responses"].items():
+                    if agent_data["status"] == "success":
+                        agent_context[agent_name] = {
+                            "content": agent_data["content"],
+                            "metadata": agent_data.get("metadata", {})
+                        }
+                
+                logger.info(f"Stage 2: Gathered context from {len(agent_context)} agents")
+                return agent_context
+            
+            return {}
+            
+        except Exception as e:
+            logger.error(f"Error in Stage 2 context gathering: {e}")
+            return {}
+
     @traceable(name="gather_agent_context")
     async def _gather_agent_context(
         self, message: UserMessage
@@ -212,8 +311,16 @@ class EnhancedDiaryCoach(BaseAgent):
         """
         agent_context = {}
         calls_made = 0
-
-        # Determine which agents to call
+        
+        # Check if we should transition to Stage 2
+        if self.current_stage == 1:
+            await self._check_stage_transition()
+        
+        # Stage 2: Use orchestrator for coordination
+        if self.current_stage == 2:
+            return await self._gather_stage2_context(message)
+        
+        # Stage 1: Direct agent calls based on triggers
         agents_to_call = []
 
         if await self._should_call_agent("memory", message.content):
@@ -378,7 +485,9 @@ class EnhancedDiaryCoach(BaseAgent):
             "morning_challenge": self.morning_challenge,
             "morning_value": self.morning_value,
             "agents_called": list(agent_context.keys()),
-            "agent_calls_made": len(agent_context)
+            "agent_calls_made": len(agent_context),
+            "current_stage": self.current_stage,
+            "problem_identified": self.problem_identified
         }
 
         return LegacyAgentResponse(

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core Beliefs Framework - Interactive Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        #visualization {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .node {
+            cursor: pointer;
+        }
+        
+        .node circle {
+            stroke-width: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .node:hover circle {
+            stroke-width: 4px;
+            filter: brightness(1.1);
+        }
+        
+        .node text {
+            font-size: 12px;
+            pointer-events: none;
+        }
+        
+        .link {
+            fill: none;
+            stroke: #999;
+            stroke-opacity: 0.6;
+            stroke-width: 1.5px;
+        }
+        
+        .tooltip {
+            position: absolute;
+            text-align: left;
+            padding: 12px;
+            font-size: 13px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            border-radius: 4px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            max-width: 400px;
+            line-height: 1.4;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .legend {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Core Beliefs: A Framework for Product Leadership</h1>
+    <div id="visualization"></div>
+    <div class="tooltip"></div>
+
+    <script>
+        // Data structure representing the core beliefs hierarchy
+        const data = {
+            name: "Core Beliefs Framework",
+            description: "Three foundational pillars: customer understanding, strategic clarity, and human-centered leadership",
+            children: [
+                {
+                    name: "Product & Customer Insight",
+                    description: "Deep customer understanding drives product decisions",
+                    children: [
+                        {
+                            name: "Customer-Centric Development",
+                            description: "Jobs To Be Done framework and validation principles",
+                            children: [
+                                {
+                                    name: "Discovery & Validation",
+                                    description: "Path dependent software, weekly interviews, test assumptions",
+                                    beliefs: ["Path dependent software", "Weekly Customer Interviews", "The Mom test", "'Switch interviews'", "Test assumptions, not products"]
+                                },
+                                {
+                                    name: "Product Definition",
+                                    description: "Customer focus, value creation, and story-driven development",
+                                    beliefs: ["What is a 'product'", "No to target groups/personas", "Story-Driven Product Development", "Product Discovery Framework"]
+                                }
+                            ]
+                        },
+                        {
+                            name: "Product Excellence",
+                            description: "Quality through focus and continuous refinement",
+                            beliefs: ["Product Taste - high ceiling", "Product is about putting the right 4 things first", "Every feature should fight for survival", "Prototype to Learn"]
+                        },
+                        {
+                            name: "Market Strategy",
+                            description: "Sustainable growth through depth before breadth",
+                            beliefs: ["Market deepening before widening", "Customer conflicts reveal segmentation", "Onboard manually", "Word of Mouth beats virality", "Nail it before we scale it"]
+                        }
+                    ]
+                },
+                {
+                    name: "Strategy & Vision",
+                    description: "Strategic clarity enables focused execution",
+                    children: [
+                        {
+                            name: "Strategic Thinking",
+                            description: "Clear positioning, focused segmentation, distinctive differentiation",
+                            children: [
+                                {
+                                    name: "Core Strategy",
+                                    description: "Positioning, Segmentation, Differentiation",
+                                    beliefs: ["A good strategy has 3 things", "The Kernel of Good Strategy", "Hedgehog strategy"]
+                                },
+                                {
+                                    name: "Strategic Adaptation",
+                                    description: "Recognizing and adapting to change",
+                                    beliefs: ["Strategic Inflection Points", "Finite vs. Infinite Mindset", "Wartime vs. Peacetime CEO"]
+                                }
+                            ]
+                        },
+                        {
+                            name: "Technology Decisions",
+                            description: "Align technology choices with business differentiation",
+                            beliefs: ["Build vs. Buy Decision", "AI makes software design more important", "Resilience Over Optimization", "Let Chaos Reign", "Theatrical vs. Dramatic"]
+                        }
+                    ]
+                },
+                {
+                    name: "Mental Models & Decision Making",
+                    description: "Rigorous thinking processes that challenge assumptions",
+                    children: [
+                        {
+                            name: "Critical Thinking",
+                            description: "First principles and leverage points",
+                            children: [
+                                {
+                                    name: "Fundamental Reasoning",
+                                    description: "Break down to fundamentals and rebuild",
+                                    beliefs: ["First Principles Thinking", "The Crux/leverage point", "10X Ceiling Principle", "Single Decisive Reason"]
+                                },
+                                {
+                                    name: "Planning & Forecasting",
+                                    description: "Work backward from the future",
+                                    beliefs: ["Backcasting", "Planning Fallacy", "Reference Class Forecasting"]
+                                }
+                            ]
+                        },
+                        {
+                            name: "Decision Quality",
+                            description: "Multiple perspectives and continuous validation",
+                            beliefs: ["Experts simulate precisely", "Triangulate all data", "Strong Opinions, Weakly Held", "WAYRTTD", "Write it Down"]
+                        }
+                    ]
+                },
+                {
+                    name: "Leadership & Team Dynamics",
+                    description: "Human-centered leadership creates conditions for teams to thrive",
+                    children: [
+                        {
+                            name: "Trust & Communication",
+                            description: "Psychological safety and radical candor",
+                            children: [
+                                {
+                                    name: "Building Trust",
+                                    description: "Vulnerability and shared goals",
+                                    beliefs: ["Trust as Vulnerability", "Care Personally, Challenge Directly", "Mutual Purpose", "Getting to 'No'"]
+                                },
+                                {
+                                    name: "Effective Communication",
+                                    description: "Calibrated questions and mastering stories",
+                                    beliefs: ["Calibrated Questions", "The AWE Question", "Mastering Stories", "Gossip is toxic"]
+                                }
+                            ]
+                        },
+                        {
+                            name: "Team Performance",
+                            description: "Align individual capabilities with collective outcomes",
+                            children: [
+                                {
+                                    name: "Management Philosophy",
+                                    description: "Task-relevant maturity and leverage",
+                                    beliefs: ["Task-Relevant Maturity", "Developer As Innovator", "Lead via context", "Managers look for Leverage"]
+                                },
+                                {
+                                    name: "Team Dynamics",
+                                    description: "Trust, commitment, and accountability",
+                                    beliefs: ["Five Dysfunctions Model", "The Braintrust", "First who, then what", "No to RACI"]
+                                }
+                            ]
+                        },
+                        {
+                            name: "Conflict Resolution",
+                            description: "Understanding root causes and creating space",
+                            beliefs: ["Disagreement signals missing information", "Some conflicts require separation", "Work on Others' Emotions", "Asynchronous Over Meetings", "Be a bar raiser"]
+                        }
+                    ]
+                },
+                {
+                    name: "Execution & Operations",
+                    description: "Focus on outcomes while maintaining system health",
+                    children: [
+                        {
+                            name: "Performance Measurement",
+                            description: "Measure outcomes and system health",
+                            children: [
+                                {
+                                    name: "Key Metrics",
+                                    description: "DORA metrics and experimentation",
+                                    beliefs: ["DORA Metrics", "10 Experiments per week", "Outcome vs. Output"]
+                                },
+                                {
+                                    name: "System Design",
+                                    description: "APIs and empowerment",
+                                    beliefs: ["API-First Strategy", "Empower the front"]
+                                }
+                            ]
+                        },
+                        {
+                            name: "Execution Rhythm",
+                            description: "Sustainable high performance",
+                            children: [
+                                {
+                                    name: "Execution Principles",
+                                    description: "Rhythm and feedback cycles",
+                                    beliefs: ["Execution requires rhythm", "Accelerate by compressing cycles", "Move slow to go fast"]
+                                },
+                                {
+                                    name: "Human-Centered Operations",
+                                    description: "Human follow-up and recovery",
+                                    beliefs: ["Follow-up should be human", "Recovery protocols are important"]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "Personal Growth & Mindset",
+                    description: "Continuous growth through awareness and learning",
+                    children: [
+                        {
+                            name: "Leadership Consciousness",
+                            description: "Operate from awareness and take ownership",
+                            beliefs: ["Above vs. Below the Line", "The Observer Self", "Radical Responsibility", "The Path of Surrender"]
+                        },
+                        {
+                            name: "Continuous Learning",
+                            description: "Beginner's mind and prioritizing growth",
+                            beliefs: ["Cultivate Beginner's Mind", "Learning Over Being Right", "Notice story moments", "Don't settle with cheatcodes"]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Set dimensions
+        const width = 1400;
+        const height = 900;
+
+        // Create SVG
+        const svg = d3.select("#visualization")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("viewBox", [-width / 2, -height / 2, width, height]);
+
+        // Create tooltip
+        const tooltip = d3.select(".tooltip");
+
+        // Create tree layout
+        const tree = d3.tree()
+            .size([2 * Math.PI, Math.min(width, height) / 2 - 120])
+            .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
+
+        // Create hierarchy
+        const root = tree(d3.hierarchy(data));
+
+        // Color scale for clusters
+        const colorScale = d3.scaleOrdinal()
+            .domain(["Product & Customer Insight", "Strategy & Vision", "Mental Models & Decision Making", 
+                     "Leadership & Team Dynamics", "Execution & Operations", "Personal Growth & Mindset"])
+            .range(["#e74c3c", "#3498db", "#2ecc71", "#f39c12", "#9b59b6", "#1abc9c"]);
+
+        // Add links
+        svg.append("g")
+            .attr("fill", "none")
+            .attr("stroke", "#555")
+            .attr("stroke-opacity", 0.4)
+            .attr("stroke-width", 1.5)
+            .selectAll("path")
+            .data(root.links())
+            .join("path")
+            .attr("d", d3.linkRadial()
+                .angle(d => d.x)
+                .radius(d => d.y));
+
+        // Add nodes
+        const node = svg.append("g")
+            .selectAll("g")
+            .data(root.descendants())
+            .join("g")
+            .attr("transform", d => `
+                rotate(${d.x * 180 / Math.PI - 90})
+                translate(${d.y},0)
+            `)
+            .attr("class", "node");
+
+        // Add circles
+        node.append("circle")
+            .attr("fill", d => {
+                if (d.depth === 0) return "#333";
+                if (d.depth === 1) return colorScale(d.data.name);
+                return d3.color(colorScale(d.ancestors()[d.ancestors().length - 2].data.name)).brighter(0.5);
+            })
+            .attr("r", d => {
+                if (d.depth === 0) return 12;
+                if (d.depth === 1) return 10;
+                if (d.depth === 2) return 8;
+                return 6;
+            })
+            .attr("stroke", d => {
+                if (d.depth === 0) return "#333";
+                if (d.depth === 1) return colorScale(d.data.name);
+                return d3.color(colorScale(d.ancestors()[d.ancestors().length - 2].data.name)).darker(0.5);
+            });
+
+        // Add labels
+        node.append("text")
+            .attr("dy", "0.31em")
+            .attr("x", d => d.x < Math.PI === !d.children ? 15 : -15)
+            .attr("text-anchor", d => d.x < Math.PI === !d.children ? "start" : "end")
+            .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
+            .text(d => d.data.name)
+            .style("font-size", d => {
+                if (d.depth === 0) return "16px";
+                if (d.depth === 1) return "14px";
+                return "12px";
+            })
+            .style("font-weight", d => d.depth <= 1 ? "bold" : "normal");
+
+        // Add interactivity
+        node.on("mouseover", function(event, d) {
+            let content = `<strong>${d.data.name}</strong><br/>`;
+            if (d.data.description) {
+                content += `<em>${d.data.description}</em><br/>`;
+            }
+            if (d.data.beliefs) {
+                content += `<br/>Key beliefs:<br/>• ${d.data.beliefs.join('<br/>• ')}`;
+            }
+            
+            tooltip.html(content)
+                .style("opacity", 1)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 10) + "px");
+        })
+        .on("mouseout", function() {
+            tooltip.style("opacity", 0);
+        });
+
+        // Add legend
+        const legend = d3.select("body").append("div")
+            .attr("class", "legend");
+
+        legend.append("h4").text("Core Clusters").style("margin", "0 0 10px 0");
+
+        const clusters = ["Product & Customer Insight", "Strategy & Vision", "Mental Models & Decision Making", 
+                         "Leadership & Team Dynamics", "Execution & Operations", "Personal Growth & Mindset"];
+
+        clusters.forEach(cluster => {
+            const item = legend.append("div").attr("class", "legend-item");
+            item.append("div")
+                .attr("class", "legend-color")
+                .style("background-color", colorScale(cluster));
+            item.append("div").text(cluster);
+        });
+
+        // Add zoom functionality
+        const zoom = d3.zoom()
+            .scaleExtent([0.5, 3])
+            .on("zoom", (event) => {
+                svg.selectAll("g").attr("transform", event.transform);
+            });
+
+        d3.select("svg").call(zoom);
+    </script>
+</body>
+</html>
