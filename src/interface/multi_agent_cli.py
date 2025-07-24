@@ -34,8 +34,8 @@ class MultiAgentCLI:
             os.getenv("DISABLE_MULTI_AGENT", "false").lower() != "true"
         )
 
-        # Create LLM service
-        self.llm_service = LLMFactory.create_cheap_service()
+        # Create LLM service (Sonnet for both coach and orchestrator)
+        self.llm_service = LLMFactory.create_standard_service()
 
         # Create enhanced coach
         self.coach = EnhancedDiaryCoach(self.llm_service)

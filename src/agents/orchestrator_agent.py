@@ -145,8 +145,8 @@ Provide your analysis in the following JSON format:
 """
 
         try:
-            response = await self.llm_service.generate(
-                prompt=analysis_prompt,
+            response = await self.llm_service.generate_response(
+                messages=[{"role": "user", "content": analysis_prompt}],
                 system_prompt=self._system_prompt,
                 temperature=0.3  # Lower temperature for more consistent decisions
             )
@@ -222,8 +222,8 @@ Provide your strategy in the following JSON format:
 """
 
         try:
-            strategy_response = await self.llm_service.generate(
-                prompt=strategy_prompt,
+            strategy_response = await self.llm_service.generate_response(
+                messages=[{"role": "user", "content": strategy_prompt}],
                 system_prompt=self._system_prompt,
                 temperature=0.5
             )
@@ -378,8 +378,8 @@ Return your synthesis as JSON:
 """
 
         try:
-            response = await self.llm_service.generate(
-                prompt=synthesis_prompt,
+            response = await self.llm_service.generate_response(
+                messages=[{"role": "user", "content": synthesis_prompt}],
                 system_prompt=self._system_prompt,
                 temperature=0.7
             )

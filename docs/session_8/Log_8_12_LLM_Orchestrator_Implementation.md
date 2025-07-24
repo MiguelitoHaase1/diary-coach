@@ -45,9 +45,9 @@ Upgraded the orchestrator agent from a simple state machine to an intelligent LL
 - **Total added latency**: 2-6 seconds when orchestration triggered
 
 ### Cost Implications
-- Uses same cheap tier (Claude Haiku) as coach
+- Uses same standard tier (Claude Sonnet 4) as coach
 - ~500-1000 tokens per orchestration decision
-- Minimal cost increase (~$0.001-0.002 per orchestration)
+- Moderate cost increase (~$0.003-0.015 per orchestration)
 
 ### Optimization Already Implemented
 - Low temperature (0.3) for consistent, fast decisions

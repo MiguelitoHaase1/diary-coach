@@ -66,8 +66,33 @@ Score from 0.0 (no connection) to 1.0 (deep value alignment).
 - Binary criteria require clear evidence to score 1
 - Graduated criteria should reflect the depth and quality of exploration
 
+## Report Format
+
+### Evaluation Report Structure
+
+Your evaluation will be compiled into a comprehensive report with the following sections:
+
+1. **Overall Effectiveness Score**: A weighted percentage score based on all criteria
+2. **Evaluation Criteria**: Detailed assessment of each criterion (A-E) with scores and reasoning
+3. **Conversation Summary**: A 2-3 paragraph summary of the coaching session
+4. **Full Conversation Transcript**: Complete record of the interaction
+
+### Conversation Summary Guidelines
+
+When generating the conversation summary, focus on:
+
+1. **What was discussed** - The main topics, problems, and areas explored
+2. **Key insights uncovered** - Important realizations, breakthroughs, or patterns identified
+3. **Action items identified** - Specific next steps or commitments made
+
+The summary should be:
+- Clear and concise (2-3 paragraphs)
+- Focused on main points rather than minor details
+- Written in a professional, objective tone
+- Based on both the conversation and Deep Thoughts report
+
 ## Response Format
 
-When evaluating, always return your assessment as a JSON object with:
+When evaluating individual criteria, always return your assessment as a JSON object with:
 - `score`: The numerical score based on the criterion type
 - `reasoning`: A clear explanation of why you assigned this score

@@ -14,6 +14,7 @@ def mock_llm_service():
     """Create a mock LLM service."""
     mock = AsyncMock(spec=AnthropicService)
     mock.generate = AsyncMock()
+    mock.generate_response = AsyncMock()
     return mock
 
 
@@ -59,7 +60,7 @@ async def test_stage_transition_insufficient_history(orchestrator):
 async def test_stage_transition_with_problem(orchestrator, mock_llm_service):
     """Test stage transition when user expresses a clear problem."""
     # Mock LLM response for stage transition analysis
-    mock_llm_service.generate.return_value = '''{
+    mock_llm_service.generate_response.return_value = '''{
         "stage_transition": {
             "recommended": true,
             "reasoning": "User articulated problem with procrastination",
@@ -138,7 +139,7 @@ async def test_coordinate_agents_success(orchestrator, mock_llm_service):
     orchestrator.active_stage = 2
 
     # Mock LLM response for coordination strategy
-    mock_llm_service.generate.return_value = '''{
+    mock_llm_service.generate_response.return_value = '''{
         "agent_coordination": {
             "agents_to_query": ["memory", "personal_content", "mcp"],
             "query_strategy": "parallel",

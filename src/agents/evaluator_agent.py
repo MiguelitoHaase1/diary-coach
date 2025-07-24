@@ -126,19 +126,15 @@ Be fair but rigorous in your assessment."""
 
             # Generate conversation summary
             summary_prompt = (
-                f"Based on this coaching conversation and Deep Thoughts report, "
-                f"write a 2-3 paragraph summary of:\n"
-                f"1. What was discussed\n"
-                f"2. Key insights uncovered\n"
-                f"3. Action items identified\n\n"
+                f"Generate a conversation summary following the Conversation "
+                f"Summary Guidelines from your system prompt.\n\n"
                 f"Conversation:\n{self._format_conversation(conversation)}\n\n"
-                f"Deep Thoughts Report:\n{deep_thoughts}\n\n"
-                f"Write a clear, concise summary focusing on the main points."
+                f"Deep Thoughts Report:\n{deep_thoughts}"
             )
 
             conversation_summary = await self.llm_service.generate_response(
                 messages=[{"role": "user", "content": summary_prompt}],
-                system_prompt="You are a coach session summarizer.",
+                system_prompt=self.system_prompt,
                 max_tokens=500,
                 temperature=0.5
             )

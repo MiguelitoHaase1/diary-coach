@@ -67,10 +67,12 @@ class EnhancedDiaryCoach(BaseAgent):
         self.agent_call_history: List[Dict[str, Any]] = []
         self.max_agent_calls_per_turn = 2  # Prevent over-calling
         self.recent_agent_calls: Set[str] = set()  # Track recent calls
-        
+
         # Check if multi-agent mode is enabled
-        self.multi_agent_enabled = os.getenv("DISABLE_MULTI_AGENT", "false").lower() != "true"
-        
+        self.multi_agent_enabled = (
+            os.getenv("DISABLE_MULTI_AGENT", "false").lower() != "true"
+        )
+
         # Stage management
         self.current_stage = 1  # Start in Stage 1 (exploration)
         self.problem_identified = False
@@ -169,7 +171,7 @@ class EnhancedDiaryCoach(BaseAgent):
         # Return None if multi-agent is disabled
         if not self.multi_agent_enabled:
             return None
-            
+
         try:
             agent = agent_registry.get_agent(agent_name)
             if not agent:
@@ -202,20 +204,63 @@ class EnhancedDiaryCoach(BaseAgent):
             logger.error(f"Error calling agent {agent_name}: {e}")
             return None
 
+    def _should_check_orchestration(self, message: UserMessage) -> bool:
+        """Determine if we should check for orchestration based on complexity.
+
+        Args:
+            message: The user message to analyze
+
+        Returns:
+            True if message indicates complex needs requiring orchestration
+        """
+        # Skip orchestration for morning protocol conversations unless complex
+        if self.conversation_state == "morning" and not self.problem_identified:
+            return False
+
+        # Need more messages before considering orchestration
+        if len(self.message_history) < 10:  # Increased from implicit 6
+            return False
+
+        # Check for complexity indicators in message
+        message_lower = message.content.lower()
+        complexity_indicators = [
+            "help me figure out",
+            "i'm struggling with",
+            "multiple issues",
+            "everything feels",
+            "overwhelmed",
+            "complex problem",
+            "deep dive",
+            "analyze thoroughly",
+            "comprehensive",
+            "let's explore",
+            "can we dig into"
+        ]
+
+        # If user explicitly asks for deeper analysis
+        if any(indicator in message_lower for indicator in complexity_indicators):
+            return True
+
+        # If coach explicitly identified a complex problem
+        if self.problem_identified and "complex" in str(self.morning_challenge).lower():
+            return True
+
+        return False
+
     async def _check_stage_transition(self) -> bool:
         """Check with orchestrator if we should transition to Stage 2.
-        
+
         Returns:
             True if we should transition to Stage 2
         """
         if not self.multi_agent_enabled or self.current_stage == 2:
             return False
-            
+
         # Check if orchestrator is available
         orchestrator = agent_registry.get_agent("orchestrator")
         if not orchestrator:
             return False
-            
+
         # Build conversation history for orchestrator
         conversation_history = []
         for i in range(0, len(self.message_history), 2):
@@ -223,7 +268,7 @@ class EnhancedDiaryCoach(BaseAgent):
                 conversation_history.append(self.message_history[i])
             if i + 1 < len(self.message_history):
                 conversation_history.append(self.message_history[i + 1])
-        
+
         # Ask orchestrator about stage transition
         request = AgentRequest(
             from_agent=self.name,
@@ -234,26 +279,26 @@ class EnhancedDiaryCoach(BaseAgent):
                 "coach_requests_orchestration": self.problem_identified
             }
         )
-        
+
         try:
             response = await orchestrator.handle_request(request)
             should_transition = response.content.lower() == "true"
-            
+
             if should_transition:
                 self.current_stage = 2
                 logger.info("Transitioned to Stage 2 - Orchestrated gathering")
-                
+
             return should_transition
         except Exception as e:
             logger.error(f"Error checking stage transition: {e}")
             return False
-    
+
     async def _gather_stage2_context(self, message: UserMessage) -> Dict[str, Any]:
         """Gather context using orchestrator in Stage 2.
-        
+
         Args:
             message: User message
-            
+
         Returns:
             Aggregated context from all agents
         """
@@ -261,7 +306,7 @@ class EnhancedDiaryCoach(BaseAgent):
         if not orchestrator:
             logger.warning("Orchestrator not available for Stage 2")
             return {}
-            
+
         request = AgentRequest(
             from_agent=self.name,
             to_agent="orchestrator",
@@ -274,25 +319,28 @@ class EnhancedDiaryCoach(BaseAgent):
                 }
             }
         )
-        
+
         try:
             response = await orchestrator.handle_request(request)
-            
+
             if response.metadata and "agent_responses" in response.metadata:
                 # Convert orchestrator format to our expected format
                 agent_context = {}
-                for agent_name, agent_data in response.metadata["agent_responses"].items():
+                responses = response.metadata["agent_responses"]
+                for agent_name, agent_data in responses.items():
                     if agent_data["status"] == "success":
                         agent_context[agent_name] = {
                             "content": agent_data["content"],
                             "metadata": agent_data.get("metadata", {})
                         }
-                
-                logger.info(f"Stage 2: Gathered context from {len(agent_context)} agents")
+
+                logger.info(
+                    f"Stage 2: Gathered context from {len(agent_context)} agents"
+                )
                 return agent_context
-            
+
             return {}
-            
+
         except Exception as e:
             logger.error(f"Error in Stage 2 context gathering: {e}")
             return {}
@@ -311,15 +359,15 @@ class EnhancedDiaryCoach(BaseAgent):
         """
         agent_context = {}
         calls_made = 0
-        
-        # Check if we should transition to Stage 2
-        if self.current_stage == 1:
+
+        # Check if we should transition to Stage 2 - only if complexity detected
+        if self.current_stage == 1 and self._should_check_orchestration(message):
             await self._check_stage_transition()
-        
+
         # Stage 2: Use orchestrator for coordination
         if self.current_stage == 2:
             return await self._gather_stage2_context(message)
-        
+
         # Stage 1: Direct agent calls based on triggers
         agents_to_call = []
 
