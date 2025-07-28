@@ -1,0 +1,219 @@
+# WebRTC - Search Results
+
+Available Libraries (top matches):
+
+Each result includes:
+- Library ID: Context7-compatible identifier (format: /org/project)
+- Name: Library or package name
+- Description: Short summary
+- Code Snippets: Number of available code examples
+- Trust Score: Authority indicator
+- Versions: List of versions if available. Use one of those versions if and only if the user explicitly provides a version in their query.
+
+For best results, select libraries based on name match, trust score, snippet coverage, and relevance to your use case.
+
+----------
+
+- Title: WebRTC
+- Context7-compatible library ID: /stasel/webrtc
+- Description: A community-driven distribution of up to date WebRTC framework binaries for iOS and macOS
+- Code Snippets: 6
+- Trust Score: 8.1
+----------
+- Title: WebRTC
+- Context7-compatible library ID: /alexxit/webrtc
+- Description: Home Assistant custom component for real-time viewing of almost any camera stream using WebRTC and other technologies.
+- Code Snippets: 40
+- Trust Score: 8.7
+----------
+- Title: WebRTC RS
+- Context7-compatible library ID: /webrtc-rs/webrtc
+- Description: A pure Rust implementation of WebRTC
+- Code Snippets: 73
+- Trust Score: 7.8
+----------
+- Title: WebRTC Samples
+- Context7-compatible library ID: /webrtc/samples
+- Description: WebRTC Web demos and samples
+- Code Snippets: 4
+- Trust Score: 9.3
+----------
+- Title: WebRTC Android
+- Context7-compatible library ID: /webrtc-sdk/android
+- Description: WebRTC pre-compiled library for android.
+- Code Snippets: 22
+- Trust Score: 8.3
+----------
+- Title: WebRTC Example
+- Context7-compatible library ID: /metered-ca/webrtc-example
+- Description: A dead simple WebRTC example
+- Code Snippets: 2
+- Trust Score: 4
+----------
+- Title: Pion WebRTC
+- Context7-compatible library ID: /pion/webrtc
+- Description: Pure Go implementation of the WebRTC API
+- Code Snippets: 77
+- Trust Score: 9.2
+----------
+- Title: ExWebRTC
+- Context7-compatible library ID: /elixir-webrtc/ex_webrtc
+- Description: An Elixir implementation of the W3C WebRTC API
+- Code Snippets: 85
+- Trust Score: 8.3
+----------
+- Title: Py-WebRTCvad
+- Context7-compatible library ID: /wiseman/py-webrtcvad
+- Description: Python interface to the WebRTC Voice Activity Detector 
+- Code Snippets: 6
+- Trust Score: 9.6
+----------
+- Title: Telnyx WebRTC SDK
+- Context7-compatible library ID: /team-telnyx/webrtc
+- Description: SDK for Telnyx's WebRTC platform
+- Code Snippets: 110
+- Trust Score: 9.6
+----------
+- Title: Dart SIP UA
+- Context7-compatible library ID: /flutter-webrtc/dart-sip-ua
+- Description: A dart-lang version of the SIP UA stack.
+- Code Snippets: 72
+- Trust Score: 9.2
+----------
+- Title: Flutter Callkeep
+- Context7-compatible library ID: /flutter-webrtc/callkeep
+- Description: iOS CallKit and Android ConnectionService for Flutter
+- Code Snippets: 11
+- Trust Score: 9.2
+----------
+- Title: Streamlit WebRTC
+- Context7-compatible library ID: /whitphx/streamlit-webrtc
+- Description: Real-time video and audio processing on Streamlit
+- Code Snippets: 28
+- Trust Score: 9.7
+----------
+- Title: Janus WebRTC Server
+- Context7-compatible library ID: /meetecho/janus-gateway
+- Description: Janus WebRTC Server
+- Code Snippets: 55
+- Trust Score: 7.2
+----------
+- Title: Flutter WebRTC
+- Context7-compatible library ID: /flutter-webrtc/flutter-webrtc
+- Description: WebRTC plugin for Flutter Mobile/Desktop/Web
+- Code Snippets: 235
+- Trust Score: 9.2
+----------
+- Title: MixedReality-WebRTC
+- Context7-compatible library ID: /microsoft/mixedreality-webrtc
+- Description: MixedReality-WebRTC is a collection of components to help mixed reality app developers integrate audio and video real-time communication into their application and improve their collaborative experience
+- Code Snippets: 123
+- Trust Score: 9.9
+----------
+- Title: Flutter WebRTC Demo
+- Context7-compatible library ID: /flutter-webrtc/flutter-webrtc-demo
+- Description: Demo for flutter-webrtc
+- Code Snippets: 39
+- Trust Score: 9.2
+----------
+- Title: LiveKit React Native WebRTC
+- Context7-compatible library ID: /livekit/react-native-webrtc
+- Description: The WebRTC module for React Native
+- Code Snippets: 53
+- Trust Score: 9.3
+----------
+- Title: React Native WebRTC
+- Context7-compatible library ID: /react-native-webrtc/react-native-webrtc
+- Description: The WebRTC module for React Native
+- Code Snippets: 56
+- Trust Score: 7.7
+----------
+- Title: Gemini WebRTC Web Simple
+- Context7-compatible library ID: /pipecat-ai/gemini-webrtc-web-simple
+- Description: Gemini Multimodal Live + WebRTC in a single `app.ts`
+- Code Snippets: 9
+- Trust Score: 7.9
+----------
+- Title: TRTC Web SDK
+- Context7-compatible library ID: /context7/web_sdk_qcloud-trtc-webrtc-v5-doc-zh-cn
+- Description: TRTC Web SDK is a JavaScript library for Tencent Cloud's real-time audio/video communication solution, enabling web developers to integrate real-time audio/video calls and live streaming.
+- Code Snippets: 175
+- Trust Score: 10
+----------
+- Title: React Native CallKeep
+- Context7-compatible library ID: /react-native-webrtc/react-native-callkeep
+- Description: iOS CallKit framework and Android ConnectionService for React Native
+- Code Snippets: 76
+- Trust Score: 7.7
+----------
+- Title: Tencent Cloud TRTC Web SDK
+- Context7-compatible library ID: /context7/web_sdk_qcloud-trtc-webrtc-v5-doc
+- Description: The Tencent Cloud TRTC Web SDK is a JavaScript library for real-time audio/video communication and live streaming services on the web, built on WebRTC.
+- Code Snippets: 743
+- Trust Score: 10
+----------
+- Title: React Native Incall Manager
+- Context7-compatible library ID: /react-native-webrtc/react-native-incall-manager
+- Description: Handling media-routes/sensors/events during a audio/video chat on React Native
+- Code Snippets: 16
+- Trust Score: 7.7
+----------
+- Title: React Native VoIP Push Notification
+- Context7-compatible library ID: /react-native-webrtc/react-native-voip-push-notification
+- Description: React Native VoIP Push Notification - Currently iOS only
+- Code Snippets: 5
+- Trust Score: 7.7
+----------
+- Title: GStreamer GstWebRTC
+- Context7-compatible library ID: /context7/gstreamer_freedesktop_org-documentation-webrtclib-webrtc_fwd.html
+- Description: GstWebRTC is a GStreamer library providing WebRTC capabilities, including support for DTLS, SCTP, and data channels, enabling real-time communication within GStreamer applications.
+- Code Snippets: 29
+- Trust Score: 10
+----------
+- Title: GStreamer GstWebRTCICE
+- Context7-compatible library ID: /context7/gstreamer_freedesktop_org-documentation-webrtclib-gstwebrtcice.html
+- Description: GstWebRTCICE is a GStreamer component within its WebRTC library that manages Interactive Connectivity Establishment (ICE) for peer-to-peer connections, handling candidate gathering and stream management.
+- Code Snippets: 82
+- Trust Score: 9
+----------
+- Title: GStreamer GstWebRTCRTPSender
+- Context7-compatible library ID: /context7/gstreamer_freedesktop_org-documentation-webrtclib-gstwebrtc-sender.html
+- Description: An object within the GStreamer WebRTC library designed to track the sending aspect of a stream, largely matching the WebRTC RTCRtpSender interface.
+- Code Snippets: 10
+- Trust Score: 9
+----------
+- Title: GstWebRTC ICE Transport
+- Context7-compatible library ID: /context7/gstreamer_freedesktop_org-documentation-webrtclib-gstwebrtc-icetransport.html
+- Description: GstWebRTCICETransport is a component within the GStreamer WebRTC library responsible for managing the Interactive Connectivity Establishment (ICE) process, facilitating peer-to-peer connections.
+- Code Snippets: 18
+- Trust Score: 9
+----------
+- Title: GStreamer GstWebRTCICEStream
+- Context7-compatible library ID: /context7/gstreamer_freedesktop_org-documentation-webrtclib-gstwebrtcicestream.html
+- Description: Manages ICE (Interactive Connectivity Establishment) streams within the GStreamer WebRTC library, handling transport discovery and candidate gathering for WebRTC connections.
+- Code Snippets: 17
+- Trust Score: 9
+----------
+- Title: GStreamer WebRTC Data Channel
+- Context7-compatible library ID: /context7/gstreamer_freedesktop_org-documentation-webrtclib-gstwebrtc-datachannel.html
+- Description: GStreamer WebRTC Data Channel is an API within the GStreamer framework for managing WebRTC Data Channels. It enables sending and receiving data and strings over these channels.
+- Code Snippets: 42
+- Trust Score: 9
+----------
+- Title: GstWebRTC: GstWebRTCDTLSTransport
+- Context7-compatible library ID: /context7/gstreamer_freedesktop_org-documentation-webrtclib-gstwebrtc-dtlstransport.html
+- Description: Manages the DTLS (Datagram Transport Layer Security) connection for WebRTC within GStreamer, handling secure communication and certificate management.
+- Code Snippets: 3
+- Trust Score: 9
+----------
+- Title: GStreamer WebRTC: GstWebRTCRTPTransceiver
+- Context7-compatible library ID: /context7/gstreamer_freedesktop_org-documentation-webrtclib-gstwebrtc-transceiver.html
+- Description: A GStreamer component that mostly matches the WebRTC RTCRtpTransceiver interface, managing the sending and receiving of media streams.
+- Code Snippets: 11
+- Trust Score: 10
+----------
+- Title: GStreamer GstWebRTCSessionDescription
+- Context7-compatible library ID: /context7/gstreamer_freedesktop_org-documentation-webrtclib-gstwebrtc-sessiondescription.html
+- Description: This documentation describes GstWebRTCSessionDescription, a structure within GStreamer's WebRTC library that represents a WebRTC Session Description, including its type and SDP message.
+- Code Snippets: 10
+- Trust Score: 10

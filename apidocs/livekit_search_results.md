@@ -1,0 +1,170 @@
+# LiveKit - Search Results
+
+Available Libraries (top matches):
+
+Each result includes:
+- Library ID: Context7-compatible identifier (format: /org/project)
+- Name: Library or package name
+- Description: Short summary
+- Code Snippets: Number of available code examples
+- Trust Score: Authority indicator
+- Versions: List of versions if available. Use one of those versions if and only if the user explicitly provides a version in their query.
+
+For best results, select libraries based on name match, trust score, snippet coverage, and relevance to your use case.
+
+----------
+
+- Title: LiveKit
+- Context7-compatible library ID: /livekit/livekit
+- Description: End-to-end stack for WebRTC. SFU media server and SDKs.
+- Code Snippets: 13
+- Trust Score: 9.3
+----------
+- Title: LiveKit SIP
+- Context7-compatible library ID: /livekit/sip
+- Description: SIP to WebRTC bridge for LiveKit
+- Code Snippets: 31
+- Trust Score: 9.3
+----------
+- Title: LiveKit
+- Context7-compatible library ID: /context7/livekit_io
+- Description: LiveKit is an open-source, real-time platform for building voice, video, and multimodal AI applications, offering SDKs and APIs for media, data, and agent management.
+- Code Snippets: 14611
+- Trust Score: 9
+----------
+- Title: LiveKit Agents
+- Context7-compatible library ID: /livekit/agents
+- Description: A powerful framework for building realtime voice AI agents 🤖🎙️📹 
+- Code Snippets: 84
+- Trust Score: 9.3
+----------
+- Title: LiveKit Ex
+- Context7-compatible library ID: /rocket4ce/livekitex
+- Description: 
+- Code Snippets: 28
+- Trust Score: 6.8
+----------
+- Title: LiveKit Protocol
+- Context7-compatible library ID: /livekit/protocol
+- Description: LiveKit protocol. Protobuf definitions for LiveKit's signaling protocol
+- Code Snippets: 86
+- Trust Score: 9.3
+----------
+- Title: LiveKit Agents JS
+- Context7-compatible library ID: /livekit/agents-js
+- Description: Build realtime multimodal AI agents with Node.js
+- Code Snippets: 5
+- Trust Score: 9.3
+----------
+- Title: LiveKit Node SDKs
+- Context7-compatible library ID: /livekit/node-sdks
+- Description: LiveKit realtime and server SDKs for Node.JS
+- Code Snippets: 27
+- Trust Score: 9.3
+----------
+- Title: LiveKit Python SDKs
+- Context7-compatible library ID: /livekit/python-sdks
+- Description: LiveKit real-time and server SDKs for Python
+- Code Snippets: 13
+- Trust Score: 9.3
+----------
+- Title: LiveKit Client SDK
+- Context7-compatible library ID: /livekit/client-sdk-js
+- Description: LiveKit browser client SDK (javascript)
+- Code Snippets: 19
+- Trust Score: 9.3
+----------
+- Title: LiveKit Components JS
+- Context7-compatible library ID: /livekit/components-js
+- Description: Official open source React components and examples for building with LiveKit.
+- Code Snippets: 142
+- Trust Score: 9.3
+----------
+- Title: LiveKit Composite
+- Context7-compatible library ID: /livekit/livekit_composite
+- Description: All public LiveKit repos as a common repo to make searching and LLM inference easier.
+- Code Snippets: 3450
+- Trust Score: 9.3
+----------
+- Title: LiveKit Server SDK Go
+- Context7-compatible library ID: /livekit/server-sdk-go
+- Description: Client and server SDK for Golang
+- Code Snippets: 13
+- Trust Score: 9.3
+----------
+- Title: LiveKit Android SDK
+- Context7-compatible library ID: /livekit/client-sdk-android
+- Description: LiveKit SDK for Android
+- Code Snippets: 17
+- Trust Score: 9.3
+----------
+- Title: LiveKit (llmstxt)
+- Context7-compatible library ID: /docs.livekit.io-d146475/llmstxt
+- Description: LiveKit is an open source platform that enables developers to build scalable realtime media applications with integrated audio, video, text, data, and AI features.
+- Code Snippets: 1134
+----------
+- Title: LiveKit Swift Client SDK
+- Context7-compatible library ID: /livekit/client-sdk-swift
+- Description: LiveKit Swift Client SDK. Easily build live audio or video experiences on iOS, macOS, tvOS, and visionOS.
+- Code Snippets: 17
+- Trust Score: 9.3
+----------
+- Title: LiveKit (llmstxt)
+- Context7-compatible library ID: /llmstxt/livekit_io-llms-full.txt
+- Description: LiveKit is an open source platform for developers building realtime media applications, making it easy to integrate audio, video, text, data, and AI models while offering scalable realtime infrastructure built on top of WebRTC.
+- Code Snippets: 6963
+- Trust Score: 8
+----------
+- Title: LiveKit Agents Playground
+- Context7-compatible library ID: /livekit/agents-playground
+- Description: 
+- Code Snippets: 3
+- Trust Score: 9.3
+----------
+- Title: LiveKit Flutter Client SDK
+- Context7-compatible library ID: /livekit/client-sdk-flutter
+- Description: Flutter Client SDK for LiveKit
+- Code Snippets: 97
+- Trust Score: 9.3
+----------
+- Title: LiveKit Components Flutter
+- Context7-compatible library ID: /livekit/components-flutter
+- Description: Official open source Flutter Widgets and examples for building with LiveKit.
+- Code Snippets: 84
+- Trust Score: 9.3
+----------
+- Title: LiveKit Server SDK PHP
+- Context7-compatible library ID: /agence104/livekit-server-sdk-php
+- Description: PHP Server SDK to LiveKit
+- Code Snippets: 4
+- Trust Score: 4.5
+----------
+- Title: LiveKit React Native WebRTC
+- Context7-compatible library ID: /livekit/react-native-webrtc
+- Description: The WebRTC module for React Native
+- Code Snippets: 53
+- Trust Score: 9.3
+----------
+- Title: LiveKit React Native SDK
+- Context7-compatible library ID: /livekit/client-sdk-react-native
+- Description: Official React Native SDK for LiveKit.
+- Code Snippets: 128
+- Trust Score: 9.3
+----------
+- Title: LiveKit Agent Deployment
+- Context7-compatible library ID: /livekit-examples/agent-deployment
+- Description: 
+- Code Snippets: 17
+- Trust Score: 8.9
+----------
+- Title: LiveKit Python Agents Examples
+- Context7-compatible library ID: /livekit-examples/python-agents-examples
+- Description: Example applications and code snippets for LiveKit Agents
+- Code Snippets: 27
+- Trust Score: 8.9
+----------
+- Title: WhisperLiveKit
+- Context7-compatible library ID: /quentinfuxa/whisperlivekit
+- Description: Python package for Real-time, Local Speech-to-Text and Speaker Diarization. FastAPI Server & Web Interface
+- Code Snippets: 20
+- Trust Score: 7.5

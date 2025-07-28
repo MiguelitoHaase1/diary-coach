@@ -1,0 +1,159 @@
+# Playwright - Search Results
+
+Available Libraries (top matches):
+
+Each result includes:
+- Library ID: Context7-compatible identifier (format: /org/project)
+- Name: Library or package name
+- Description: Short summary
+- Code Snippets: Number of available code examples
+- Trust Score: Authority indicator
+- Versions: List of versions if available. Use one of those versions if and only if the user explicitly provides a version in their query.
+
+For best results, select libraries based on name match, trust score, snippet coverage, and relevance to your use case.
+
+----------
+
+- Title: Playwright
+- Context7-compatible library ID: /microsoft/playwright
+- Description: Playwright is a framework for Web Testing and Automation. It allows testing Chromium, Firefox and WebKit with a single API. 
+- Code Snippets: 3056
+- Trust Score: 9.9
+----------
+- Title: Playwright BDD
+- Context7-compatible library ID: /vitalets/playwright-bdd
+- Description: BDD testing with Playwright runner
+- Code Snippets: 289
+- Trust Score: 9.7
+----------
+- Title: Playwright MCP
+- Context7-compatible library ID: /microsoft/playwright-mcp
+- Description: Playwright MCP server
+- Code Snippets: 30
+- Trust Score: 9.9
+----------
+- Title: Playwright Ghost
+- Context7-compatible library ID: /regseb/playwright-ghost
+- Description: Playwright overlay with plugins.
+- Code Snippets: 43
+- Trust Score: 7.9
+----------
+- Title: Playwright Java
+- Context7-compatible library ID: /microsoft/playwright-java
+- Description: Java version of the Playwright testing and automation library
+- Code Snippets: 103
+- Trust Score: 9.9
+----------
+- Title: Playwright CRX
+- Context7-compatible library ID: /ruifigueira/playwright-crx
+- Description: Playwright for chrome extensions
+- Code Snippets: 3022
+- Trust Score: 8.2
+----------
+- Title: Playwright .NET
+- Context7-compatible library ID: /microsoft/playwright-dotnet
+- Description: .NET version of the Playwright testing and automation library.
+- Code Snippets: 122
+- Trust Score: 9.9
+----------
+- Title: Playwright
+- Context7-compatible library ID: /context7/playwright_dev-docs-intro
+- Description: Playwright is a Node.js library for end-to-end testing, automating Chromium, Firefox, and WebKit browsers. It enables cross-platform testing on Windows, Linux, and macOS, supporting headless/headed modes and mobile emulation.
+- Code Snippets: 2653
+- Trust Score: 10
+----------
+- Title: Playwright Python
+- Context7-compatible library ID: /microsoft/playwright-python
+- Description: Python version of the Playwright testing and automation library.
+- Code Snippets: 59
+- Trust Score: 9.9
+----------
+- Title: Playwright Go
+- Context7-compatible library ID: /playwright-community/playwright-go
+- Description: Playwright for Go a browser automation library to control Chromium, Firefox and WebKit with a single API.
+- Code Snippets: 138
+- Trust Score: 8
+----------
+- Title: Playwright for .NET
+- Context7-compatible library ID: /context7/playwright_dev-dotnet
+- Description: Playwright for .NET is a library for end-to-end testing that supports modern rendering engines like Chromium, WebKit, and Firefox across various operating systems. It integrates with popular .NET test frameworks like MSTest, NUnit, and xUnit.
+- Code Snippets: 1064
+- Trust Score: 10
+----------
+- Title: Playwright Stealth
+- Context7-compatible library ID: /mattwmaster58/playwright_stealth
+- Description: playwright stealth
+- Code Snippets: 3
+- Trust Score: 7.5
+----------
+- Title: Playwright for Python
+- Context7-compatible library ID: /context7/playwright_dev-python
+- Description: Playwright for Python is a library for end-to-end testing and browser automation. It supports Chromium, WebKit, and Firefox across multiple OS, providing powerful APIs to automate web applications for both sync and async Python.
+- Code Snippets: 1532
+- Trust Score: 10
+----------
+- Title: Playwright Elements
+- Context7-compatible library ID: /danteukraine/playwright-elements
+- Description: 
+- Code Snippets: 94
+- Trust Score: 7.2
+----------
+- Title: Playwright AWS Lambda
+- Context7-compatible library ID: /jupiterone/playwright-aws-lambda
+- Description: Support for running Microsoft's Playwright on AWS Lambda and Google Cloud Functions
+- Code Snippets: 4
+- Trust Score: 8.9
+----------
+- Title: Playwright Ruby Client
+- Context7-compatible library ID: /yusukeiwaki/playwright-ruby-client
+- Description: Playwright client for Ruby
+- Code Snippets: 980
+- Trust Score: 9.2
+----------
+- Title: Playwright
+- Context7-compatible library ID: /qa-gary-parker/playwright-release-notes-examples
+- Description: A comprehensive demonstration of new features and improvements in Playwright releases
+- Code Snippets: 17
+- Trust Score: 5.8
+----------
+- Title: Playwright Model Context Protocol Server
+- Context7-compatible library ID: /executeautomation/mcp-playwright
+- Description: Playwright Model Context Protocol Server - Tool to automate Browsers and APIs in Claude Desktop, Cline, Cursor IDE and More 🔌
+- Code Snippets: 77
+- Trust Score: 9.7
+----------
+- Title: Playwright for Go
+- Context7-compatible library ID: /context7/pkg_go_dev-github.com-playwright-community-playwright-go
+- Description: A Go library designed to automate Chromium, Firefox, and WebKit browsers using a single API. It provides tools for end-to-end testing, web scraping, and browser automation.
+- Code Snippets: 21
+- Trust Score: 7
+----------
+- Title: n8n Playwright
+- Context7-compatible library ID: /toema/n8n-playwright
+- Description: n8n-community-node-package for browser automation using Playwright
+- Code Snippets: 4
+- Trust Score: 6.1
+----------
+- Title: Mock Service Worker Playwright
+- Context7-compatible library ID: /mswjs/playwright
+- Description: Mock Service Worker binding for Playwright.
+- Code Snippets: 4
+- Trust Score: 8.2
+----------
+- Title: Guidepup Playwright
+- Context7-compatible library ID: /guidepup/guidepup-playwright
+- Description: Screen reader driver for Playwright tests.
+- Code Snippets: 12
+- Trust Score: 7.1
+----------
+- Title: Scrapy Playwright
+- Context7-compatible library ID: /scrapy-plugins/scrapy-playwright
+- Description: 🎭 Playwright integration for Scrapy
+- Code Snippets: 62
+- Trust Score: 7.8
+----------
+- Title: ReportPortal Agent JS Playwright
+- Context7-compatible library ID: /reportportal/agent-js-playwright
+- Description: Agent to integrate Playwright with ReportPortal.
+- Code Snippets: 28
+- Trust Score: 9.1

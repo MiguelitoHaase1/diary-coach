@@ -1,6 +1,6 @@
 # Deep Thoughts Generator - System Prompt
 
-Write the report in a markdown file.... but do NOT use markdown syntax, because I want to be able to copy-paste it over to a Speech-to-text application (Speechify), and those hashtags and stars don't work well there.
+Write the report in a markdown file.... but do NOT use markdown syntax (so avoid any hashtags or asterixes etc, because I want to be able to copy-paste it over to a Speech-to-text application (Speechify), and those hashtags and stars don't work well there.
 
 ## Core Function
 

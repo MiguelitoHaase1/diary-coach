@@ -1,12 +1,12 @@
-# Multi-Agent Diary Coach Lesson Plan: Personal Experience-First Development
+# Multi-Agent Diary Coach Lesson Plan: Voice-First Development
 
 ## Executive Summary
 
-Build a multi-agent coaching system prioritizing personal experience and voice interaction before production hardening. Start with a working prototype (Session 2), enhance with personal context and evaluation (Sessions 3-4), migrate to LangGraph/LangSmith (Session 5), build conversation memory and context infrastructure (Session 6), then implement parallel multi-agent orchestration with dedicated MCP agent (Session 7). Production features come last after core experience is perfected.
+Build a multi-agent coaching system prioritizing voice interaction immediately after core functionality. Start with working prototype (Session 2), enhance with personal context and evaluation (Sessions 3-4), migrate to LangGraph/LangSmith (Session 5), build conversation memory and context infrastructure (Session 6), implement parallel multi-agent orchestration (Session 7-8). Then pivot to voice development with TTS, development tooling, and LiveKit integration. Advanced state evolution moves to production phase.
 
-**Tech Stack**: Anthropic SDK (Sonnet + Opus), LangGraph (orchestration), LangSmith (observability), OpenTelemetry, pytest + LangChain, Personal Context Files (Markdown), LiveKit (voice), Redis Pub/Sub (early phases), FastAPI (later phases)
+**Tech Stack**: Anthropic SDK (Sonnet + Opus), LangGraph (orchestration), LangSmith (observability), OpenTelemetry, pytest + LangChain, Personal Context Files (Markdown), LiveKit (voice), ElevenLabs (TTS), Redis Pub/Sub (early phases), FastAPI (later phases)
 
-## Phase 1: Intelligent Personal Experience (19-21 hours)
+## Phase 1: Intelligent Personal Experience (19-21 hours) ✅
 
 ### Session 1: Project Setup and TDD Infrastructure (2-3 hours) ✅
 
@@ -77,7 +77,7 @@ Build a multi-agent coaching system prioritizing personal experience and voice i
 - Morning Evaluation Suite: New metrics for morning effectiveness
 - Refined Morning Prompt: Data-driven prompt improvements
 
-## Phase 2: LangGraph Migration & Intelligence (14-16 hours)
+## Phase 2: LangGraph Migration & Intelligence (17-19 hours) ✅
 
 ### Session 5: LangGraph Architecture Migration (4-5 hours) ✅
 
@@ -144,12 +144,12 @@ Build a multi-agent coaching system prioritizing personal experience and voice i
 - Use appropriate model tiers (STANDARD for evaluations)
 - Parse LLM outputs robustly with fallback patterns
 
-### Session 8: Three-Stage Multi-Agent System (4-5 hours)
+### Session 8: Three-Stage Multi-Agent System (5-6 hours) ✅
 
 **Goal**: Implement sophisticated multi-agent system with staged orchestration and 6 specialized agents
 
 **Topics**:
-- Sevel-agent architecture: Coach, MCP, Orchestrator, Personal Content, Memory, Reporter, Evaluator
+- Seven-agent architecture: Coach, MCP, Orchestrator, Personal Content, Memory, Reporter, Evaluator
 - Three-stage conversation flow with progressive agent involvement
 - Coach-led initial exploration with on-demand agent calls
 - Orchestrator activation after problem identification
@@ -197,25 +197,25 @@ Reporter Agent → Deep Thoughts Report
 - **Stage 2 → 3**: After sufficient information gathering
 - **Output**: Single Deep Thoughts report with integrated evaluations
 
-### Session 9: Advanced State Evolution (3-4 hours)
+## Phase 3: Voice Revolution (15-18 hours)
 
-**Goal**: Implement multi-session state management and synthesis
+### Session 9: Development Tooling & ElevenLabs TTS (3-4 hours)
+
+**Goal**: Set up comprehensive development environment for voice work
 
 **Topics**:
-- State persistence across conversations
-- Weekly synthesis via state aggregation
-- State versioning and migration patterns
-- Conversation continuity (morning → evening)
-- Historical state replay for debugging
+- ElevenLabs TTS Integration: Simple script to convert Deep Thoughts markdown to audio
+- Context7 MCP Setup: API documentation access for LiveKit, LangGraph, Todoist
+- Firecrawl MCP Setup: Web scraping for latest documentation and examples
+- LiveKit Expert Sub-agent: Claude Code assistant trained on your past LiveKit logs
+- Puppeteer/Playwright MCP: Debug console visibility for voice UI development
 
 **Key Deliverables**:
-- Multi-session state management
-- Weekly report generator using historical states
-- State evolution tracking in LangSmith
-- Conversation linking system
-- Debug tools using state replay
-
-## Phase 3: Voice Revolution (9-11 hours)
+- `tts_deep_thoughts.py`: Script that reads markdown and generates MP3 via ElevenLabs
+- MCP configurations for Context7 and Firecrawl with API docs pre-loaded
+- LiveKit expert sub-agent prompt with your repo history embedded
+- Browser automation MCP for real-time UI debugging during voice development
+- Development environment fully prepared for voice implementation
 
 ### Session 10: Performance Optimization for Voice (3-4 hours)
 
@@ -235,7 +235,7 @@ Reporter Agent → Deep Thoughts Report
 - Performance dashboard in LangSmith
 - Cost optimization via execution analysis
 
-### Session 11: Voice Integration Architecture (3-4 hours)
+### Session 11: Voice Integration Architecture (4-5 hours)
 
 **Goal**: Add LiveKit voice layer to LangGraph system
 
@@ -253,7 +253,7 @@ Reporter Agent → Deep Thoughts Report
 - Voice metrics in LangSmith
 - Seamless voice/text state continuity
 
-### Session 12: Voice UX Enhancement (2-3 hours)
+### Session 12: Voice UX Enhancement (3-4 hours)
 
 **Goal**: Create natural voice interactions with graph-based flow control
 
@@ -271,9 +271,27 @@ Reporter Agent → Deep Thoughts Report
 - Personality configuration nodes
 - Conversation flow templates
 
-## Phase 4: Production & Scale (14-16 hours)
+## Phase 4: Production & Scale (17-19 hours)
 
-### Session 13: Evening & Weekly Synthesis (4-5 hours)
+### Session 13: Advanced State Evolution (3-4 hours)
+
+**Goal**: Implement multi-session state management and synthesis
+
+**Topics**:
+- State persistence across conversations
+- Weekly synthesis via state aggregation
+- State versioning and migration patterns
+- Conversation continuity (morning → evening)
+- Historical state replay for debugging
+
+**Key Deliverables**:
+- Multi-session state management
+- Weekly report generator using historical states
+- State evolution tracking in LangSmith
+- Conversation linking system
+- Debug tools using state replay
+
+### Session 14: Evening & Weekly Synthesis (4-5 hours)
 
 **Goal**: Create evening reflection and weekly synthesis capabilities
 
@@ -291,7 +309,7 @@ Reporter Agent → Deep Thoughts Report
 - Date selection interface for report synthesis
 - Sentiment tracking across sessions
 
-### Session 14: Production Observability (3-4 hours)
+### Session 15: Production Observability (3-4 hours)
 
 **Goal**: Complete monitoring and debugging infrastructure
 
@@ -309,7 +327,7 @@ Reporter Agent → Deep Thoughts Report
 - A/B testing framework
 - Automated error recovery
 
-### Session 15: Scale & Multi-User Support (3-4 hours)
+### Session 16: Scale & Multi-User Support (3-4 hours)
 
 **Goal**: Production deployment with concurrent users
 
@@ -327,7 +345,7 @@ Reporter Agent → Deep Thoughts Report
 - Cost tracking per user/session
 - Load test results with bottleneck analysis
 
-### Session 16: Continuous Learning System (3-4 hours)
+### Session 17: Continuous Learning System (3-4 hours)
 
 **Goal**: Build feedback loops for system improvement
 
@@ -355,6 +373,37 @@ Every session follows the "Wrap, Don't Weld" principle:
 5. **Preserve Experience**: User never sees the plumbing change
 
 ## Key Architectural Insights
+
+### Voice-First Development Philosophy
+1. **Early Tooling Setup**: MCPs and sub-agents ready before voice coding begins
+2. **TTS as Bridge**: ElevenLabs provides immediate audio feedback during development
+3. **Expert Knowledge**: LiveKit sub-agent leverages your existing experience
+4. **Debug Visibility**: Browser automation ensures you can see what's happening
+5. **Performance First**: Optimize before adding voice complexity
+
+### Development Tooling Architecture
+```
+DEVELOPMENT ENVIRONMENT:
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  Context7 MCP   │     │  Firecrawl MCP   │     │ Puppeteer MCP   │
+│  (API Docs)     │     │  (Web Scraping)  │     │ (UI Debugging)  │
+└────────┬────────┘     └────────┬─────────┘     └────────┬────────┘
+         │                       │                          │
+         └───────────────────────┴──────────────────────────┘
+                                 │
+                          ┌──────▼─────────┐
+                          │  Claude Code   │
+                          │  Development   │
+                          └──────┬─────────┘
+                                 │
+                        ┌────────▼─────────┐
+                        │ LiveKit Expert  │
+                        │   Sub-agent     │
+                        └──────────────────┘
+
+AUDIO PIPELINE:
+Deep Thoughts MD → ElevenLabs TTS → Audio File → User Listening
+```
 
 ### Session 6 MCP Lessons
 The attempted MCP integration in Session 6 revealed critical architectural requirements:
@@ -393,6 +442,13 @@ Every session follows this rhythm:
 - Context enhances without disrupting coaching
 - Voice interactions feel human and responsive
 - Weekly synthesis provides meaningful insights
+
+### Voice Development Success
+- Development velocity increased by 50% with proper tooling
+- LiveKit integration completed without major roadblocks
+- TTS provides immediate gratification for Deep Thoughts
+- Debug visibility prevents voice UI mysteries
+- Performance remains under 3-second response time
 
 ### Learning & Growth
 - Each session builds on previous learnings

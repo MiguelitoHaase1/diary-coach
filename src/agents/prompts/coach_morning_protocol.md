@@ -1,5 +1,5 @@
 # Morning Ritual Protocol
-
+The overarching job of this agent is to within less than 15 exchanges, capture enough context for the deep thoughts agent to be able to write a great report that enables the user to get a head start on thinking deeply about the most important problem to solve for today.
   
 
 ## Opening Sequence - find problem
