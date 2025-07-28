@@ -479,6 +479,90 @@ class MultiAgentCLI:
         print(f"Evaluation saved to: {evaluation_abs_path}")
         print("="*80)
 
+        # Ask if user wants audio version
+        print(
+            "\n🎙️ Would you like an audio version of the Deep Thoughts report? "
+            "(Y/n): ", end="", flush=True
+        )
+        audio_response = input().strip().lower()
+
+        if audio_response in ['y', 'yes', '']:
+            await self._generate_audio_report(deep_thoughts_path)
+
+    async def _generate_audio_report(self, deep_thoughts_path: str):
+        """Generate audio version of Deep Thoughts report."""
+        try:
+            # Import the TTS converter
+            import sys
+            sys.path.append('scripts')
+            from tts_deep_thoughts import TTSConverter, MarkdownProcessor
+
+            # Get API credentials
+            api_key = os.getenv('ELEVENLABS_API_KEY')
+            voice_id = os.getenv('ELEVENLABS_VOICE_ID')
+
+            if not api_key or not voice_id:
+                print("❌ ElevenLabs credentials not found in environment.")
+                print(
+                    "Please add ELEVENLABS_API_KEY and ELEVENLABS_VOICE_ID "
+                    "to your .env file."
+                )
+                return
+
+            print("\n🎵 Converting Deep Thoughts to audio...")
+
+            # Initialize converter
+            converter = TTSConverter(api_key, voice_id)
+            processor = MarkdownProcessor()
+
+            # Read the Deep Thoughts content
+            with open(deep_thoughts_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+
+            # Clean for speech
+            clean_text = processor.clean_for_speech(content)
+            print(f"   Characters to convert: {len(clean_text):,}")
+
+            # Generate output path
+            from pathlib import Path
+            output_dir = Path('data/audio')
+            output_dir.mkdir(parents=True, exist_ok=True)
+
+            # Extract timestamp from filename
+            timestamp = Path(deep_thoughts_path).stem.split('_', 1)[1]
+            output_path = output_dir / f'deep_thoughts_audio_{timestamp}.mp3'
+
+            # Convert to speech
+            result = await converter.convert_text_async(
+                clean_text,
+                str(output_path),
+                "eleven_monolingual_v1"
+            )
+
+            if result['success']:
+                print(f"\n✅ Audio saved to: {result['output_path']}")
+                file_mb = result['file_size'] / 1024 / 1024
+                print(
+                    f"   File size: {result['file_size']:,} bytes "
+                    f"({file_mb:.1f} MB)"
+                )
+                print(f"   Generation time: {result['duration']:.1f}s")
+
+                if result['file_size'] > 10 * 1024 * 1024:
+                    print("   ⚠️  Note: File > 10MB may be slow on mobile devices")
+            else:
+                print(f"\n❌ Audio generation failed: {result['error']}")
+                if "quota_exceeded" in str(result['error']):
+                    print(
+                        "   💡 Tip: Your ElevenLabs quota has been exceeded. "
+                        "Check your account."
+                    )
+
+        except Exception as e:
+            print(f"\n❌ Error generating audio: {e}")
+            print("   You can manually convert later with:")
+            print(f"   python scripts/tts_deep_thoughts.py {deep_thoughts_path}")
+
 
 async def main():
     """Main entry point for multi-agent CLI."""

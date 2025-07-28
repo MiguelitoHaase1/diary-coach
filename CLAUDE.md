@@ -64,6 +64,20 @@ For each increment within a session:
 
 Also, at any point in an increment, turn over the microphone before making any major decisions, or if you are stuck on something for too many tries, e.g., API errors or similar difficulties that reoccur.
 
+#### Using Sub-Agents
+
+When planning increments:
+
+1. **Parallel Execution**: When increments can be run in parallel, propose to do so for efficiency
+2. **Specialized Agents**: When increments are best handled by particular sub-agents with tailored context, propose using them:
+   - **UI Agent**: For frontend/interface changes (works in `worktrees/ui`)
+   - **MCP Agent**: For Model Context Protocol integrations (works in `worktrees/mcp`)
+   - **LiveKit Agent**: For real-time communication features (works in `worktrees/voice`)
+   - **Evaluation Agent**: For testing and evaluation infrastructure
+   - **Documentation Agent**: For comprehensive documentation updates
+3. **Clear Delegation**: Specify exactly what each sub-agent should accomplish and what context they need
+4. **Worktree Isolation**: Each agent works in their dedicated git worktree for clean separation
+
 #### When Things Fail
 1. **Fail Fast**: Broken increment = immediate stop
 2. **Document Failure**: Log what broke and why
@@ -203,7 +217,80 @@ git commit -m "docs(session-x): update status and logbook"
     
 _Note: For detailed MCP integration approaches, see @docs/MCP_howto.md_
 
-### B. Evaluation System Integration
+### B. API Documentation with MCP Servers
+
+#### Context7 MCP Server
+
+For up-to-date API documentation during development:
+
+1. **Usage**: Add `use context7` to any prompt requiring library documentation
+2. **Benefits**: 
+   - Version-specific documentation (not outdated training data)
+   - Real code examples that actually work
+   - No hallucinated APIs
+3. **Example**:
+   ```
+   "Implement voice streaming with LiveKit. use context7"
+   ```
+
+#### Firecrawl MCP Server
+
+For web scraping and research tasks:
+
+1. **Tools Available**:
+   - `firecrawl_scrape`: Single page content extraction
+   - `firecrawl_batch_scrape`: Multiple URLs efficiently
+   - `firecrawl_map`: Discover URLs on a website
+   - `firecrawl_search`: Web search with content extraction
+   - `firecrawl_deep_research`: In-depth multi-source research
+2. **Usage**: Automatically invoked when web content is needed
+3. **Note**: Requires `FIRECRAWL_API_KEY` environment variable
+
+#### Local API Documentation
+
+Pre-fetched documentation available in `/apidocs`:
+- ElevenLabs (text-to-speech)
+- LiveKit (WebRTC)
+- LangGraph (agent orchestration)
+- Playwright (UI debugging)
+- WebRTC debugging
+- Todoist MCP server guide
+
+### C. Git Worktree Development
+
+#### Structure
+
+```
+diary-coach/
+├── main repository (main branch)
+└── worktrees/
+    ├── voice/      → feature/voice-agent
+    ├── langgraph/  → feature/langgraph-migration
+    ├── mcp/        → feature/mcp-enhancements
+    └── ui/         → feature/ui-interface
+```
+
+#### Benefits
+
+1. **Parallel Development**: Work on multiple features simultaneously
+2. **Clean Separation**: Each feature has isolated dependencies
+3. **No Stashing**: Switch between features instantly
+4. **Independent Testing**: Run tests without conflicts
+
+#### Workflow
+
+```bash
+# Work on voice features
+cd worktrees/voice
+source venv/bin/activate
+# Make changes, test, commit to feature/voice-agent
+
+# Switch to UI work (no stashing needed)
+cd ../ui
+# Continue development on feature/ui-interface
+```
+
+### D. Evaluation System Integration
 
 #### Core Principles
 
