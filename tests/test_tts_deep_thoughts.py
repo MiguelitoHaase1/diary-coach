@@ -135,10 +135,10 @@ class TestTTSConverter:
     @pytest.mark.asyncio
     async def test_convert_text_async_error(self, mock_client, mock_async_client):
         """Should handle conversion errors."""
-        # Setup mock to raise error
-        mock_instance = AsyncMock()
-        mock_async_client.return_value = mock_instance
-        mock_instance.generate.side_effect = Exception("API Error")
+        # Setup mock to raise error on the sync client (since async uses sync internally)
+        mock_instance = MagicMock()
+        mock_client.return_value = mock_instance
+        mock_instance.text_to_speech.convert.side_effect = Exception("API Error")
 
         # Test conversion
         converter = TTSConverter("test_key", "test_voice")
@@ -181,10 +181,15 @@ class TestFileOperations:
 
     def test_find_deep_thoughts_files(self):
         """Should find Deep Thoughts files."""
+        # Mock both glob patterns
         with patch('pathlib.Path.glob') as mock_glob:
-            mock_glob.return_value = [
-                Path('data/reports/deep_thoughts_20250128_120000.md'),
-                Path('data/reports/deep_thoughts_20250127_120000.md')
+            # Return empty for first pattern, files for second
+            mock_glob.side_effect = [
+                [],  # DeepThoughts_* pattern
+                [    # deep_thoughts_* pattern
+                    Path('data/reports/deep_thoughts_20250128_120000.md'),
+                    Path('data/reports/deep_thoughts_20250127_120000.md')
+                ]
             ]
 
             files = find_deep_thoughts_files(Path('data/reports'))
