@@ -235,7 +235,37 @@ Reporter Agent → Deep Thoughts Report
 - Performance dashboard in LangSmith
 - Cost optimization via execution analysis
 
-### Session 11: Voice Integration Architecture (4-5 hours)
+### Session 11: Chat UI Foundation with React Native Web (4-5 hours)
+
+**Goal**: Build polished web chat interface inspired by Claude's voice UX
+
+**Topics**:
+- React Native Web setup for cross-platform potential
+- Real-time chat UI with transcript display
+- Agent state visualization (talking, listening, waiting, thinking)
+- Report action buttons and Deep Thoughts display
+- WebSocket integration for streaming responses
+- Voice readiness: UI elements for future audio controls
+
+**Key Deliverables**:
+- React Native Web application with modern chat interface
+- Real-time message streaming with typing indicators
+- Clear agent state indicators (Coach vs Orchestrator vs other agents)
+- Transcript view with speaker identification and timestamps
+- Report generation UI with download/share capabilities
+- Responsive design working on mobile and desktop
+- WebSocket connection to backend LangGraph system
+- Pre-built UI hooks for future voice controls (mute, interrupt, etc.)
+
+**UI/UX Features**:
+- Smooth message animations and transitions
+- Agent avatars/indicators for clear speaker identification
+- "Thinking" animations during processing
+- Collapsible Deep Thoughts reports inline
+- Export options for conversation history
+- Dark/light theme support
+
+### Session 12: Voice Integration Architecture (4-5 hours)
 
 **Goal**: Add LiveKit voice layer to LangGraph system
 
@@ -253,7 +283,7 @@ Reporter Agent → Deep Thoughts Report
 - Voice metrics in LangSmith
 - Seamless voice/text state continuity
 
-### Session 12: Voice UX Enhancement (3-4 hours)
+### Session 13: Voice UX Enhancement (3-4 hours)
 
 **Goal**: Create natural voice interactions with graph-based flow control
 
@@ -273,7 +303,7 @@ Reporter Agent → Deep Thoughts Report
 
 ## Phase 4: Production & Scale (17-19 hours)
 
-### Session 13: Advanced State Evolution (3-4 hours)
+### Session 14: Advanced State Evolution (3-4 hours)
 
 **Goal**: Implement multi-session state management and synthesis
 
@@ -291,7 +321,7 @@ Reporter Agent → Deep Thoughts Report
 - Conversation linking system
 - Debug tools using state replay
 
-### Session 14: Evening & Weekly Synthesis (4-5 hours)
+### Session 15: Evening & Weekly Synthesis (4-5 hours)
 
 **Goal**: Create evening reflection and weekly synthesis capabilities
 
@@ -309,7 +339,7 @@ Reporter Agent → Deep Thoughts Report
 - Date selection interface for report synthesis
 - Sentiment tracking across sessions
 
-### Session 15: Production Observability (3-4 hours)
+### Session 16: Production Observability (3-4 hours)
 
 **Goal**: Complete monitoring and debugging infrastructure
 
@@ -327,7 +357,7 @@ Reporter Agent → Deep Thoughts Report
 - A/B testing framework
 - Automated error recovery
 
-### Session 16: Scale & Multi-User Support (3-4 hours)
+### Session 17: Scale & Multi-User Support (3-4 hours)
 
 **Goal**: Production deployment with concurrent users
 
@@ -345,7 +375,7 @@ Reporter Agent → Deep Thoughts Report
 - Cost tracking per user/session
 - Load test results with bottleneck analysis
 
-### Session 17: Continuous Learning System (3-4 hours)
+### Session 18: Continuous Learning System (3-4 hours)
 
 **Goal**: Build feedback loops for system improvement
 

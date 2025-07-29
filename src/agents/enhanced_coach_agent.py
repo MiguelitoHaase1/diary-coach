@@ -10,6 +10,7 @@ from src.events.schemas import UserMessage, AgentResponse as LegacyAgentResponse
 from src.services.llm_service import AnthropicService
 from src.agents.prompts import get_coach_system_prompt, get_coach_morning_protocol
 from src.agents.registry import agent_registry
+from src.agents.morning_protocol_tracker import MorningProtocolTracker
 
 # Try to import LangSmith for tracing
 try:
@@ -62,6 +63,10 @@ class EnhancedDiaryCoach(BaseAgent):
         self.morning_challenge: Optional[str] = None
         self.morning_value: Optional[str] = None
         self.message_history: List[Dict[str, str]] = []
+        
+        # Morning protocol tracking
+        self.protocol_tracker = MorningProtocolTracker(self.MORNING_PROMPT_ADDITION)
+        self._next_nudge = None  # Store nudge for next generation
 
         # Agent collaboration tracking
         self.agent_call_history: List[Dict[str, Any]] = []
@@ -94,8 +99,19 @@ class EnhancedDiaryCoach(BaseAgent):
     def _get_system_prompt(self) -> str:
         """Get the appropriate system prompt based on conversation context."""
         base_prompt = self.SYSTEM_PROMPT
-        # Check recent messages for morning context
-        if self.message_history:
+        
+        # Check if we're in morning conversation mode
+        if self.conversation_state == "morning":
+            morning_prompt = base_prompt + "\n\n" + self.MORNING_PROMPT_ADDITION
+            # Add nudge if we have one
+            if self._next_nudge:
+                logger.info(f"Adding nudge to prompt: {self._next_nudge[:50]}...")
+                morning_prompt += self._next_nudge
+                self._next_nudge = None  # Use once then clear
+            return morning_prompt
+        
+        # Also check recent messages for morning context
+        elif self.message_history:
             # Check last few user messages for morning greeting
             recent_user_messages = [
                 msg for msg in self.message_history[-6:]
@@ -104,6 +120,7 @@ class EnhancedDiaryCoach(BaseAgent):
             if any(self._is_morning_context(msg["content"])
                    for msg in recent_user_messages):
                 return base_prompt + "\n\n" + self.MORNING_PROMPT_ADDITION
+        
         return base_prompt
 
     async def _should_call_agent(
@@ -481,6 +498,12 @@ class EnhancedDiaryCoach(BaseAgent):
         logger.info(
             f"EnhancedDiaryCoach.process_message: {message.content}")
 
+        # Check and update conversation state BEFORE generating response
+        if (self._is_morning_context(message.content) and
+                self.conversation_state == "general"):
+            self.conversation_state = "morning"
+            logger.info("Entering morning conversation mode")
+
         # Update message history
         self.message_history.append({
             "role": "user",
@@ -490,7 +513,7 @@ class EnhancedDiaryCoach(BaseAgent):
         # Gather context from agents if in Stage 1
         agent_context = await self._gather_agent_context(message)
 
-        # Get base system prompt
+        # Get base system prompt (includes nudge if available)
         base_prompt = self._get_system_prompt()
 
         # Enhance prompt with agent context
@@ -498,11 +521,12 @@ class EnhancedDiaryCoach(BaseAgent):
 
         # Debug logging
         logger.info(f"Enhanced coach: agents_called={list(agent_context.keys())}")
+        logger.info(f"Conversation state: {self.conversation_state}")
         if agent_context:
             logger.info("Agent context being used in prompt")
             for agent, data in agent_context.items():
                 logger.info(f"  {agent}: {data['content'][:100]}...")
-
+            
         # Generate response
         response_content = await self.llm_service.generate_response(
             messages=self.message_history,
@@ -517,10 +541,18 @@ class EnhancedDiaryCoach(BaseAgent):
             "content": response_content
         })
 
-        # Track conversation state
-        if (self._is_morning_context(message.content) and
-                self.conversation_state == "general"):
-            self.conversation_state = "morning"
+        # Now check if we need a nudge for next time
+        if self.conversation_state == "morning":
+            # Analyze the exchange that just happened
+            nudge = self.protocol_tracker.analyze_exchange(
+                message.content, 
+                response_content
+            )
+            if nudge:
+                # Store nudge for next generation
+                self._next_nudge = nudge
+                logger.info(f"Morning protocol nudge prepared: {nudge[:50]}...")
+                logger.info(f"Protocol state: {self.protocol_tracker.current_state}")
 
         # Clear recent calls periodically (every 3 turns)
         # 3 user + 3 assistant messages
