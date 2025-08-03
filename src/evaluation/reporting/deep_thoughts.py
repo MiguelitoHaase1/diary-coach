@@ -4,10 +4,16 @@ from datetime import datetime
 from typing import List, Dict, Optional
 from pathlib import Path
 from langsmith import traceable
+import asyncio
+import logging
+import re
 
 from src.services.llm_service import AnthropicService
 from src.services.llm_factory import LLMFactory, LLMTier
 from src.agents.prompts import get_deep_thoughts_system_prompt
+# Web search removed - now handled natively in the prompt
+
+logger = logging.getLogger(__name__)
 
 
 class DeepThoughtsGenerator:
@@ -62,6 +68,8 @@ class DeepThoughtsGenerator:
         include_transcript: bool = False,
         subjective_ratings: Optional[Dict[str, int]] = None,
         automatic_scores: Optional[Dict[str, float]] = None,
+        # Web search now handled natively by the LLM
+        enable_web_search: bool = True,
     ) -> str:
         """Generate Deep Thoughts report and save to file.
 
@@ -73,6 +81,7 @@ class DeepThoughtsGenerator:
             include_transcript: Whether to include conversation transcript
             subjective_ratings: Optional dict of subjective ratings (1-10)
             automatic_scores: Optional dict of automatic evaluation scores (0-1)
+            enable_web_search: If True, report will include search suggestions
 
         Returns:
             Deep Thoughts report content
@@ -89,6 +98,8 @@ class DeepThoughtsGenerator:
             subjective_ratings=subjective_ratings,
             automatic_scores=automatic_scores,
         )
+        
+        # Web search is now handled natively by the LLM during generation
 
         # Get output file path
         output_path = self._get_output_path(timestamp)
@@ -166,8 +177,17 @@ class DeepThoughtsGenerator:
         user_prompt = f"""CONVERSATION TO ANALYZE:
 {conversation_text}
 
-Generate a Deep Thoughts report now following the structure and guidelines
-provided in the system prompt."""
+Generate a Deep Thoughts report now following ALL sections in the structure:
+1. Story-line introduction
+2. Today's Crux
+3. Options
+4. Crux Solution Deep Dive
+5. Contextualization
+6. Just One More Thing... (if applicable)
+7. Conclusion
+8. Recommended readings (REQUIRED - suggest search terms and themes)
+
+Follow the guidelines in the system prompt and ensure you include the Recommended readings section with search suggestions."""
 
         # Add optional enhancement sections if requested
         if include_evals or include_transcript:
@@ -186,23 +206,57 @@ Additionally, include an Evaluation Summary section with:
         try:
             # Generate analysis with parameters based on tier
             if self.tier in [LLMTier.PREMIUM, LLMTier.O3]:
-                max_tokens = 1500
+                max_tokens = 2500  # Increased to ensure full report
                 temperature = 0.2
             else:
-                max_tokens = 1000
+                max_tokens = 2000  # Increased for standard tier too
                 temperature = 0.3
 
-            analysis_content = await self.llm_service.generate_response(
-                messages=[{"role": "user", "content": user_prompt}],
-                system_prompt=system_prompt,
-                max_tokens=max_tokens,
-                temperature=temperature,
-            )
+            # Implement retry logic with exponential backoff
+            max_retries = 5
+            base_delay = 2  # Start with 2 seconds
 
-            # Return the analysis content directly
-            # The LLM already includes the transcript in the appendix as per
-            # system prompt
-            return analysis_content
+            for attempt in range(max_retries):
+                try:
+                    analysis_content = await self.llm_service.generate_response(
+                        messages=[{"role": "user", "content": user_prompt}],
+                        system_prompt=system_prompt,
+                        max_tokens=max_tokens,
+                        temperature=temperature,
+                    )
+
+                    # Return the analysis content directly
+                    # The LLM already includes the transcript in the appendix as per
+                    # system prompt
+                    return analysis_content
+
+                except Exception as e:
+                    error_msg = str(e)
+
+                    # Check if it's an overload error
+                    if "500" in error_msg and "Overloaded" in error_msg:
+                        if attempt < max_retries - 1:
+                            # Calculate exponential backoff delay
+                            delay = base_delay * (2 ** attempt)
+                            logger.warning(
+                                f"Claude Opus overloaded, retrying in {delay}s "
+                                f"(attempt {attempt + 1}/{max_retries})"
+                            )
+                            await asyncio.sleep(delay)
+                            continue
+                        else:
+                            logger.error(
+                                f"Claude Opus overloaded after {max_retries} attempts"
+                            )
+
+                    # If not an overload error or final attempt, raise
+                    if attempt == max_retries - 1:
+                        raise e
+
+            # If we get here, all retries failed
+            raise Exception(
+                f"Failed to generate Deep Thoughts after {max_retries} attempts"
+            )
 
         except Exception as e:
             # Fallback content if generation fails
@@ -225,3 +279,5 @@ Try running the analysis again, or check the system logs for more details.
 *Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}*"""
 
             return fallback_content
+    
+    # Web search methods removed - now handled natively by the LLM

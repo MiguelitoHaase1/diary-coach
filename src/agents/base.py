@@ -23,6 +23,9 @@ class AgentCapability(Enum):
     REPORT_GENERATION = "report_generation"
     SYNTHESIS = "synthesis"
     QUALITY_ASSESSMENT = "quality_assessment"
+    WEB_SEARCH = "web_search"
+    RESEARCH = "research"
+    CONTENT_CURATION = "content_curation"
 
 
 @dataclass

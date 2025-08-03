@@ -1,14 +1,14 @@
 """Personal Content Agent for accessing user's personal documentation."""
 
-import os
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Dict, List
 from datetime import datetime
 from pathlib import Path
 
 from src.agents.base import BaseAgent, AgentCapability, AgentRequest, AgentResponse
 from src.orchestration.document_loader import MarkdownDocumentLoader
 from src.orchestration.context_state import ContextState
+from src.services.llm_factory import LLMFactory, LLMTier
 
 
 logger = logging.getLogger(__name__)
@@ -32,19 +32,25 @@ class PersonalContentAgent(BaseAgent):
         self.chunk_size = chunk_size
         self.document_loader = MarkdownDocumentLoader(documents_path, chunk_size)
         self.available_documents: List[str] = []
+        # Use Claude Sonnet for intelligent content synthesis
+        self.llm_service = LLMFactory.create_service(LLMTier.STANDARD)
 
     async def initialize(self) -> None:
         """Initialize by scanning available personal documents."""
         try:
             if self.documents_path.exists():
+                # Recursively find all markdown files in subdirectories
                 self.available_documents = [
-                    f.name for f in self.documents_path.glob("*.md")
+                    str(f.relative_to(self.documents_path))
+                    for f in self.documents_path.rglob("*.md")
                 ]
                 logger.info(f"Found {len(self.available_documents)} personal documents")
             else:
-                logger.warning(f"Personal documents path not found: {self.documents_path}")
+                logger.warning(
+                    f"Personal documents path not found: {self.documents_path}"
+                )
                 self.available_documents = []
-            
+
             self.is_initialized = True
         except Exception as e:
             logger.error(f"Error initializing PersonalContentAgent: {e}")
@@ -68,13 +74,13 @@ class PersonalContentAgent(BaseAgent):
                 }],
                 context_relevance={"documents": 1.0}  # Force high relevance
             )
-            
+
             # Use document loader to find relevant content
             updated_state = await self.document_loader.load_documents(mock_state)
-            
+
             # Extract relevant documents
             if updated_state.document_context:
-                return self._format_personal_content_response(
+                return await self._format_personal_content_response(
                     request, updated_state.document_context
                 )
             else:
@@ -88,7 +94,7 @@ class PersonalContentAgent(BaseAgent):
                     request_id=request.request_id,
                     timestamp=datetime.now()
                 )
-                
+
         except Exception as e:
             logger.error(f"Error handling personal content request: {e}")
             return AgentResponse(
@@ -100,10 +106,10 @@ class PersonalContentAgent(BaseAgent):
                 error=str(e)
             )
 
-    def _format_personal_content_response(
+    async def _format_personal_content_response(
         self, request: AgentRequest, documents: Dict[str, str]
     ) -> AgentResponse:
-        """Format personal content into structured response.
+        """Use LLM to synthesize personal content into intelligent response.
 
         Args:
             request: Original request
@@ -112,70 +118,69 @@ class PersonalContentAgent(BaseAgent):
         Returns:
             Formatted AgentResponse
         """
-        # Convert dict to list format for processing
-        doc_list = []
-        for filename, content in documents.items():
-            doc_list.append({
-                "source": filename,
-                "content": content,
-                "relevance": 1.0  # All docs that made it here are relevant
-            })
-        
-        # Take all documents (already filtered by relevance)
-        relevant_content = doc_list
-        
-        # Format response following the prompt structure
-        content_lines = ["RELEVANT CONTEXT:"]
-        for item in relevant_content:
-            # Extract key points from content
-            lines = item["content"].strip().split("\n")
-            key_points = [
-                line.strip() for line in lines 
-                if line.strip() and not line.strip().startswith("#")
-            ][:3]  # Take first 3 non-header lines
-            
-            for point in key_points:
-                content_lines.append(f"- {point}")
-        
-        # Add integration suggestion
-        content_lines.extend([
-            "",
-            "SUGGESTED INTEGRATION:",
-            self._generate_integration_suggestion(request.query, relevant_content)
-        ])
-        
+        # Build prompt for LLM with personal context
+        prompt = self._build_synthesis_prompt(request.query, documents)
+
+        # Get LLM response
+        messages = [{"role": "user", "content": prompt}]
+        llm_response = await self.llm_service.generate_response(
+            messages, max_tokens=1000
+        )
+
+        # Extract sources for metadata
+        sources = list(documents.keys())
+
         return AgentResponse(
             agent_name=self.name,
-            content="\n".join(content_lines),
+            content=llm_response,
             metadata={
                 "documents_found": len(documents),
-                "documents_used": len(relevant_content),
-                "relevance_scores": [doc["relevance"] for doc in relevant_content],
-                "sources": [doc["source"] for doc in relevant_content]
+                "documents_used": len(documents),
+                "sources": sources,
+                "llm_tier": "standard",
+                "llm_model": "claude-sonnet-4"
             },
             request_id=request.request_id,
             timestamp=datetime.now()
         )
 
-    def _generate_integration_suggestion(
-        self, query: str, content: List[Dict[str, Any]]
-    ) -> str:
-        """Generate a suggestion for how to integrate personal content.
+    def _build_synthesis_prompt(self, query: str, documents: Dict[str, str]) -> str:
+        """Build prompt for LLM to synthesize personal content.
 
         Args:
-            query: Original query
-            content: Relevant content found
+            query: The question about personal content
+            documents: Dict of filename->content
 
         Returns:
-            Integration suggestion
+            Prompt for the LLM
         """
-        query_lower = query.lower()
-        
-        if "value" in query_lower or "belief" in query_lower:
-            return "Reference these core beliefs when discussing current challenges"
-        elif "experience" in query_lower or "past" in query_lower:
-            return "Draw parallels between past experiences and current situation"
-        elif "goal" in query_lower or "aspiration" in query_lower:
-            return "Connect current discussion to long-term aspirations"
-        else:
-            return "Weave these insights naturally into the coaching conversation"
+        prompt_parts = [
+            "You are analyzing personal documentation to provide "
+            "relevant context for a coaching conversation.",
+            "",
+            f"Query: {query}",
+            "",
+            "Available Personal Context:",
+            ""
+        ]
+
+        # Add each document
+        for filename, content in documents.items():
+            prompt_parts.extend([
+                f"=== {filename} ===",
+                content[:self.chunk_size],  # Respect chunk size limit
+                ""
+            ])
+
+        prompt_parts.extend([
+            "Based on the personal context above, provide:",
+            "1. RELEVANT CONTEXT: Key insights from the documents "
+            "that relate to the query",
+            "2. SUGGESTED INTEGRATION: How to naturally weave these "
+            "insights into the coaching conversation",
+            "",
+            "Format your response clearly with these two sections. "
+            "Be specific and actionable."
+        ])
+
+        return "\n".join(prompt_parts)

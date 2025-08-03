@@ -64,6 +64,10 @@ Focus on clarity, coherence, and practical value."""
             Response with Deep Thoughts report
         """
         try:
+            # Check if this is a phase 2 questions request
+            if request.query == "phase2_questions":
+                return await self._handle_phase2_questions(request)
+            
             # Extract agent contributions from context
             agent_data = request.context.get("agent_contributions", {})
             conversation = request.context.get("conversation", [])
@@ -97,6 +101,65 @@ Focus on clarity, coherence, and practical value."""
             return AgentResponse(
                 agent_name=self.name,
                 content=f"Error generating Deep Thoughts: {str(e)}",
+                metadata={},
+                request_id=request.request_id,
+                timestamp=datetime.now(),
+                error=str(e),
+            )
+
+    async def _handle_phase2_questions(self, request: AgentRequest) -> AgentResponse:
+        """Generate phase 2 questions based on conversation context.
+        
+        Args:
+            request: Request containing conversation context
+            
+        Returns:
+            Response with suggested questions and insights
+        """
+        try:
+            conversation = request.context.get("conversation", [])
+            crux = request.context.get("crux", "")
+            
+            # Build prompt for phase 2 question generation
+            phase2_prompt = f"""Based on this coaching conversation, I need to suggest the most important area to explore deeper.
+
+CONVERSATION SO FAR:
+{self._format_conversation(conversation)}
+
+IDENTIFIED CRUX:
+{crux}
+
+Analyze this conversation and provide:
+1. Brief insight: What's the most critical aspect of this crux that needs deeper exploration?
+2. Key question area: What specific dimension should we probe further?
+3. Suggested approach: How should the coach explore this area?
+
+Be concise and focus on what would most help the user make progress on their crux."""
+
+            # Generate phase 2 analysis
+            analysis = await self.llm_service.generate_response(
+                messages=[{"role": "user", "content": phase2_prompt}],
+                system_prompt="You are an expert coaching analyst helping identify the most valuable areas to explore deeper.",
+                max_tokens=500,
+                temperature=0.5
+            )
+            
+            return AgentResponse(
+                agent_name=self.name,
+                content=analysis,
+                metadata={
+                    "response_type": "phase2_questions",
+                    "crux": crux,
+                },
+                request_id=request.request_id,
+                timestamp=datetime.now(),
+            )
+            
+        except Exception as e:
+            logger.error(f"Phase 2 questions error: {str(e)}")
+            return AgentResponse(
+                agent_name=self.name,
+                content="I'll explore deeper questions about your challenge.",
                 metadata={},
                 request_id=request.request_id,
                 timestamp=datetime.now(),

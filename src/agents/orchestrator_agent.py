@@ -2,7 +2,7 @@
 
 import asyncio
 import json
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from datetime import datetime
 import logging
 
@@ -343,7 +343,8 @@ Provide your strategy in the following JSON format:
                 content=f"Agent timed out after {timeout}s",
                 metadata={"error": "timeout"},
                 request_id=request.request_id,
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
+                error="timeout"
             )
 
     async def _synthesize_agent_responses(
@@ -470,6 +471,500 @@ Return your synthesis as JSON:
             f"Failed to parse JSON from response: {response[:200]}..."
         )
         return None
+
+    async def coordinate_stage3_synthesis(
+        self, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Coordinate all Stage 3 agent contributions for Deep Thoughts synthesis.
+
+        This method:
+        1. Gathers contributions from all relevant agents (memory, personal, MCP)
+        2. Analyzes what additional information is needed
+        3. Coordinates any necessary web searches
+        4. Prepares a unified brief for the reporter agent
+        5. Manages all error handling and retries
+
+        Args:
+            context: Conversation history and other context
+
+        Returns:
+            Dictionary with all agent contributions and coordination metadata
+        """
+        try:
+            conversation = context.get("conversation", [])
+
+            # Gather agent contributions
+            agent_contributions = await self._gather_stage3_agent_contributions(
+                conversation
+            )
+
+            # Generate initial report
+            initial_report = await self._generate_initial_report(
+                conversation, agent_contributions
+            )
+
+            # Coordinate web search if needed
+            web_search_results = await self._coordinate_web_search_if_needed(
+                initial_report, context
+            )
+
+            # Prepare unified synthesis brief
+            synthesis_brief = self._prepare_synthesis_brief(
+                agent_contributions,
+                initial_report,
+                web_search_results
+            )
+
+            return synthesis_brief
+
+        except Exception as e:
+            logger.error(f"Stage 3 coordination error: {e}")
+            return {
+                "status": "error",
+                "error": str(e),
+                "fallback": "Direct agent calls recommended"
+            }
+
+    async def _gather_stage3_agent_contributions(
+        self, conversation: list
+    ) -> Dict[str, str]:
+        """Gather contributions from all relevant Stage 3 agents.
+
+        Args:
+            conversation: The conversation history
+
+        Returns:
+            Dictionary of agent contributions
+        """
+        agent_contributions = {}
+
+        # Define agents and their queries
+        agent_queries = [
+            {
+                "name": "memory",
+                "query": "Provide relevant past conversation insights for synthesis",
+                "timeout": 5.0
+            },
+            {
+                "name": "personal_content",
+                "query": "Provide relevant personal context and beliefs",
+                "timeout": 5.0
+            },
+            {
+                "name": "mcp",
+                "query": "Provide relevant tasks and external context for synthesis",
+                "timeout": 3.0,
+                "filter_empty": "No relevant tasks"
+            }
+        ]
+
+        for agent_info in agent_queries:
+            logger.info(f"Stage 3: Gathering {agent_info['name']} contributions...")
+            agent = agent_registry.get_agent(agent_info["name"])
+            if not agent:
+                continue
+
+            request = AgentRequest(
+                from_agent=self.agent_id,
+                to_agent=agent_info["name"],
+                query=agent_info["query"],
+                context={"conversation": conversation}
+            )
+
+            response = await self._query_agent_with_timeout(
+                agent, request, timeout=agent_info.get("timeout", 5.0)
+            )
+
+            if response and not response.error:
+                # Check for filter condition
+                if filter_text := agent_info.get("filter_empty"):
+                    if filter_text not in response.content:
+                        agent_contributions[agent_info["name"]] = response.content
+                else:
+                    agent_contributions[agent_info["name"]] = response.content
+
+        return agent_contributions
+
+    async def _generate_initial_report(
+        self, conversation: list, agent_contributions: Dict[str, str]
+    ) -> str:
+        """Generate initial Deep Thoughts report using Reporter agent.
+
+        Args:
+            conversation: The conversation history
+            agent_contributions: Contributions from other agents
+
+        Returns:
+            The initial report content or empty string if unavailable
+        """
+        logger.info("Stage 3: Generating initial Deep Thoughts report...")
+        reporter = agent_registry.get_agent("reporter")
+        if not reporter:
+            logger.warning("Reporter agent not available")
+            return ""
+
+        reporter_request = AgentRequest(
+            from_agent=self.agent_id,
+            to_agent="reporter",
+            query="Generate Deep Thoughts report",
+            context={
+                "conversation": conversation,
+                "agent_contributions": agent_contributions
+            }
+        )
+
+        reporter_response = await reporter.handle_request(reporter_request)
+        return reporter_response.content if reporter_response else ""
+
+    async def _coordinate_web_search_if_needed(
+        self, initial_report: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Coordinate web search if the report indicates it's needed.
+
+        Args:
+            initial_report: The initial Deep Thoughts report
+            context: Additional context
+
+        Returns:
+            Web search results or empty dict if not needed
+        """
+        if not initial_report:
+            return {}
+
+        logger.info("Stage 3: Coordinating web search for articles...")
+        search_coordination = await self.coordinate_phase3_search(
+            initial_report, context
+        )
+
+        if search_coordination.get("status") == "success":
+            return search_coordination
+
+        return {}
+
+    def _prepare_synthesis_brief(
+        self,
+        agent_contributions: Dict[str, str],
+        initial_report: str,
+        web_search_results: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Prepare the final synthesis brief with all gathered information.
+
+        Args:
+            agent_contributions: Contributions from agents
+            initial_report: The initial report
+            web_search_results: Results from web search
+
+        Returns:
+            The complete synthesis brief
+        """
+        return {
+            "status": "success",
+            "agent_contributions": agent_contributions,
+            "initial_report": initial_report,
+            "web_search_results": web_search_results,
+            "coordination_metadata": {
+                "stage": "stage3_synthesis",
+                "timestamp": datetime.now().isoformat(),
+                "agents_queried": list(agent_contributions.keys()),
+                "web_search_performed": bool(web_search_results)
+            }
+        }
+
+    async def coordinate_phase3_search(
+        self, report_content: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Coordinate Phase 3 web search for Deep Thoughts report.
+
+        This method handles web search coordination as part of Stage 3.
+        Now called by coordinate_stage3_synthesis for unified coordination.
+
+        Args:
+            report_content: The Deep Thoughts report content
+            context: Additional context from the conversation
+
+        Returns:
+            Dictionary with search results and coordination metadata
+        """
+        try:
+            # Extract search markers or themes from report
+            search_needs = await self._analyze_search_needs(report_content)
+
+            if not search_needs:
+                return {
+                    "status": "no_search_needed",
+                    "message": "No web search required for this report"
+                }
+
+            # Generate specific search queries
+            search_queries = await self._generate_search_queries(
+                search_needs, context
+            )
+
+            # Coordinate with web search agent
+            search_results = await self._execute_searches_with_retry(
+                search_queries
+            )
+
+            # Prepare structured brief for Deep Thoughts
+            structured_brief = await self._prepare_search_brief(
+                search_results, search_needs
+            )
+
+            return {
+                "status": "success",
+                "search_results": search_results,
+                "structured_brief": structured_brief,
+                "queries_executed": len(search_queries),
+                "coordination_metadata": {
+                    "stage": "phase3",
+                    "timestamp": datetime.now().isoformat(),
+                    "search_needs": search_needs
+                }
+            }
+
+        except Exception as e:
+            logger.error(f"Phase 3 coordination error: {e}")
+            return {
+                "status": "error",
+                "error": str(e),
+                "fallback": "Manual search recommended"
+            }
+
+    async def _analyze_search_needs(self, report_content: str) -> List[str]:
+        """Analyze report to identify search needs."""
+        # Look for NEEDS_WEBSEARCH markers
+        import re
+        pattern = r'\[NEEDS_WEBSEARCH:\s*([^\]]+)\]'
+        matches = re.findall(pattern, report_content)
+
+        if matches:
+            return [match.strip() for match in matches]
+
+        # If no markers, use LLM to identify search needs
+        analysis_prompt = f"""Analyze this Deep Thoughts report and identify 2-3 topics
+that would benefit from external research articles:
+
+{report_content[:2000]}
+
+Return only the topics as a simple list, one per line."""
+
+        try:
+            response = await self.llm_service.generate_response(
+                messages=[{"role": "user", "content": analysis_prompt}],
+                temperature=0.3,
+                max_tokens=200
+            )
+
+            topics = [
+                line.strip() for line in response.split('\n')
+                if line.strip() and not line.startswith('-')
+            ]
+            return topics[:3]
+        except Exception as e:
+            logger.error(f"Error analyzing search needs: {e}")
+            return []
+
+    async def _generate_search_queries(
+        self, search_needs: List[str], context: Dict[str, Any]
+    ) -> List[Dict[str, str]]:
+        """Generate specific search queries for identified needs."""
+        queries = []
+
+        for need in search_needs:
+            # Generate optimized search query
+            query_prompt = f"""Generate an optimized web search query for finding
+high-quality articles about: {need}
+
+Consider the coaching context and focus on practical, actionable content.
+Return just the search query, nothing else."""
+
+            try:
+                optimized_query = await self.llm_service.generate_response(
+                    messages=[{"role": "user", "content": query_prompt}],
+                    temperature=0.3,
+                    max_tokens=100
+                )
+
+                queries.append({
+                    "original_need": need,
+                    "search_query": optimized_query.strip(),
+                    "retry_count": 0
+                })
+            except Exception as e:
+                logger.error(f"Error generating query for '{need}': {e}")
+                # Fallback to basic query
+                queries.append({
+                    "original_need": need,
+                    "search_query": f"{need} best practices articles",
+                    "retry_count": 0
+                })
+
+        return queries
+
+    async def _execute_searches_with_retry(
+        self, queries: List[Dict[str, str]], max_retries: int = 2
+    ) -> List[Dict[str, Any]]:
+        """Execute searches with retry logic and error handling."""
+        from src.agents.registry import agent_registry
+
+        # Try to get Claude web search agent first, fallback to regular
+        search_agent = agent_registry.get_agent("claude_web_search")
+        if not search_agent:
+            search_agent = agent_registry.get_agent("web_search")
+
+        if not search_agent:
+            logger.error("No web search agent available")
+            return []
+
+        results = []
+
+        for query_info in queries:
+            retry_count = 0
+            success = False
+
+            while retry_count <= max_retries and not success:
+                try:
+                    request = AgentRequest(
+                        from_agent=self.agent_id,
+                        to_agent=search_agent.name,
+                        query="search",
+                        context={
+                            "queries": [query_info["search_query"]],
+                            "max_articles_per_theme": 3
+                        },
+                        request_id=f"phase3_search_{datetime.now().timestamp()}"
+                    )
+
+                    response = await search_agent.handle_request(request)
+
+                    if response.error:
+                        raise Exception(response.error)
+
+                    results.append({
+                        "query": query_info["search_query"],
+                        "original_need": query_info["original_need"],
+                        "results": response.content,
+                        "metadata": response.metadata,
+                        "success": True
+                    })
+                    success = True
+
+                except Exception as e:
+                    retry_count += 1
+                    logger.warning(
+                        f"Search failed for '{query_info['search_query']}' "
+                        f"(attempt {retry_count}/{max_retries}): {e}"
+                    )
+
+                    if retry_count <= max_retries:
+                        # Modify query for retry
+                        query_info["search_query"] = await self._modify_query_for_retry(
+                            query_info["search_query"], str(e)
+                        )
+                        await asyncio.sleep(2 ** retry_count)  # Exponential backoff
+                    else:
+                        results.append({
+                            "query": query_info["search_query"],
+                            "original_need": query_info["original_need"],
+                            "results": None,
+                            "error": str(e),
+                            "success": False
+                        })
+
+        return results
+
+    async def _modify_query_for_retry(self, original_query: str, error: str) -> str:
+        """Modify search query based on error for retry."""
+        if "rate limit" in error.lower():
+            # Don't modify for rate limits, just wait
+            return original_query
+        elif "no results" in error.lower():
+            # Broaden the query
+            return f"{original_query} OR guidance OR strategies"
+        else:
+            # Simplify the query
+            words = original_query.split()[:5]  # Take first 5 words
+            return " ".join(words)
+
+    async def _prepare_search_brief(
+        self, search_results: List[Dict[str, Any]], search_needs: List[str]
+    ) -> Dict[str, Any]:
+        """Prepare structured brief from search results for Deep Thoughts."""
+        successful_results = [r for r in search_results if r.get("success")]
+        failed_searches = [r for r in search_results if not r.get("success")]
+
+        # Organize results by theme
+        organized_results = {}
+        for result in successful_results:
+            need = result["original_need"]
+            organized_results[need] = {
+                "content": result["results"],
+                "metadata": result.get("metadata", {})
+            }
+
+        # Deduplicate and prioritize
+        brief = {
+            "search_summary": {
+                "total_searches": len(search_results),
+                "successful": len(successful_results),
+                "failed": len(failed_searches)
+            },
+            "organized_results": organized_results,
+            "key_articles": await self._extract_key_articles(successful_results),
+            "failed_searches": [
+                {
+                    "need": f["original_need"],
+                    "error": f.get("error", "Unknown error")
+                }
+                for f in failed_searches
+            ],
+            "prepared_at": datetime.now().isoformat()
+        }
+
+        return brief
+
+    async def _extract_key_articles(
+        self, results: List[Dict[str, Any]], max_articles: int = 9
+    ) -> List[Dict[str, str]]:
+        """Extract and deduplicate key articles from all results."""
+        articles = []
+        seen_urls = set()
+
+        for result in results:
+            content = result.get("results", "")
+            # Simple extraction of URLs and titles
+            lines = content.split('\n')
+
+            for i, line in enumerate(lines):
+                if "URL:" in line or "http" in line:
+                    # Try to extract URL
+                    import re
+                    url_match = re.search(r'https?://[^\s\)]+', line)
+                    if url_match:
+                        url = url_match.group(0).rstrip('.,;)')
+                        if url not in seen_urls:
+                            # Try to get title from previous line
+                            title = "Article"
+                            if i > 0:
+                                title_line = lines[i-1]
+                                # Extract title from markdown format
+                                title_match = re.search(
+                                    r'\*\*"?([^"*]+)"?\*\*', title_line
+                                )
+                                if title_match:
+                                    title = title_match.group(1)
+
+                            articles.append({
+                                "title": title,
+                                "url": url,
+                                "theme": result.get("original_need", "General")
+                            })
+                            seen_urls.add(url)
+
+                            if len(articles) >= max_articles:
+                                return articles
+
+        return articles
 
     def get_stage_info(self) -> Dict[str, Any]:
         """Get current stage information."""

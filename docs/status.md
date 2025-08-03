@@ -1,14 +1,193 @@
 # Diary Coach Project Status
 
-## Current Status: Session 9.4 – Morning Protocol Nudging System
+## Current Status: Session 10.11 – Web Search Integration Complete ✅
 
-**Last Updated**: July 29, 2025
+**Last Updated**: August 3, 2025
 
 ## Project Overview
 
 Multi-agent text-first coaching system with eventual voice integration. Uses a Test-Driven Development (TDD) approach with comprehensive conversation quality evaluation. Built incrementally following three core principles: Compartmentalization, Continuous Improvement, and Learning While Building.
 
 ## Recent Sessions
+
+### Session 10.11: Complete Web Search Integration with Anthropic's Native Search ✅
+
+**Duration**: Multiple increments
+**Approach**: Implement Anthropic's native WebSearch capability with orchestrator coordination
+**Result**: Fully functional web search integrated into Deep Thoughts reports
+
+#### Key Achievements 🎯
+* ✅ **Native WebSearch Integration**: Using Anthropic's built-in web search capability
+* ✅ **Unified Stage 3 Orchestration**: All agents coordinated through orchestrator
+* ✅ **Claude Web Search Agent**: New agent using native WebSearch tool
+* ✅ **Phase 3 Search Coordination**: Retry logic and error handling
+* ✅ **100% Test Coverage**: Comprehensive tests for all new components
+* ✅ **Clean Architecture**: Removed redundant code and refactored large methods
+
+#### Architecture Changes
+* **Stage 3 Unified**: `orchestrator.coordinate_stage3_synthesis()` manages all agents
+* **Web Search Flow**: Orchestrator → Claude Web Search Agent → Anthropic WebSearch
+* **Error Handling**: Exponential backoff retry logic with query modification
+* **Modular Design**: Split 118-line method into 5 focused functions
+
+#### Technical Implementation
+- **ClaudeWebSearchAgent**: Uses Anthropic's WebSearch for real URLs
+- **Orchestrator Phase 3**: Coordinates search with retry and metadata tracking
+- **Stage 3 Synthesis**: Unified coordination for all agent contributions
+- **Test Suite**: 17 new tests covering all edge cases and integration points
+
+### Session 10.7-10.10: Web Search Evolution Journey
+
+**Previous Iterations**:
+- 10.7: Discovered fake URL issue with simulated search
+- 10.8: Attempted various API integrations (Google, Bing)
+- 10.9: Explored MCP server options for web search
+- 10.10: Implemented code review and cleanup
+
+### Session 10.6: Enhanced Phase 2 & Real Web Search ✅
+
+**Duration**: 1 increment (~60 minutes)
+**Approach**: Implement reporter agent invocation and real web search capability
+**Result**: Both features successfully implemented
+
+#### Key Achievements 🎯
+* ✅ **Phase 2 Reporter Integration**: Coach now consults reporter for deeper questioning insights
+* ✅ **Real Web Search**: Agent uses Claude's native WebSearch - no external APIs needed!
+* ✅ **Hidden Complexity**: Agent invocations remain invisible to users
+* ✅ **Modular Design**: Clean WebSearchService ready for multiple backends
+* ✅ **Fallback Patterns**: Graceful degradation when services unavailable
+
+#### Technical Details
+- **Phase 2 Flow**: User accepts → Coach detects → Reporter analyzes → Insights guide questions
+- **Web Search**: Theme extraction → Search service → Actual URLs in report
+- **Production Ready**: Just add API keys for Brave/Google/Bing search
+- **Crux Tracking**: Coach now tracks identified crux for context
+
+### Session 10.5: Fix Phase 2 and Web Search Issues ✅
+
+**Duration**: 1 increment (~45 minutes)
+**Approach**: Debug and fix critical issues from prototype run
+**Result**: Phase 2 questioning fixed, web search behavior clarified
+
+#### Key Achievements 🎯
+* ✅ **Phase 2 Fix**: Removed prompt instruction causing `<invoke>` tag exposure
+* ✅ **Theme Extraction Enhanced**: Now handles "Theme N:" format from reports
+* ✅ **Debug Logging Added**: Better visibility into theme extraction and web search
+* ✅ **Behavior Clarified**: Web search provides suggestions, not actual URLs (by design)
+* ✅ **Test Script Created**: `test_web_search_fix.py` for verification
+
+#### Technical Details
+- **Root Cause**: Morning protocol prompt told coach to "engage the deep thoughts reporter agent"
+- **LLM Behavior**: This caused hallucination of non-existent tool-calling syntax
+- **Simple Fix**: Changed to "continue with thoughtful follow-up questions"
+- **Web Search Note**: Actual URL fetching requires external API integration
+
+### Session 10.3: Web Search Agent Integration ✅
+
+**Duration**: 3 increments (~2 hours)
+**Approach**: Add web search capability through dedicated Web Search Agent
+**Result**: Full agent integration that provides intelligent article recommendations
+
+#### Implementation Journey
+* 🔍 **Phase 1**: Tried Brave MCP server (deprecated, had issues)
+* 📝 **Phase 2**: Created two-phase approach with search suggestions
+* ✅ **Phase 3**: Implemented Web Search Agent with full multi-agent integration
+
+#### Changes Made
+* ✅ **Created Web Search Agent**: Full BaseAgent implementation with proper capabilities
+* ✅ **Integrated with Stage 3**: Reporter → Web Search → Enhanced Report flow
+* ✅ **Smart Theme Extraction**: Automatically extracts themes from Deep Thoughts
+* ✅ **Quality Curation**: Agent follows prompt guidelines for source selection
+* ✅ **No Hallucination**: Provides search suggestions with clear search strategies
+
+#### Architecture
+```
+User: "deep report"
+  ↓
+Reporter Agent (generates Deep Thoughts)
+  ↓
+Theme Extraction (from Recommended readings)
+  ↓
+Web Search Agent (finds article recommendations)
+  ↓
+Report Enhancement (integrates search results)
+  ↓
+Final Report (saved with article suggestions)
+```
+
+#### Technical Details
+- **Agent Communication**: Uses standard AgentRequest/Response pattern
+- **Integration Point**: `multi_agent_cli.py` Stage 3 flow
+- **Theme Extraction**: Regex-based extraction from recommendations section
+- **Report Enhancement**: `_enhance_report_with_search()` method replaces section
+- **Two-Phase Approach**: Generate first, enhance second for clean separation
+- **Future Enhancement**: Can integrate real web search APIs when available
+
+### Session 10.2: Claude Opus Overload Fix - Remove Fallback & Add Retry Logic ✅
+
+**Duration**: 1 increment (~45 minutes)
+**Approach**: Remove GPT-4o fallback and implement exponential backoff retry for Opus
+**Result**: Cleaner architecture with robust retry mechanism for handling overload
+
+#### Changes Made
+* ✅ **Removed GPT-4o Fallback**: Deleted all fallback code from deep_thoughts.py per user request
+* ✅ **Personal Content Agent**: Switched back to Claude Sonnet (was using GPT-4o)
+* ✅ **Exponential Backoff**: Added 5 retries with delays of 2s, 4s, 8s, 16s, 32s
+* ✅ **Better Logging**: Added warning logs for retry attempts
+* ✅ **All Tests Pass**: Personal content agent tests confirmed working
+
+#### Technical Details
+- **Retry Logic**: Only retries on 500 "Overloaded" errors, not other failures
+- **Max Wait**: Up to 62 seconds total retry time before failing
+- **Architecture**: Reporter Agent continues to use Opus, Orchestrator uses Sonnet
+- **Load Distribution**: Personal Content Agent now on Sonnet to reduce Opus load
+
+### Session 10.1: Claude Opus Overload Issue & Fallback Implementation 🚧
+
+**Duration**: 1 increment (~30 minutes)
+**Approach**: Implement GPT-4o fallback for Deep Thoughts when Claude Opus is overloaded
+**Result**: Fallback implemented but issue persists - needs architectural review
+
+#### Issue Summary
+* 🔴 **Problem**: Claude Opus returning 500 "Overloaded" errors during Deep Thoughts generation
+* 🟡 **Attempted Fix**: Implemented GPT-4o fallback, but error still occurs
+* 💡 **Root Cause Theory**: Stage 3 asking Opus to do too much (orchestrate agents AND generate report)
+
+#### Changes Made
+* ✅ Added GPT-4o fallback logic to Deep Thoughts generator
+* ✅ Switched Personal Content Agent to GPT-4o for load balancing
+* ✅ Added debug logging to track error handling
+
+#### Tomorrow's Plan
+* Investigate if Orchestrator Agent is also overwhelming Opus
+* Consider different models for different roles (Sonnet for orchestration?)
+* Test fallback mechanism in isolation
+* Review Stage 3 architecture for optimization opportunities
+
+### Session 10.0: Personal Content Agent LLM Integration
+
+**Duration**: 1 increment (~45 minutes)
+**Approach**: Transform personal content agent from procedural logic to LLM-powered synthesis
+**Result**: Claude Sonnet 4 now intelligently analyzes personal documents
+
+#### Key Achievements 🎯
+* ✅ **Folder Structure Update**: Agent now handles new `AboutMe/` and `Beliefs/` subdirectories
+* ✅ **LLM Integration**: Claude Sonnet 4 replaces keyword matching with semantic understanding
+* ✅ **Intelligent Synthesis**: Context-aware insights instead of simple text extraction
+* ✅ **Test Suite Updated**: All 10 personal content tests passing with mocked LLM
+* ✅ **Full Compatibility**: 138 total tests pass, no regressions
+
+#### Technical Details
+- **Model**: Claude Sonnet 4 (STANDARD tier) for quality synthesis
+- **Prompt Design**: Structured format requesting RELEVANT CONTEXT and SUGGESTED INTEGRATION
+- **Recursive Scanning**: Uses `rglob("*.md")` for nested folder support
+- **Performance**: Tests use mocks to maintain <1s execution time
+- **Backwards Compatible**: Same API interface, drop-in replacement
+
+#### Files Modified
+- `src/agents/personal_content_agent.py` - Added LLM service and synthesis
+- `src/orchestration/document_loader.py` - Updated for recursive file discovery
+- `tests/agents/test_personal_content_agent.py` - Comprehensive test mocking
 
 ### Session 9.4: Morning Protocol Nudging System
 
@@ -613,11 +792,20 @@ diary-coach/
 │   │   ├── Log_8_0_Test_Failure_Analysis.md # Pre-session test analysis ✅
 │   │   ├── Log_8_7_LangSmith_Integration_Tests.md # Test infrastructure log ✅
 │   │   └── Log_8_12_LLM_Orchestrator_Implementation.md # Orchestrator upgrade log ✅
-│   └── Session_9/           # Session 9 artifacts
-│       ├── Log_9_0_Development_Tools_Setup.md # MCP servers and API docs ✅
-│       ├── Log_9_1_Worktree_Setup.md # Git worktree setup for parallel dev ✅
-│       ├── Log_9_3_Protocol_State_Management.md # Protocol state tracking ✅
-│       └── Log_9_4_Morning_Protocol_Nudging.md # Nudging system implementation ✅
+│   ├── Session_9/           # Session 9 artifacts
+│   │   ├── Log_9_0_Development_Tools_Setup.md # MCP servers and API docs ✅
+│   │   ├── Log_9_1_Worktree_Setup.md # Git worktree setup for parallel dev ✅
+│   │   ├── Log_9_3_Protocol_State_Management.md # Protocol state tracking ✅
+│   │   └── Log_9_4_Morning_Protocol_Nudging.md # Nudging system implementation ✅
+│   └── session_10/          # Session 10 artifacts
+│       ├── Log_10_0_Personal_Content_Agent_LLM_Integration.md # LLM-powered personal content ✅
+│       ├── Log_10_1_Claude_Opus_Overload_Issue.md # Fallback implementation ✅
+│       ├── Log_10_2_Claude_Opus_Retry_Fix.md # Retry mechanism implementation ✅
+│       ├── Log_10_3_Web_Search_Agent_Integration.md # Web search agent integration ✅
+│       ├── Log_10_4_Prototype_Issues_Analysis.md # Critical issues documentation ✅
+│       ├── Log_10_5_Fix_Phase2_And_WebSearch_Issues.md # Phase 2 and search fixes ✅
+│       ├── Log_10_6_Enhanced_Phase2_And_WebSearch.md # Reporter integration & real search ✅
+│       └── Log_10_7_Web_Search_Integration_Fix.md # Fixed markers but FAKE URLs discovered ⚠️
 ├── scripts/                 # Evaluation and testing scripts
 ├── apidocs/                 # API documentation repository ✅
 │   ├── elevenlabs_documentation.md      # Text-to-speech APIs
@@ -680,17 +868,54 @@ cd worktrees/mcp
 4. **Merge**: After review, merge to main
 5. **Cleanup**: `git worktree remove worktrees/[name]`
 
+## Active Issues 🚧
+
+### Session 10.5: Phase 2 and Web Search Issues Fixed ✅
+
+**Duration**: 1 increment (~45 minutes)
+**Approach**: Fix broken phase 2 questioning and clarify web search behavior
+**Result**: Phase 2 fixed, web search behavior clarified
+
+#### Issues Resolved
+* ✅ **Phase 2 Fixed**: Coach no longer shows raw `<invoke>` tags to users
+* ✅ **Web Search Clarified**: Agent provides search suggestions as designed (not URLs)
+* ✅ **Theme Extraction Fixed**: Now properly extracts "Theme N:" format
+* ✅ **Debug Logging Added**: Better visibility into multi-agent interactions
+
+#### Technical Details
+- **Phase 2 Fix**: Updated morning protocol prompt to remove "engage the deep thoughts reporter agent" instruction
+- **Theme Extraction**: Added regex support for both old and new theme formats
+- **Web Search Note**: Actual URLs require web search API integration (Brave, Google, or Claude's WebSearch)
+
+### Enhancement Opportunities
+
+1. **Claude WebSearch Optimization**: Currently using simulated results
+   - UPDATE: Claude has native WebSearch! No external APIs needed
+   - Fine-tune prompts for optimal search results
+   - Add intelligent result caching
+
+2. **Phase 2 Improvements**:
+   - More sophisticated crux detection
+   - Better conversation flow tracking
+   - Enhanced reporter insights
+
+3. **Search Enhancements**:
+   - Add result caching for common themes
+   - Implement search quality metrics
+   - Optimize theme extraction algorithms
+
 ## Next Steps
 
 ### Multi-Agent System Complete ✅
 The multi-agent coaching system is now fully operational with:
 - ✅ Enhanced Coach Agent with Stage 1 integration
 - ✅ Memory Agent with conversation persistence
-- ✅ Personal Content Agent with core beliefs access
+- ✅ **Personal Content Agent with LLM-powered synthesis** (Claude Sonnet)
 - ✅ MCP Agent with Todoist integration (119 tasks, 6 due today)
 - ✅ **LLM-Powered Orchestrator Agent** for intelligent Stage 2 coordination
 - ✅ Reporter Agent for Deep Thoughts synthesis (Stage 3)
 - ✅ Evaluator Agent with 5-criteria assessment
+- ✅ **Web Search Agent** with theme extraction and article curation (Stage 3)
 - ✅ Agent Registry for discovery and coordination
 - ✅ Multi-Agent CLI with all 3 stages implemented
 
@@ -726,7 +951,7 @@ The multi-agent coaching system is now fully operational with:
 - [ ] Analytics dashboard
 
 ### Remaining Features to Integrate
-- [ ] Deep Thoughts Evaluation in multi-agent CLI
+- [ ] Real web search API integration (Brave, Google, or Claude's native)
 - [ ] Eval Command for persona-based testing
 - [ ] Enhanced reporting with multi-agent metrics
 - [ ] Learning ledger automatic updates

@@ -63,6 +63,8 @@ class EnhancedDiaryCoach(BaseAgent):
         self.morning_challenge: Optional[str] = None
         self.morning_value: Optional[str] = None
         self.message_history: List[Dict[str, str]] = []
+        self.crux_identified: Optional[str] = None
+        self.phase2_active = False
         
         # Morning protocol tracking
         self.protocol_tracker = MorningProtocolTracker(self.MORNING_PROMPT_ADDITION)
@@ -436,6 +438,83 @@ class EnhancedDiaryCoach(BaseAgent):
 
         return agent_context
 
+    def _should_consult_reporter_for_phase2(self, message: UserMessage) -> bool:
+        """Check if we should consult reporter for phase 2 questions.
+        
+        Args:
+            message: User message
+            
+        Returns:
+            True if we should consult reporter for phase 2 insights
+        """
+        # Check if user accepted deeper questions
+        message_lower = message.content.lower()
+        acceptance_phrases = [
+            "yes", "sure", "ok", "okay", "ready", "let's do it",
+            "i'm ready", "sounds good", "go ahead", "deeper questions"
+        ]
+        
+        # Check if we're in morning protocol and have identified a crux
+        if (self.conversation_state == "morning" and 
+            self.crux_identified and 
+            any(phrase in message_lower for phrase in acceptance_phrases)):
+            # Look for context suggesting phase 2
+            recent_assistant = self.message_history[-1] if self.message_history else None
+            if recent_assistant and recent_assistant.get("role") == "assistant":
+                content = recent_assistant["content"].lower()
+                if "deeper questions" in content or "deep report now" in content:
+                    return True
+        
+        return False
+    
+    async def _get_reporter_phase2_insights(self, message: UserMessage) -> str:
+        """Get phase 2 insights from reporter agent.
+        
+        Args:
+            message: User message
+            
+        Returns:
+            Reporter's insights for phase 2 questioning
+        """
+        try:
+            # Get reporter from registry
+            reporter = agent_registry.get_agent("reporter")
+            if not reporter:
+                logger.warning("Reporter agent not available for phase 2")
+                return ""
+            
+            # Build conversation context
+            conversation = []
+            for msg in self.message_history[-10:]:  # Last 10 messages
+                conversation.append({
+                    "type": msg["role"],
+                    "content": msg["content"]
+                })
+            
+            # Call reporter for phase 2 insights
+            request = AgentRequest(
+                from_agent=self.name,
+                to_agent="reporter",
+                query="phase2_questions",
+                context={
+                    "conversation": conversation,
+                    "crux": self.crux_identified or "",
+                    "conversation_id": message.conversation_id
+                }
+            )
+            
+            response = await reporter.handle_request(request)
+            
+            if response and not response.error:
+                self.phase2_active = True
+                return response.content
+            
+            return ""
+            
+        except Exception as e:
+            logger.error(f"Error getting phase 2 insights: {e}")
+            return ""
+
     def _enhance_prompt_with_context(
         self, base_prompt: str, agent_context: Dict[str, Any]
     ) -> str:
@@ -510,6 +589,13 @@ class EnhancedDiaryCoach(BaseAgent):
             "content": message.content
         })
 
+        # Check if we need phase 2 reporter insights
+        if self._should_consult_reporter_for_phase2(message):
+            reporter_insights = await self._get_reporter_phase2_insights(message)
+            logger.info(f"Phase 2 reporter insights: {reporter_insights[:100]}...")
+            # Store insights for prompt enhancement
+            self._phase2_insights = reporter_insights
+        
         # Gather context from agents if in Stage 1
         agent_context = await self._gather_agent_context(message)
 
@@ -518,6 +604,13 @@ class EnhancedDiaryCoach(BaseAgent):
 
         # Enhance prompt with agent context
         system_prompt = self._enhance_prompt_with_context(base_prompt, agent_context)
+        
+        # Add phase 2 insights if available
+        if hasattr(self, '_phase2_insights') and self._phase2_insights:
+            system_prompt += f"\n\n## PHASE 2 COACHING INSIGHTS\n{self._phase2_insights}\n"
+            system_prompt += "\nUse these insights to ask deeper, more targeted questions about the crux."
+            # Clear insights after use
+            self._phase2_insights = None
 
         # Debug logging
         logger.info(f"Enhanced coach: agents_called={list(agent_context.keys())}")
@@ -540,6 +633,15 @@ class EnhancedDiaryCoach(BaseAgent):
             "role": "assistant",
             "content": response_content
         })
+        
+        # Track crux identification
+        if "crux" in response_content.lower() and "identified" in response_content.lower():
+            # Extract crux from response
+            import re
+            crux_match = re.search(r'crux[^:]*:([^.!?]+)', response_content, re.IGNORECASE)
+            if crux_match:
+                self.crux_identified = crux_match.group(1).strip()
+                logger.info(f"Crux identified: {self.crux_identified}")
 
         # Now check if we need a nudge for next time
         if self.conversation_state == "morning":
