@@ -1,6 +1,6 @@
 # Diary Coach Project Status
 
-## Current Status: Session 10.11 – Web Search Integration Complete ✅
+## Current Status: Session 10.12 – Web Search Fixed with Real URLs ✅
 
 **Last Updated**: August 3, 2025
 
@@ -9,6 +9,24 @@
 Multi-agent text-first coaching system with eventual voice integration. Uses a Test-Driven Development (TDD) approach with comprehensive conversation quality evaluation. Built incrementally following three core principles: Compartmentalization, Continuous Improvement, and Learning While Building.
 
 ## Recent Sessions
+
+### Session 10.12: Web Search Fixes - Real URLs and Clean Reports ✅
+
+**Duration**: 1 increment
+**Approach**: Fix critical user-reported issues with web search
+**Result**: Fully functional web search with real URLs and clean formatting
+
+#### Issues Fixed 🔧
+* ✅ **AgentRequest Import Error**: Fixed evaluation flow crash
+* ✅ **Real URLs Working**: Properly enabled WebSearch tool for actual web results
+* ✅ **Clean Reports**: Removed search tactics from final output
+* ✅ **Article Limit**: Limited to 3-5 most relevant articles
+
+#### Technical Fixes
+- **LLM Service**: Added `tools` parameter support for WebSearch
+- **WebSearch Tool**: Configured with `web_search_20250305` type
+- **Report Formatting**: New `_format_search_results` method for clean output
+- **Import Fix**: Added missing AgentRequest import to CLI
 
 ### Session 10.11: Complete Web Search Integration with Anthropic's Native Search ✅
 
