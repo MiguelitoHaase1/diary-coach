@@ -75,7 +75,8 @@ class AnthropicService:
         messages: List[Dict[str, str]],
         system_prompt: Optional[str] = None,
         max_tokens: int = 200,
-        temperature: float = 0.7
+        temperature: float = 0.7,
+        tools: Optional[List[Dict]] = None
     ) -> str:
         """Generate response from Claude API with retry logic.
 
@@ -106,6 +107,9 @@ class AnthropicService:
 
                 if system_prompt:
                     call_params["system"] = system_prompt
+                
+                if tools:
+                    call_params["tools"] = tools
 
                 # Make API call with optional LangSmith tracing
                 if self.langsmith_client:

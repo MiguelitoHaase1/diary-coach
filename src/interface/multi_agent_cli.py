@@ -21,6 +21,7 @@ from src.agents.evaluator_agent import EvaluatorAgent
 from src.agents.web_search_agent import WebSearchAgent
 from src.agents.claude_web_search_agent import ClaudeWebSearchAgent
 from src.agents.registry import agent_registry
+from src.agents.base import AgentRequest
 from src.services.llm_factory import LLMFactory
 from src.events.bus import EventBus
 from src.orchestration.langsmith_tracker import LangSmithTracker
@@ -468,7 +469,10 @@ class MultiAgentCLI:
                         # Find matching result
                         for need, result_data in organized_results.items():
                             if query in need or need in query:
-                                return result_data.get("content", match.group(0))
+                                # Clean and format the search results
+                                content = result_data.get("content", "")
+                                formatted = self._format_search_results(content)
+                                return formatted if formatted else match.group(0)
                         return match.group(0)
 
                     deep_thoughts_report = re.sub(
@@ -645,6 +649,64 @@ class MultiAgentCLI:
             print("   You can manually convert later with:")
             print(f"   python scripts/tts_deep_thoughts.py {deep_thoughts_path}")
 
+    def _format_search_results(self, raw_results: str, max_articles: int = 5) -> str:
+        """Format and filter search results to show only clean article listings.
+        
+        Args:
+            raw_results: Raw search results from the web search agent
+            max_articles: Maximum number of articles to include (default 5)
+            
+        Returns:
+            Formatted article list with titles and URLs only
+        """
+        import re
+        
+        # Extract articles from the raw results
+        articles = []
+        lines = raw_results.split('\n')
+        
+        i = 0
+        while i < len(lines):
+            line = lines[i].strip()
+            
+            # Look for article pattern: - **"Title"** - Source
+            if line.startswith('- **') or line.startswith('**'):
+                # Extract title and source
+                title_match = re.search(r'\*\*"?([^"*]+)"?\*\*', line)
+                if title_match:
+                    title = title_match.group(1)
+                    
+                    # Look for URL on next line or same line
+                    url = None
+                    if i + 1 < len(lines):
+                        next_line = lines[i + 1].strip()
+                        url_match = re.search(r'URL:\s*(https?://[^\s]+)', next_line)
+                        if url_match:
+                            url = url_match.group(1).rstrip('.,;)')
+                    
+                    # Also check same line for URL
+                    if not url:
+                        url_match = re.search(r'https?://[^\s]+', line)
+                        if url_match:
+                            url = url_match.group(0).rstrip('.,;)')
+                    
+                    if url:
+                        articles.append({"title": title, "url": url})
+                        if len(articles) >= max_articles:
+                            break
+            
+            i += 1
+        
+        # Format the articles nicely
+        if not articles:
+            return ""
+        
+        formatted = "\n**Relevant Articles:**\n\n"
+        for idx, article in enumerate(articles[:max_articles], 1):
+            formatted += f"{idx}. [{article['title']}]({article['url']})\n"
+        
+        return formatted
+    
     def _enhance_report_with_search(self, report: str, search_results: str) -> str:
         """Enhance Deep Thoughts report with web search results.
 

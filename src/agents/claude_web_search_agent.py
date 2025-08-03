@@ -96,15 +96,20 @@ Format as:
   Summary: [brief summary]"""
 
                 try:
-                    # This will trigger Claude's WebSearch tool automatically
+                    # Enable WebSearch tool for real web searches
                     search_results = await self.llm_service.generate_response(
                         messages=[{"role": "user", "content": search_prompt}],
                         system_prompt=(
                             "You are a research assistant. Use web search to "
-                            "find real articles. Return only working URLs."
+                            "find real articles. Return only working URLs from actual searches."
                         ),
                         max_tokens=1500,
-                        temperature=0.3
+                        temperature=0.3,
+                        tools=[{
+                            "type": "web_search_20250305",
+                            "name": "web_search",
+                            "max_uses": 5
+                        }]
                     )
 
                     if search_results:
