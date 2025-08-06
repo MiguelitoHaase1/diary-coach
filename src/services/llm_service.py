@@ -107,7 +107,7 @@ class AnthropicService:
 
                 if system_prompt:
                     call_params["system"] = system_prompt
-                
+
                 if tools:
                     call_params["tools"] = tools
 
@@ -139,8 +139,21 @@ class AnthropicService:
 
                 response = await self.client.messages.create(**call_params)
 
-                # Extract response text
-                response_text = response.content[0].text
+                # Extract response text - handle tool use responses
+                response_text = ""
+                for block in response.content:
+                    if hasattr(block, 'type'):
+                        if block.type == 'text':
+                            response_text += block.text + "\n"
+                        elif block.type in [
+                            'server_tool_use', 'web_search_tool_result'
+                        ]:
+                            # Tool responses are in text blocks
+                            continue
+                # Fallback to old method if no text found
+                if not response_text and response.content:
+                    if hasattr(response.content[0], 'text'):
+                        response_text = response.content[0].text
 
                 # Track usage
                 input_tokens = response.usage.input_tokens
