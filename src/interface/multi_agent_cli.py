@@ -266,7 +266,6 @@ class MultiAgentCLI:
 
         # Process through coach
         try:
-            from src.agents.base import AgentRequest
             request = AgentRequest(
                 from_agent="user",
                 to_agent="coach",
@@ -414,7 +413,6 @@ class MultiAgentCLI:
                 print(f"  ⚠️ Orchestrator coordination failed: {error}")
                 print("  📝 Falling back to direct reporter call...")
 
-                from src.agents.base import AgentRequest
                 reporter_request = AgentRequest(
                     from_agent="cli",
                     to_agent="reporter",
@@ -431,7 +429,6 @@ class MultiAgentCLI:
         else:
             # Single-agent mode or orchestrator not available
             print("  📝 Generating report without orchestration...")
-            from src.agents.base import AgentRequest
             reporter_request = AgentRequest(
                 from_agent="cli",
                 to_agent="reporter",
