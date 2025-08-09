@@ -1,0 +1,321 @@
+# Session 10.14: Performance Optimization for Voice
+
+## Executive Summary
+
+**Goal**: Optimize multi-agent system execution for sub-3-second response times in preparation for future voice integration. Focus on caching, streaming, and parallel execution patterns.
+
+**Duration**: 3-4 hours (5-6 increments)
+
+**Key Outcome**: Graph execution under 3 seconds, comprehensive caching layer, streaming state updates, and cost optimization through smart execution patterns.
+
+## Pre-Session Setup (Human Tasks)
+
+🔴 **HUMAN SETUP REQUIRED**:
+- [ ] **LangSmith Dashboard Access**: Ensure you can view execution traces
+- [ ] **Redis Running**: For caching layer implementation
+  ```bash
+  redis-server --daemonize yes
+  ```
+- [ ] **Performance Baselines**: Run a few coaching sessions to establish current latency
+- [ ] **Install Dependencies**:
+  ```bash
+  pip install redis-py-cluster aioredis cachetools line_profiler
+  pip install memory_profiler pytest-benchmark
+  ```
+- [ ] **Environment Variables**: Ensure these are set:
+  ```
+  REDIS_URL=redis://localhost:6379
+  LANGSMITH_API_KEY=your_key
+  LANGSMITH_PROJECT=diary-coach-performance
+  ```
+
+## Current Performance Baseline
+
+From your Session 8.13 logs:
+- Orchestrator checks: 1-2 seconds per message (after 6 exchanges)
+- Multi-agent Stage 2: 2-6 seconds added latency
+- Web search: Variable (depends on query complexity)
+- Deep Thoughts generation: 10-15 seconds with Opus
+
+**Target**: Sub-3-second response for 90% of coaching interactions
+
+## Architecture Focus
+
+```
+Performance Optimization Points:
+┌─────────────────┐
+│  Request Entry  │ ← Early filtering & caching
+└────────┬────────┘
+         │
+┌────────▼────────┐
+│ Orchestrator    │ ← Lazy evaluation & heuristics
+└────────┬────────┘
+         │
+┌────────▼────────┐
+│ Agent Parallel  │ ← Concurrent execution
+│   Execution     │
+└────────┬────────┘
+         │
+┌────────▼────────┐
+│ Response Stream │ ← Progressive rendering
+└─────────────────┘
+```
+
+## Increments
+
+### Increment 1: Performance Profiling Infrastructure (45 min)
+**Purpose**: Establish comprehensive performance monitoring to identify bottlenecks
+
+**Approach**:
+1. Create `src/performance/profiler.py` with execution tracking
+2. Add timing decorators to all agent methods
+3. Integrate with LangSmith for execution visualization
+4. Create performance dashboard script
+5. Establish baseline metrics for all conversation types
+
+**Tests First**:
+- `test_profiler_accuracy()`: Verify timing measurements
+- `test_langsmith_integration()`: Ensure traces are sent
+- `test_performance_baseline()`: Document current latencies
+
+**Deliverables**:
+- Performance tracking infrastructure
+- Baseline report showing current bottlenecks
+- LangSmith dashboard configured for performance
+
+**Common Pitfalls**:
+- Don't add so much instrumentation that it affects performance
+- Ensure async timing is accurate (use `time.perf_counter()`)
+- Remember to exclude profiling overhead from measurements
+
+### Increment 2: Smart Caching Layer (60 min)
+**Purpose**: Implement intelligent caching to avoid redundant LLM calls and agent executions
+
+**Approach**:
+1. Create `src/performance/cache_manager.py` with Redis backend
+2. Implement semantic similarity caching for coach responses
+3. Add TTL-based caching for MCP data (Todoist, calendar)
+4. Cache personal content agent results (documents don't change often)
+5. Implement cache warming for common morning patterns
+
+**Tests First**:
+- `test_cache_hit_rate()`: Verify cache effectiveness
+- `test_semantic_similarity()`: Check similar queries hit cache
+- `test_cache_invalidation()`: Ensure stale data is refreshed
+
+**Deliverables**:
+- Redis-backed caching system
+- 70%+ cache hit rate for common patterns
+- Configurable TTL for different data types
+
+**Common Pitfalls**:
+- Over-caching can make responses feel repetitive
+- Cache key design is crucial (include context, not just query)
+- Redis connection pooling needed for performance
+
+### Increment 3: Parallel Agent Execution (45 min)
+**Purpose**: Execute independent agents concurrently to reduce total latency
+
+**Approach**:
+1. Identify independent agent paths in Stage 2
+2. Implement `asyncio.gather()` for parallel execution
+3. Create dependency graph for agent ordering
+4. Add result aggregation with timeout handling
+5. Optimize orchestrator to batch agent requests
+
+**Tests First**:
+- `test_parallel_execution()`: Verify agents run concurrently
+- `test_dependency_ordering()`: Ensure correct execution order
+- `test_timeout_handling()`: Check graceful degradation
+
+**Deliverables**:
+- Parallel execution framework
+- 40-60% reduction in Stage 2 latency
+- Dependency graph visualization
+
+**Common Pitfalls**:
+- Race conditions in shared state access
+- Thundering herd on LLM API (implement rate limiting)
+- Timeout tuning is critical (too short = failures, too long = slow)
+
+### Increment 4: Streaming State Updates (45 min)
+**Purpose**: Implement progressive response streaming for immediate user feedback
+
+**Approach**:
+1. Create `StreamingResponseManager` for partial updates
+2. Modify coach agent to yield tokens as generated
+3. Implement buffering strategy for natural chunks
+4. Add typing indicators during agent processing
+5. Stream Deep Thoughts generation paragraph by paragraph
+
+**Tests First**:
+- `test_streaming_chunks()`: Verify partial responses work
+- `test_buffer_management()`: Check natural breaking points
+- `test_user_perception()`: Measure perceived latency reduction
+
+**Deliverables**:
+- Streaming response system
+- 50% reduction in perceived latency
+- Natural conversation flow with indicators
+
+**Common Pitfalls**:
+- Streaming can break if chunks split mid-word
+- Buffer size affects perceived responsiveness
+- Error handling mid-stream is complex
+
+### Increment 5: Execution Path Optimization (45 min)
+**Purpose**: Optimize the most common conversation paths for maximum speed
+
+**Approach**:
+1. Analyze LangSmith data for common patterns
+2. Create "fast paths" for simple queries
+3. Implement speculative execution for likely follow-ups
+4. Pre-compute morning protocol transitions
+5. Add compilation of static prompt components
+
+**Tests First**:
+- `test_fast_path_detection()`: Verify pattern matching
+- `test_speculative_accuracy()`: Check prediction success rate
+- `test_precomputation()`: Ensure cached components work
+
+**Deliverables**:
+- Fast path routing system
+- 80% of simple queries under 1 second
+- Speculative execution framework
+
+**Common Pitfalls**:
+- Over-optimization can reduce response quality
+- Speculative execution wastes resources if wrong
+- Pattern detection needs continuous tuning
+
+### Increment 6: Cost Optimization Analysis (30 min)
+**Purpose**: Reduce API costs while maintaining quality through smart model selection
+
+**Approach**:
+1. Create cost tracking per conversation
+2. Implement dynamic model selection (Sonnet vs Opus)
+3. Add token usage optimization (prompt compression)
+4. Create cost dashboard with per-user metrics
+5. Implement budget alerts and limits
+
+**Tests First**:
+- `test_cost_tracking()`: Verify accurate cost calculation
+- `test_model_selection()`: Check quality thresholds
+- `test_prompt_compression()`: Ensure meaning preserved
+
+**Deliverables**:
+- Cost tracking system
+- 30-50% cost reduction strategies
+- Budget management tools
+
+## Sub-Agent Recommendations
+
+### Parallel Execution Opportunities
+- **Increments 2 & 3** can run in parallel (caching and parallelization are independent)
+- **Increment 6** can start anytime after Increment 1 (just needs profiling data)
+
+### Specialized Sub-Agents
+1. **Performance Optimization Agent**:
+   - Use for Increments 1, 5
+   - Specialized in profiling and bottleneck analysis
+   - Context: Your Session 8.13 optimization patterns
+
+2. **Caching Expert Agent**:
+   - Use for Increment 2
+   - Knows Redis patterns and cache invalidation strategies
+   - Context: Semantic similarity algorithms
+
+3. **Async Python Agent**:
+   - Use for Increments 3, 4
+   - Expert in asyncio, concurrency patterns
+   - Context: Your existing async agent architecture
+
+## Post-Session Tasks (Human)
+
+🔴 **HUMAN TASKS AFTER CODING**:
+- [ ] Review performance dashboard for remaining bottlenecks
+- [ ] Tune cache TTLs based on usage patterns
+- [ ] Configure Redis persistence for production
+- [ ] Set up monitoring alerts for performance regression
+- [ ] Document performance SLAs for voice readiness
+- [ ] Consider CDN for static prompt components
+
+## Success Criteria
+
+✅ 90% of coaching responses under 3 seconds
+✅ Cache hit rate > 70% for common patterns
+✅ Stage 2 latency reduced by 50%
+✅ Streaming responses with < 500ms first token
+✅ Cost per conversation reduced by 30%
+✅ All optimizations maintain conversation quality
+✅ Performance regression tests in place
+
+## Learning Opportunities
+
+### From Your Previous Sessions
+- **Session 8.13**: Lazy orchestration patterns to extend
+- **Session 10.2**: Retry patterns for reliability
+- **Session 6**: Relevance scoring for cache similarity
+
+### New Learning Areas
+- **Cache Invalidation**: One of the two hard problems in CS
+- **Distributed Systems**: Handling Redis failures gracefully
+- **Streaming Architectures**: Backpressure and flow control
+- **Cost Optimization**: Token economics and model selection
+
+## Common Pitfalls to Avoid
+
+1. **Don't Over-Cache**: Responses should still feel dynamic
+2. **Avoid Premature Optimization**: Profile first, optimize second
+3. **Maintain Quality**: Speed shouldn't compromise coaching effectiveness
+4. **Handle Cache Misses**: System must work without cache
+5. **Test with Real Data**: Synthetic benchmarks miss edge cases
+6. **Monitor Continuously**: Performance degrades over time
+7. **Document Trade-offs**: Be clear about what was sacrificed for speed
+
+## Architecture Notes
+
+### Why This Approach?
+- **Voice Preparation**: 3-second target is critical for voice UX
+- **Cost Efficiency**: Reduced latency often means reduced cost
+- **User Experience**: Faster responses increase engagement
+- **Scalability**: Optimizations enable multi-user support
+
+### Key Insights from Your Codebase
+- You already have lazy orchestration (Session 8.13)
+- Your heuristic pre-filtering is a good foundation
+- The 11 complexity indicators can be expanded
+- Morning protocol bypass shows the fast-path pattern
+
+## Risk Mitigation
+
+**High Risk**: Cache invalidation bugs
+- **Mitigation**: Comprehensive testing, gradual rollout
+
+**Medium Risk**: Over-optimization reducing quality
+- **Mitigation**: A/B testing, quality metrics alongside speed
+
+**Low Risk**: Redis failures
+- **Mitigation**: Fallback to direct execution, circuit breakers
+
+## Performance Targets by Pattern
+
+| Conversation Type | Current | Target | Strategy |
+|------------------|---------|--------|----------|
+| Simple greeting | 2-3s | <0.5s | Fast path |
+| Morning protocol | 3-4s | <2s | Pre-computation |
+| Stage 2 complex | 6-8s | <3s | Parallelization |
+| Deep Thoughts | 15-20s | <10s | Streaming + cache |
+| Web search | Variable | <5s | Result caching |
+
+## Commit Message Format
+```
+perf(cache): implement semantic similarity caching
+perf(parallel): add concurrent agent execution
+perf(streaming): implement progressive response updates
+test(perf): add performance benchmarks
+```
+
+---
+
+**Remember**: This session is about making your already-working system FAST. Every millisecond counts when preparing for voice interaction. The goal is imperceptible latency while maintaining the coaching quality you've built.

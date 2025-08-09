@@ -11,6 +11,7 @@ from src.services.llm_service import AnthropicService
 from src.agents.prompts import get_coach_system_prompt, get_coach_morning_protocol
 from src.agents.registry import agent_registry
 from src.agents.morning_protocol_tracker import MorningProtocolTracker
+from src.performance.profiler import profile_async
 
 # Try to import LangSmith for tracing
 try:
@@ -174,6 +175,7 @@ class EnhancedDiaryCoach(BaseAgent):
         return should_call
 
     @traceable(name="call_agent")
+    @profile_async("coach_call_agent")
     async def _call_agent(
         self, agent_name: str, query: str, context: Dict[str, Any]
     ) -> Optional[AgentResponse]:
@@ -565,6 +567,7 @@ class EnhancedDiaryCoach(BaseAgent):
         return base_prompt
 
     @traceable(name="enhanced_coach_process_message")
+    @profile_async("coach_process_message", send_to_langsmith=True)
     async def process_message(self, message: UserMessage) -> LegacyAgentResponse:
         """Process a user message and generate a coaching response.
 

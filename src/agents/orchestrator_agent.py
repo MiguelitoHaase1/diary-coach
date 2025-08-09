@@ -10,6 +10,7 @@ from src.agents.base import BaseAgent, AgentCapability, AgentRequest, AgentRespo
 from src.agents.registry import agent_registry
 from src.services.llm_service import AnthropicService
 from src.agents.prompts import PromptLoader
+from src.performance.profiler import profile_async
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +56,7 @@ class OrchestratorAgent(BaseAgent):
         """Clean up orchestrator resources."""
         self.coordination_history.clear()
 
+    @profile_async("orchestrator_handle_request", send_to_langsmith=True)
     async def handle_request(self, request: AgentRequest) -> AgentResponse:
         """Handle orchestration requests.
 
@@ -472,6 +474,7 @@ Return your synthesis as JSON:
         )
         return None
 
+    @profile_async("orchestrator_stage3_synthesis", send_to_langsmith=True)
     async def coordinate_stage3_synthesis(
         self, context: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -670,6 +673,7 @@ Return your synthesis as JSON:
             }
         }
 
+    @profile_async("orchestrator_phase3_search")
     async def coordinate_phase3_search(
         self, report_content: str, context: Dict[str, Any]
     ) -> Dict[str, Any]:
