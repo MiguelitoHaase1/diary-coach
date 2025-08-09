@@ -1,12 +1,14 @@
 """MCP Agent for external service integration via Model Context Protocol."""
 
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 from datetime import datetime
 
 from src.agents.base import BaseAgent, AgentCapability, AgentRequest, AgentResponse
 from src.orchestration.mcp_todo_node import MCPTodoNode
 from src.orchestration.context_state import ContextState
+from src.performance.cache_manager import get_cache
+from src.performance.profiler import profile_async
 
 
 logger = logging.getLogger(__name__)
@@ -29,7 +31,7 @@ class MCPAgent(BaseAgent):
         try:
             # Test MCP connection status
             self.connection_status = await self.mcp_node.get_mcp_status()
-            
+
             if self.connection_status.get("connected"):
                 logger.info(
                     f"MCP Agent initialized with {self.connection_status.get('total_todos', 0)} todos"
@@ -39,9 +41,9 @@ class MCPAgent(BaseAgent):
                     f"MCP Agent initialized without connection: "
                     f"{self.connection_status.get('error', 'Unknown error')}"
                 )
-            
+
             self.is_initialized = True
-            
+
         except Exception as e:
             logger.error(f"Error initializing MCP Agent: {e}")
             self.connection_status = {
@@ -50,6 +52,7 @@ class MCPAgent(BaseAgent):
             }
             self.is_initialized = True  # Still mark as initialized
 
+    @profile_async("mcp_handle_request")
     async def handle_request(self, request: AgentRequest) -> AgentResponse:
         """Handle MCP-related requests from other agents.
 
@@ -61,7 +64,7 @@ class MCPAgent(BaseAgent):
         """
         try:
             query_lower = request.query.lower()
-            
+
             # Determine request type
             if any(word in query_lower for word in ["status", "connection", "connected"]):
                 return await self._get_connection_status(request)
@@ -72,7 +75,7 @@ class MCPAgent(BaseAgent):
             else:
                 # General task fetch based on context
                 return await self._get_relevant_tasks(request)
-                
+
         except Exception as e:
             logger.error(f"Error handling MCP request: {e}")
             return AgentResponse(
@@ -88,7 +91,7 @@ class MCPAgent(BaseAgent):
         """Get current MCP connection status."""
         # Refresh status
         self.connection_status = await self.mcp_node.get_mcp_status()
-        
+
         if self.connection_status.get("connected"):
             content = (
                 f"TODOIST CONNECTION: Active\n"
@@ -100,7 +103,7 @@ class MCPAgent(BaseAgent):
                 f"TODOIST CONNECTION: Offline\n"
                 f"Error: {self.connection_status.get('error', 'Unknown error')}"
             )
-        
+
         return AgentResponse(
             agent_name=self.name,
             content=content,
@@ -113,17 +116,31 @@ class MCPAgent(BaseAgent):
         self, request: AgentRequest, date_filter: str
     ) -> AgentResponse:
         """Get tasks with specific date filter."""
+        # Try cache first
+        cache = get_cache()
+        user_id = request.context.get("user_id", "default")
+        cache_key = f"{date_filter}_{user_id}"
+
+        cached_tasks = await cache.get_mcp_data("tasks", cache_key)
+        if cached_tasks:
+            logger.info(f"Cache hit for MCP tasks: {date_filter}")
+            return self._format_task_response(request, cached_tasks)
+
         # Create a mock state for the MCP node
         mock_state = ContextState(
             messages=[{"content": request.query, "type": "user"}],
             context_relevance={"todos": 1.0},  # Force high relevance
             conversation_id=request.context.get("conversation_id", "")
         )
-        
+
         # Fetch tasks with filter
         updated_state = await self.mcp_node.fetch_todos(mock_state, date_filter)
-        
+
         if updated_state.todo_context:
+            # Cache the tasks
+            await cache.set_mcp_data("tasks", cache_key, updated_state.todo_context)
+            logger.debug(f"Cached MCP tasks for: {date_filter}")
+
             return self._format_task_response(request, updated_state.todo_context)
         else:
             return AgentResponse(
@@ -146,14 +163,14 @@ class MCPAgent(BaseAgent):
             context_relevance={"todos": 0.8},  # High relevance for direct requests
             conversation_id=request.context.get("conversation_id", "")
         )
-        
+
         # Add conversation history if available
         if "messages" in request.context:
             mock_state.messages = request.context["messages"]
-        
+
         # Fetch todos
         updated_state = await self.mcp_node.fetch_todos(mock_state)
-        
+
         if updated_state.todo_context:
             response = self._format_task_response(request, updated_state.todo_context)
             print(f"📤 MCP DEBUG: Returning response with content length: {len(response.content)}")
@@ -169,7 +186,7 @@ class MCPAgent(BaseAgent):
                     content = "No relevant tasks found for the current context."
             else:
                 content = "No tasks available."
-            
+
             return AgentResponse(
                 agent_name=self.name,
                 content=content,
@@ -193,14 +210,14 @@ class MCPAgent(BaseAgent):
                 request_id=request.request_id,
                 timestamp=datetime.now()
             )
-        
+
         # Format tasks
         content_lines = ["CURRENT TASKS:"]
-        
+
         high_priority_count = 0
         due_today_count = 0
         today = datetime.now().date().isoformat()
-        
+
         # Sort tasks: due today first, then by priority
         def task_sort_key(task):
             due_date = task.get("due_date")
@@ -208,18 +225,18 @@ class MCPAgent(BaseAgent):
             priority_map = {"high": 0, "medium": 1, "low": 2}
             priority_value = priority_map.get(task.get("priority", "low"), 2)
             return (not is_due_today, priority_value)
-        
+
         sorted_tasks = sorted(tasks, key=task_sort_key)
-        
+
         for task in sorted_tasks[:5]:  # Limit to top 5
             priority = task.get("priority", "low")
             content = task.get("content", "Untitled task")
             project = task.get("project", "Inbox")
             due_date = task.get("due_date")
-            
+
             # Build task line
             task_line = ""
-            
+
             # Highlight tasks due today
             if due_date == today:
                 task_line = "🔴 [DUE TODAY] "
@@ -229,21 +246,21 @@ class MCPAgent(BaseAgent):
                 high_priority_count += 1
             elif priority == "medium":
                 task_line = "[Medium Priority] "
-            
+
             task_line += content
-            
+
             # Add metadata
             metadata_parts = []
             if project and project != "Inbox":
                 metadata_parts.append(f"Project: {project}")
             if due_date and due_date != today:
                 metadata_parts.append(f"Due: {due_date}")
-            
+
             if metadata_parts:
                 task_line += f" ({', '.join(metadata_parts)})"
-            
+
             content_lines.append(f"- {task_line}")
-        
+
         # Add summary
         content_lines.extend([
             "",
@@ -251,10 +268,10 @@ class MCPAgent(BaseAgent):
             f"Total: {len(tasks)} tasks | High Priority: {high_priority_count} | "
             f"Due Today: {due_today_count}"
         ])
-        
+
         if due_today_count > 0:
             content_lines.append(f"⚡ {due_today_count} task(s) due today!")
-        
+
         return AgentResponse(
             agent_name=self.name,
             content="\n".join(content_lines),

@@ -12,6 +12,7 @@ from src.agents.prompts import get_coach_system_prompt, get_coach_morning_protoc
 from src.agents.registry import agent_registry
 from src.agents.morning_protocol_tracker import MorningProtocolTracker
 from src.performance.profiler import profile_async
+from src.performance.cache_manager import get_cache
 
 # Try to import LangSmith for tracing
 try:
@@ -66,7 +67,7 @@ class EnhancedDiaryCoach(BaseAgent):
         self.message_history: List[Dict[str, str]] = []
         self.crux_identified: Optional[str] = None
         self.phase2_active = False
-        
+
         # Morning protocol tracking
         self.protocol_tracker = MorningProtocolTracker(self.MORNING_PROMPT_ADDITION)
         self._next_nudge = None  # Store nudge for next generation
@@ -102,7 +103,7 @@ class EnhancedDiaryCoach(BaseAgent):
     def _get_system_prompt(self) -> str:
         """Get the appropriate system prompt based on conversation context."""
         base_prompt = self.SYSTEM_PROMPT
-        
+
         # Check if we're in morning conversation mode
         if self.conversation_state == "morning":
             morning_prompt = base_prompt + "\n\n" + self.MORNING_PROMPT_ADDITION
@@ -112,7 +113,7 @@ class EnhancedDiaryCoach(BaseAgent):
                 morning_prompt += self._next_nudge
                 self._next_nudge = None  # Use once then clear
             return morning_prompt
-        
+
         # Also check recent messages for morning context
         elif self.message_history:
             # Check last few user messages for morning greeting
@@ -123,7 +124,7 @@ class EnhancedDiaryCoach(BaseAgent):
             if any(self._is_morning_context(msg["content"])
                    for msg in recent_user_messages):
                 return base_prompt + "\n\n" + self.MORNING_PROMPT_ADDITION
-        
+
         return base_prompt
 
     async def _should_call_agent(
@@ -442,10 +443,10 @@ class EnhancedDiaryCoach(BaseAgent):
 
     def _should_consult_reporter_for_phase2(self, message: UserMessage) -> bool:
         """Check if we should consult reporter for phase 2 questions.
-        
+
         Args:
             message: User message
-            
+
         Returns:
             True if we should consult reporter for phase 2 insights
         """
@@ -455,10 +456,10 @@ class EnhancedDiaryCoach(BaseAgent):
             "yes", "sure", "ok", "okay", "ready", "let's do it",
             "i'm ready", "sounds good", "go ahead", "deeper questions"
         ]
-        
+
         # Check if we're in morning protocol and have identified a crux
-        if (self.conversation_state == "morning" and 
-            self.crux_identified and 
+        if (self.conversation_state == "morning" and
+            self.crux_identified and
             any(phrase in message_lower for phrase in acceptance_phrases)):
             # Look for context suggesting phase 2
             recent_assistant = self.message_history[-1] if self.message_history else None
@@ -466,15 +467,15 @@ class EnhancedDiaryCoach(BaseAgent):
                 content = recent_assistant["content"].lower()
                 if "deeper questions" in content or "deep report now" in content:
                     return True
-        
+
         return False
-    
+
     async def _get_reporter_phase2_insights(self, message: UserMessage) -> str:
         """Get phase 2 insights from reporter agent.
-        
+
         Args:
             message: User message
-            
+
         Returns:
             Reporter's insights for phase 2 questioning
         """
@@ -484,7 +485,7 @@ class EnhancedDiaryCoach(BaseAgent):
             if not reporter:
                 logger.warning("Reporter agent not available for phase 2")
                 return ""
-            
+
             # Build conversation context
             conversation = []
             for msg in self.message_history[-10:]:  # Last 10 messages
@@ -492,7 +493,7 @@ class EnhancedDiaryCoach(BaseAgent):
                     "type": msg["role"],
                     "content": msg["content"]
                 })
-            
+
             # Call reporter for phase 2 insights
             request = AgentRequest(
                 from_agent=self.name,
@@ -504,15 +505,15 @@ class EnhancedDiaryCoach(BaseAgent):
                     "conversation_id": message.conversation_id
                 }
             )
-            
+
             response = await reporter.handle_request(request)
-            
+
             if response and not response.error:
                 self.phase2_active = True
                 return response.content
-            
+
             return ""
-            
+
         except Exception as e:
             logger.error(f"Error getting phase 2 insights: {e}")
             return ""
@@ -580,6 +581,32 @@ class EnhancedDiaryCoach(BaseAgent):
         logger.info(
             f"EnhancedDiaryCoach.process_message: {message.content}")
 
+        # Try to get cached response first (only for simple queries)
+        cache = get_cache()
+        cached_response = None
+
+        # Only use cache for non-morning, non-complex queries
+        if (self.conversation_state != "morning" and
+            len(self.message_history) < 6 and
+            not self._should_check_orchestration(message)):
+            cached_response = await cache.get_coach_response(message.content)
+            if cached_response:
+                logger.info("Cache hit for coach response")
+                # Still update message history
+                self.message_history.append({
+                    "role": "user",
+                    "content": message.content
+                })
+                self.message_history.append({
+                    "role": "assistant",
+                    "content": cached_response
+                })
+                return LegacyAgentResponse(
+                    agent_name="diary_coach",
+                    content=cached_response,
+                    metadata={"cached": True}
+                )
+
         # Check and update conversation state BEFORE generating response
         if (self._is_morning_context(message.content) and
                 self.conversation_state == "general"):
@@ -598,7 +625,7 @@ class EnhancedDiaryCoach(BaseAgent):
             logger.info(f"Phase 2 reporter insights: {reporter_insights[:100]}...")
             # Store insights for prompt enhancement
             self._phase2_insights = reporter_insights
-        
+
         # Gather context from agents if in Stage 1
         agent_context = await self._gather_agent_context(message)
 
@@ -607,7 +634,7 @@ class EnhancedDiaryCoach(BaseAgent):
 
         # Enhance prompt with agent context
         system_prompt = self._enhance_prompt_with_context(base_prompt, agent_context)
-        
+
         # Add phase 2 insights if available
         if hasattr(self, '_phase2_insights') and self._phase2_insights:
             system_prompt += f"\n\n## PHASE 2 COACHING INSIGHTS\n{self._phase2_insights}\n"
@@ -622,7 +649,7 @@ class EnhancedDiaryCoach(BaseAgent):
             logger.info("Agent context being used in prompt")
             for agent, data in agent_context.items():
                 logger.info(f"  {agent}: {data['content'][:100]}...")
-            
+
         # Generate response
         response_content = await self.llm_service.generate_response(
             messages=self.message_history,
@@ -631,12 +658,19 @@ class EnhancedDiaryCoach(BaseAgent):
             temperature=0.7
         )
 
+        # Cache the response for simple queries
+        if (self.conversation_state != "morning" and
+            len(self.message_history) < 8 and
+            not agent_context):  # Don't cache if agents were involved
+            await cache.set_coach_response(message.content, response_content)
+            logger.debug(f"Cached response for: {message.content[:50]}...")
+
         # Update message history
         self.message_history.append({
             "role": "assistant",
             "content": response_content
         })
-        
+
         # Track crux identification
         if "crux" in response_content.lower() and "identified" in response_content.lower():
             # Extract crux from response
@@ -650,7 +684,7 @@ class EnhancedDiaryCoach(BaseAgent):
         if self.conversation_state == "morning":
             # Analyze the exchange that just happened
             nudge = self.protocol_tracker.analyze_exchange(
-                message.content, 
+                message.content,
                 response_content
             )
             if nudge:
@@ -721,3 +755,4 @@ class EnhancedDiaryCoach(BaseAgent):
                 timestamp=datetime.now(),
                 error=str(e)
             )
+
