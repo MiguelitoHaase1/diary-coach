@@ -11,6 +11,11 @@ from src.agents.registry import agent_registry
 from src.services.llm_service import AnthropicService
 from src.agents.prompts import PromptLoader
 from src.performance.profiler import profile_async
+from src.performance.parallel_executor import (
+    ParallelExecutor,
+    AgentDependencyGraph,
+    ParallelConfig
+)
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +39,14 @@ class OrchestratorAgent(BaseAgent):
         self.coordination_history = []
         self.llm_service = llm_service
         self._system_prompt = self._load_system_prompt()
+
+        # Initialize parallel executor for Stage 2
+        self.parallel_config = ParallelConfig(
+            max_parallel=3,
+            timeout_seconds=4.0,
+            enable_fallback=True
+        )
+        self.parallel_executor = ParallelExecutor(self.parallel_config)
 
     def _load_system_prompt(self) -> str:
         """Load the orchestrator system prompt."""
@@ -190,10 +203,11 @@ Provide your analysis in the following JSON format:
                     return True
         return False
 
+    @profile_async("orchestrator_stage2_coordination", send_to_langsmith=True)
     async def _coordinate_stage2_agents(
         self, context: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Use LLM to intelligently coordinate agent queries in Stage 2."""
+        """Use LLM to coordinate agent queries in Stage 2 with parallel execution."""
         query_context = context.get("query_context", {})
         user_query = query_context.get("current_focus", "")
         conversation_history = context.get("conversation_history", [])
@@ -254,26 +268,42 @@ Provide your strategy in the following JSON format:
             agents_to_query = coordination_info.get("agents_to_query", [])
             specific_prompts = coordination_info.get("specific_prompts", {})
 
-            # Prepare parallel tasks based on LLM strategy
-            tasks = []
+            # Build dependency graph for intelligent parallel execution
+            graph = AgentDependencyGraph()
+
+            # Add all agents as independent (they can run in parallel)
+            for agent_name in agents_to_query:
+                graph.add_agent(agent_name)
+
+            # Generate execution plan
+            plan = graph.generate_execution_plan()
+
+            # Prepare agents dictionary with actual agent instances
+            agents_dict = {}
             for agent_name in agents_to_query:
                 agent = agent_registry.get_agent(agent_name)
                 if agent:
-                    specific_query = specific_prompts.get(
-                        agent_name,
-                        f"Provide relevant context for: {user_query}"
-                    )
-                    request = AgentRequest(
-                        from_agent=self.agent_id,
-                        to_agent=agent_name,
-                        query=specific_query,
-                        context=query_context
-                    )
-                    tasks.append(self._query_agent_with_timeout(agent, request))
+                    agents_dict[agent_name] = agent
+                else:
+                    logger.warning(f"Agent {agent_name} not found in registry")
 
-            # Execute queries
+            # Build context with specific prompts for each agent
+            execution_context = {
+                "query": user_query,
+                "query_context": query_context,
+                "specific_prompts": specific_prompts
+            }
+
+            # Execute agents using parallel executor
             start_time = datetime.now()
-            results = await asyncio.gather(*tasks, return_exceptions=True)
+
+            # Use our parallel executor for optimized execution
+            results = await self.parallel_executor.execute_agents(
+                agents=agents_dict,
+                plan=plan,
+                context=execution_context
+            )
+
             duration = (datetime.now() - start_time).total_seconds()
 
             # Aggregate results
@@ -281,22 +311,32 @@ Provide your strategy in the following JSON format:
                 "stage": 2,
                 "coordination_time": duration,
                 "coordination_strategy": strategy,
+                "parallel_execution": True,
                 "agent_responses": {}
             }
 
-            for agent_name, result in zip(agents_to_query, results):
-                if isinstance(result, Exception):
-                    logger.error(f"Agent {agent_name} failed: {result}")
+            # Process results from parallel executor
+            for agent_name, response in results.items():
+                if response.error:
+                    logger.error(f"Agent {agent_name} failed: {response.error}")
                     aggregated["agent_responses"][agent_name] = {
-                        "error": str(result),
+                        "error": response.error,
                         "status": "failed"
                     }
                 else:
                     aggregated["agent_responses"][agent_name] = {
-                        "content": result.content,
-                        "metadata": result.metadata,
+                        "content": response.content,
+                        "metadata": response.metadata,
                         "status": "success"
                     }
+
+            # Get execution metrics from parallel executor
+            execution_metrics = self.parallel_executor.get_metrics()
+            aggregated["execution_metrics"] = {
+                "parallel_speedup": execution_metrics.get("average_speedup", 1.0),
+                "timeout_rate": execution_metrics.get("timeout_rate", 0),
+                "error_rate": execution_metrics.get("error_rate", 0)
+            }
 
             # Use LLM to synthesize results
             success_responses = [
@@ -317,15 +357,21 @@ Provide your strategy in the following JSON format:
                 "query": user_query,
                 "agents_queried": agents_to_query,
                 "duration": duration,
+                "parallel_execution": True,
                 "results": len(
-                    [r for r in results if not isinstance(r, Exception)]
+                    [r for r in results.values() if not r.error]
                 )
             })
+
+            logger.info(
+                f"Stage 2 coordination completed in {duration:.2f}s "
+                f"with {execution_metrics.get('average_speedup', 1.0):.1f}x speedup"
+            )
 
             return aggregated
 
         except Exception as e:
-            logger.error(f"Error in LLM-driven coordination: {e}")
+            logger.error(f"Error in parallel coordination: {e}")
             # Fallback to simple parallel coordination
             return await self._fallback_coordination(user_query, query_context)
 
@@ -397,37 +443,54 @@ Return your synthesis as JSON:
     ) -> Dict[str, Any]:
         """Fallback to simple parallel coordination if LLM fails."""
         available_agents = ["memory", "personal_content", "mcp"]
-        tasks = []
 
+        # Build dependency graph (all independent for fallback)
+        graph = AgentDependencyGraph()
+        for agent_name in available_agents:
+            graph.add_agent(agent_name)
+
+        # Generate execution plan
+        plan = graph.generate_execution_plan()
+
+        # Prepare agents dictionary
+        agents_dict = {}
         for agent_name in available_agents:
             agent = agent_registry.get_agent(agent_name)
             if agent:
-                request = AgentRequest(
-                    from_agent=self.agent_id,
-                    to_agent=agent_name,
-                    query=f"Provide relevant context for: {user_query}",
-                    context=query_context
-                )
-                tasks.append(self._query_agent_with_timeout(agent, request))
+                agents_dict[agent_name] = agent
 
-        results = await asyncio.gather(*tasks, return_exceptions=True)
+        # Execute with parallel executor
+        execution_context = {
+            "query": user_query,
+            "query_context": query_context
+        }
+
+        start_time = datetime.now()
+        results = await self.parallel_executor.execute_agents(
+            agents=agents_dict,
+            plan=plan,
+            context=execution_context
+        )
+        duration = (datetime.now() - start_time).total_seconds()
 
         aggregated = {
             "stage": 2,
             "agent_responses": {},
-            "fallback_mode": True
+            "fallback_mode": True,
+            "parallel_execution": True,
+            "coordination_time": duration
         }
 
-        for agent_name, result in zip(available_agents, results):
-            if isinstance(result, Exception):
+        for agent_name, response in results.items():
+            if response.error:
                 aggregated["agent_responses"][agent_name] = {
-                    "error": str(result),
+                    "error": response.error,
                     "status": "failed"
                 }
             else:
                 aggregated["agent_responses"][agent_name] = {
-                    "content": result.content,
-                    "metadata": result.metadata,
+                    "content": response.content,
+                    "metadata": response.metadata,
                     "status": "success"
                 }
 
