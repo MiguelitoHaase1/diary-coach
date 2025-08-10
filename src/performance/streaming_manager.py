@@ -208,7 +208,7 @@ class StreamingResponseManager:
     def __init__(self, config: Optional[StreamingConfig] = None):
         self.config = config or StreamingConfig()
         self.metrics = StreamingMetrics()
-        self.typing_indicator = TypingIndicator()
+        self._typing_indicator_instance = TypingIndicator()
         self.is_streaming = False
         self._active_streams = set()
     
@@ -423,17 +423,17 @@ class StreamingResponseManager:
     async def typing_indicator(self, message: str = None):
         """Context manager for typing indicator"""
         if self.config.enable_typing_indicators:
-            self.typing_indicator.start(message)
+            self._typing_indicator_instance.start(message)
         try:
-            yield self.typing_indicator
+            yield self._typing_indicator_instance
         finally:
             if self.config.enable_typing_indicators:
-                self.typing_indicator.stop()
+                self._typing_indicator_instance.stop()
     
     @property
     def is_typing(self) -> bool:
         """Check if currently showing typing indicator"""
-        return self.typing_indicator.is_typing
+        return self._typing_indicator_instance.is_typing
     
     def get_metrics(self) -> Dict[str, Any]:
         """Get streaming metrics"""

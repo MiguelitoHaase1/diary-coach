@@ -34,6 +34,11 @@ class CostConfig:
     # Alert thresholds
     budget_warning_threshold: float = 0.8  # Warn at 80% of budget
     budget_critical_threshold: float = 0.95  # Critical at 95% of budget
+    budget_info_threshold: float = 0.5  # Info at 50% of budget
+    
+    # Model selection thresholds (configurable)
+    budget_critical_model_threshold: float = 0.02  # Use cheapest model below 2%
+    budget_low_model_threshold: float = 0.1  # Prefer cheaper models below 10%
 
 
 @dataclass
@@ -342,11 +347,11 @@ class ModelSelector:
         budget_remaining = context.get("budget_remaining", float('inf'))
         daily_budget = context.get("daily_budget", self.config.daily_budget_usd)
         
-        if budget_remaining / daily_budget < 0.02:  # Less than 2% budget
+        if budget_remaining / daily_budget < self.config.budget_critical_model_threshold:
             # Unless it's critical, use the cheapest model
             return ModelChoice(
                 model="claude-3-haiku",
-                reasoning="Near budget limit - using most cost-effective model",
+                reasoning=f"Near budget limit (<{self.config.budget_critical_model_threshold*100:.0f}%) - using most cost-effective model",
                 estimated_cost=self._estimate_cost("claude-3-haiku", query),
                 quality_score=0.7
             )
@@ -384,10 +389,10 @@ class ModelSelector:
         # Complex queries
         if complexity == "complex":
             # Check budget constraints for complex queries
-            if budget_remaining / daily_budget < 0.1:  # Less than 10% budget
+            if budget_remaining / daily_budget < self.config.budget_low_model_threshold:
                 return ModelChoice(
                     model="claude-3-sonnet",
-                    reasoning="Complex query but budget constraints apply",
+                    reasoning=f"Complex query but budget constraints apply (<{self.config.budget_low_model_threshold*100:.0f}%)",
                     estimated_cost=self._estimate_cost("claude-3-sonnet", query),
                     quality_score=0.85
                 )
@@ -529,6 +534,11 @@ class TokenOptimizer:
             return sum(len(m.get("content", "").split()) * 1.5 for m in msgs)
         
         current_tokens = estimate_tokens(recent)
+        
+        # If recent messages already exceed limit, just return them
+        if current_tokens >= max_tokens:
+            return recent
+        
         pruned = []
         
         # Add older messages if they fit
@@ -538,11 +548,11 @@ class TokenOptimizer:
                 pruned.insert(0, msg)
                 current_tokens += msg_tokens
             else:
-                # Try to add a summary instead
-                if msg["role"] == "user" and current_tokens + 10 <= max_tokens:
-                    summary = {"role": "user", "content": "[Earlier context omitted]"}
+                # Add summary if we've pruned messages (use assistant role for consistency)
+                if len(pruned) < len(older):
+                    summary = {"role": "assistant", "content": "[Earlier messages in conversation omitted for brevity]"}
                     pruned.insert(0, summary)
-                    break
+                break
         
         return pruned + recent
     
@@ -583,24 +593,36 @@ class TokenOptimizer:
         
         lines = template.split('\n')
         optimized_lines = []
-        seen_instructions = set()
+        seen_concepts = set()
         
         for line in lines:
             line = line.strip()
             if not line:
                 continue
             
-            # Remove duplicate instructions
-            instruction_key = re.sub(r'[^a-z\s]', '', line.lower())[:20]
-            if instruction_key and instruction_key in seen_instructions:
-                continue
-            seen_instructions.add(instruction_key)
-            
             # Simplify bullet points
             if line.startswith('- '):
                 line = line[2:]
             
-            optimized_lines.append(line)
+            # Extract key concepts from the line
+            words = line.lower().split()
+            key_words = set()
+            for word in words:
+                # Remove common words
+                if word not in ['be', 'and', 'to', 'the', 'a', 'with', 'as', 'you', 'should']:
+                    key_words.add(word.strip('.,!?'))
+            
+            # Check for duplicate concepts
+            is_duplicate = False
+            for seen in seen_concepts:
+                overlap = key_words & seen
+                if len(overlap) >= 2:  # If 2+ key words overlap, it's likely duplicate
+                    is_duplicate = True
+                    break
+            
+            if not is_duplicate and key_words:
+                optimized_lines.append(line)
+                seen_concepts.add(frozenset(key_words))
         
         return '\n'.join(optimized_lines)
 
@@ -698,12 +720,24 @@ class CostDashboard:
         else:
             trend = "insufficient_data"
         
-        # Simple projection
+        # Simple projection based on trend
         if len(daily_costs) >= 3:
             recent_avg = sum(daily_costs[-3:]) / 3
-            projection = recent_avg * 1.1  # Conservative projection
+            if trend == "increasing":
+                # Project continued growth (with zero check)
+                if daily_costs[-2] > 0 and daily_costs[-1] > 0:
+                    growth_rate = daily_costs[-1] / daily_costs[-2]
+                    # Cap growth rate to reasonable bounds (max 2x growth)
+                    growth_rate = min(growth_rate, 2.0)
+                else:
+                    growth_rate = 1.1  # Default 10% growth
+                projection = daily_costs[-1] * growth_rate
+            elif trend == "decreasing":
+                projection = recent_avg * 0.9  # Conservative decrease
+            else:
+                projection = recent_avg  # Stable
         else:
-            projection = daily_costs[-1] if daily_costs else 0
+            projection = daily_costs[-1] * 1.1 if daily_costs else 0
         
         return {
             "daily_costs": daily_costs,
@@ -816,30 +850,32 @@ class BudgetManager:
         
         alerts = []
         daily = self.tracker.get_daily_cost()
-        daily_percentage = daily.total_cost / self.config.daily_budget_usd
         
-        # Check daily budget thresholds
-        if daily_percentage >= self.config.budget_critical_threshold:
-            alerts.append({
-                "level": "critical",
-                "type": "daily_budget",
-                "message": f"Daily budget critical: {daily_percentage*100:.0f}% used",
-                "remaining": self.get_daily_budget_remaining()
-            })
-        elif daily_percentage >= self.config.budget_warning_threshold:
-            alerts.append({
-                "level": "warning",
-                "type": "daily_budget",
-                "message": f"Daily budget warning: {daily_percentage*100:.0f}% used",
-                "remaining": self.get_daily_budget_remaining()
-            })
-        elif daily_percentage >= 0.5:
-            alerts.append({
-                "level": "info",
-                "type": "daily_budget",
-                "message": f"Daily budget: {daily_percentage*100:.0f}% used",
-                "remaining": self.get_daily_budget_remaining()
-            })
+        if self.config.daily_budget_usd > 0:
+            daily_percentage = daily.total_cost / self.config.daily_budget_usd
+            
+            # Check daily budget thresholds
+            if daily_percentage >= self.config.budget_critical_threshold:
+                alerts.append({
+                    "level": "critical",
+                    "type": "daily_budget",
+                    "message": f"Daily budget critical: {daily_percentage*100:.0f}% used",
+                    "remaining": self.get_daily_budget_remaining()
+                })
+            elif daily_percentage >= self.config.budget_warning_threshold:
+                alerts.append({
+                    "level": "warning",
+                    "type": "daily_budget",
+                    "message": f"Daily budget warning: {daily_percentage*100:.0f}% used",
+                    "remaining": self.get_daily_budget_remaining()
+                })
+            elif daily_percentage >= self.config.budget_info_threshold:
+                alerts.append({
+                    "level": "info",
+                    "type": "daily_budget",
+                    "message": f"Daily budget: {daily_percentage*100:.0f}% used",
+                    "remaining": self.get_daily_budget_remaining()
+                })
         
         # Check high-cost users
         for user_id, conv_ids in self.tracker.user_costs.items():
