@@ -57,14 +57,14 @@ class TestDiaryCoach:
         await coach.handle_request(AgentRequest(
             from_agent="test",
             to_agent="coach",
-            query=morning_message,
+            query=morning_message.content,
             context={"user_id": "michael"}))
         
         challenge_message = UserMessage(content="I want to be more present with my family", user_id="michael", timestamp=datetime.now())
         await coach.handle_request(AgentRequest(
             from_agent="test",
             to_agent="coach",
-            query=challenge_message,
+            query=challenge_message.content,
             context={"user_id": "michael"}))
         
         # Evening should reference morning
@@ -72,7 +72,7 @@ class TestDiaryCoach:
         response = await coach.handle_request(AgentRequest(
             from_agent="test",
             to_agent="coach",
-            query=evening_message,
+            query=evening_message.content,
             context={"user_id": "michael"}))
         
         assert "Good evening Michael!" in response.content
@@ -112,7 +112,7 @@ class TestDiaryCoach:
         await coach.handle_request(AgentRequest(
             from_agent="test",
             to_agent="coach",
-            query=morning_msg,
+            query=morning_msg.content,
             context={"user_id": "michael"}))
         
         # Check state changed to morning if it's morning time
@@ -126,7 +126,7 @@ class TestDiaryCoach:
         await coach.handle_request(AgentRequest(
             from_agent="test",
             to_agent="coach",
-            query=challenge_msg,
+            query=challenge_msg.content,
             context={"user_id": "michael"}))
         
         # The extraction logic is basic - it only stores if "challenge" is in the content
@@ -139,7 +139,7 @@ class TestDiaryCoach:
         response = await coach.handle_request(AgentRequest(
             from_agent="test",
             to_agent="coach",
-            query=value_msg,
+            query=value_msg.content,
             context={"user_id": "michael"}))
         
         # Verify we have all 6 messages in history
@@ -184,23 +184,23 @@ class TestDiaryCoach:
         await coach.handle_request(AgentRequest(
             from_agent="test",
             to_agent="coach",
-            query=msg1,
+            query=msg1.content,
             context={"user_id": "michael"}))
         
         msg2 = UserMessage(content="I'm struggling with focus", user_id="michael", timestamp=datetime.now())
         await coach.handle_request(AgentRequest(
             from_agent="test",
             to_agent="coach",
-            query=msg2,
+            query=msg2.content,
             context={"user_id": "michael"}))
         
         # Should have message history
         assert len(coach.message_history) == 4  # 2 user + 2 assistant messages
         assert coach.message_history[0]["role"] == "user"
-        assert coach.message_history[0]["content"].content == "good morning"
+        assert coach.message_history[0]["content"] == "good morning"
         assert coach.message_history[1]["role"] == "assistant"
         assert coach.message_history[2]["role"] == "user"
-        assert coach.message_history[2]["content"].content == "I'm struggling with focus"
+        assert coach.message_history[2]["content"] == "I'm struggling with focus"
 
     @pytest.mark.asyncio
     async def test_value_question_timing(self, coach, mock_llm_service):
@@ -215,21 +215,21 @@ class TestDiaryCoach:
         await coach.handle_request(AgentRequest(
             from_agent="test",
             to_agent="coach",
-            query=UserMessage(content="good morning", user_id="michael", timestamp=datetime.now()),
+            query="good morning",
             context={"user_id": "michael"}))
         
         # Challenge identification
         await coach.handle_request(AgentRequest(
             from_agent="test",
             to_agent="coach",
-            query=UserMessage(content="I need to have a difficult conversation", user_id="michael", timestamp=datetime.now()),
+            query="I need to have a difficult conversation",
             context={"user_id": "michael"}))
         
         # Further exploration should eventually lead to value question
         response = await coach.handle_request(AgentRequest(
             from_agent="test",
             to_agent="coach",
-            query=UserMessage(content="I'm worried about how they'll react", user_id="michael", timestamp=datetime.now()),
+            query="I'm worried about how they'll react",
             context={"user_id": "michael"}))
         
         # The third response should contain the value question

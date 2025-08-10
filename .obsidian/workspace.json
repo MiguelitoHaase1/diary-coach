@@ -170,6 +170,9 @@
   },
   "active": "7118fbc22704ce5c",
   "lastOpenFiles": [
+    "docs/prototype/DeepThoughts/DeepThoughts_20250810_1140.md",
+    "docs/prototype/DeepThoughts/DeepThoughts_20250810_1139.md",
+    "docs/prototype/DeepThoughts/DeepThoughts_20250810_1138.md",
     "src/performance/cost_optimizer.py.tmp.14886.1754818158678",
     "CHANGELOG.md",
     "tests/test_fast_path_optimization.py.tmp.14886.1754817262243",
@@ -182,7 +185,6 @@
     "docs/session_10/Log_10_14_Increment_6_Cost_Optimization.md",
     "src/performance/__pycache__/cost_optimizer.cpython-313.pyc",
     "tests/__pycache__/test_cost_optimization.cpython-313-pytest-8.1.2.pyc",
-    "src/performance/cost_optimizer.py",
     "docs/session_10/Log_10_14_Increment_5_Fast_Path_Optimization.md",
     "docs/session_10/Log_10_14_Increment_4_Streaming_Response.md",
     "docs/session_10/Log_10_14_Increment_3_Parallel_Execution.md",

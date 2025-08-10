@@ -49,8 +49,17 @@ class TestCacheManager:
     async def test_cache_hit_rate(self, mock_redis, cache_config):
         """Test that cache achieves good hit rate for similar queries"""
         # Mock the module import itself to avoid aioredis dependency
-        with patch('src.performance.cache_manager.aioredis') as mock_aioredis:
-            mock_aioredis.from_url = AsyncMock(return_value=mock_redis)
+        import sys
+        mock_aioredis = MagicMock()
+        mock_aioredis.from_url = AsyncMock(return_value=mock_redis)
+        sys.modules['aioredis'] = mock_aioredis
+        
+        try:
+            # Need to reload to pick up the mocked module
+            import importlib
+            import src.performance.cache_manager
+            importlib.reload(src.performance.cache_manager)
+            from src.performance.cache_manager import CacheManager, CacheEntry
             cache = CacheManager(cache_config)
             await cache.initialize()
             
@@ -85,43 +94,61 @@ class TestCacheManager:
             assert stats["hits"] == 1
             assert stats["misses"] == 1
             assert stats["hit_rate"] == 0.5
+        finally:
+            # Clean up the mock
+            if 'aioredis' in sys.modules:
+                del sys.modules['aioredis']
     
     @pytest.mark.asyncio
     async def test_semantic_similarity(self, mock_redis, cache_config):
         """Test semantic similarity matching for cache lookups"""
-        with patch('src.performance.cache_manager.aioredis') as mock_aioredis, \
-             patch('src.performance.cache_manager.EMBEDDINGS_AVAILABLE', True):
-            mock_aioredis.from_url = AsyncMock(return_value=mock_redis)
-            cache = CacheManager(cache_config)
-            await cache.initialize()
+        import sys
+        mock_aioredis = MagicMock()
+        mock_aioredis.from_url = AsyncMock(return_value=mock_redis)
+        sys.modules['aioredis'] = mock_aioredis
+        
+        try:
+            # Need to reload to pick up the mocked module
+            import importlib
+            import src.performance.cache_manager
+            importlib.reload(src.performance.cache_manager)
+            from src.performance.cache_manager import CacheManager
             
-            # Store a response
-            await cache.set(
-                "coach_response",
-                "What should I work on today?",
-                "Focus on your top priority project",
-                ttl=60
-            )
-            
-            # Mock the semantic search
-            cached_entries = [
-                {
-                    "key": "coach_response:what_should_i_work_on_today",
-                    "query": "What should I work on today?",
-                    "value": "Focus on your top priority project",
-                    "embedding": [0.1] * 384  # Mock embedding
-                }
-            ]
-            mock_redis.keys.return_value = [b"coach_response:*"]
-            mock_redis.get.return_value = json.dumps(cached_entries[0])
-            
-            # Similar query should hit cache
-            with patch('src.performance.cache_manager.semantic_similarity', return_value=0.92):
-                result = await cache.get_semantic(
+            with patch('src.performance.cache_manager.EMBEDDINGS_AVAILABLE', True):
+                cache = CacheManager(cache_config)
+                await cache.initialize()
+                
+                # Store a response
+                await cache.set(
                     "coach_response",
-                    "What tasks should I focus on today?"
+                    "What should I work on today?",
+                    "Focus on your top priority project",
+                    ttl=60
                 )
-                assert result == "Focus on your top priority project"
+                
+                # Mock the semantic search
+                cached_entries = [
+                    {
+                        "key": "coach_response:what_should_i_work_on_today",
+                        "query": "What should I work on today?",
+                        "value": "Focus on your top priority project",
+                        "embedding": [0.1] * 384  # Mock embedding
+                    }
+                ]
+                mock_redis.keys.return_value = [b"coach_response:*"]
+                mock_redis.get.return_value = json.dumps(cached_entries[0])
+                
+                # Similar query should hit cache
+                with patch('src.performance.cache_manager.semantic_similarity', return_value=0.92):
+                    result = await cache.get_semantic(
+                        "coach_response",
+                        "What tasks should I focus on today?"
+                    )
+                    assert result == "Focus on your top priority project"
+        finally:
+            # Clean up the mock
+            if 'aioredis' in sys.modules:
+                del sys.modules['aioredis']
     
     @pytest.mark.skip(reason="Requires aioredis setup")
     @pytest.mark.asyncio
@@ -368,8 +395,17 @@ class TestCacheIntegration:
     @pytest.mark.asyncio
     async def test_coach_response_caching(self, mock_redis, cache_config):
         """Test caching of coach responses"""
-        with patch('src.performance.cache_manager.aioredis') as mock_aioredis:
-            mock_aioredis.from_url = AsyncMock(return_value=mock_redis)
+        import sys
+        mock_aioredis = MagicMock()
+        mock_aioredis.from_url = AsyncMock(return_value=mock_redis)
+        sys.modules['aioredis'] = mock_aioredis
+        
+        try:
+            # Need to reload to pick up the mocked module
+            import importlib
+            import src.performance.cache_manager
+            importlib.reload(src.performance.cache_manager)
+            from src.performance.cache_manager import CacheManager
             cache = CacheManager(cache_config)
             await cache.initialize()
             
@@ -390,6 +426,10 @@ class TestCacheIntegration:
             
             cached = await cache.get_coach_response(query)
             assert cached == response
+        finally:
+            # Clean up the mock
+            if 'aioredis' in sys.modules:
+                del sys.modules['aioredis']
     
     @pytest.mark.skip(reason="Requires aioredis setup")
     @pytest.mark.asyncio

@@ -344,28 +344,28 @@ class TestStreamingIntegration:
         """Test coach agent with streaming responses"""
         # Mock the agent to avoid full setup
         with patch('src.agents.enhanced_coach_agent.EnhancedCoachAgent') as MockAgent:
-        
-        # Mock LLM service to return streamable content
-        mock_llm = AsyncMock()
-        mock_llm.generate_response_stream = AsyncMock()
-        
-        async def mock_stream():
-            chunks = [
+            # Mock LLM service to return streamable content
+            mock_llm = AsyncMock()
+            mock_llm.generate_response_stream = AsyncMock()
+            
+            async def mock_stream():
+                chunks = [
                 "I understand ",
                 "you're feeling ",
                 "overwhelmed. ",
                 "Let's take ",
                 "this step by step."
             ]
-            for chunk in chunks:
-                yield chunk
-                await asyncio.sleep(0.01)
+                for chunk in chunks:
+                    yield chunk
+                    await asyncio.sleep(0.01)
+            
+            mock_llm.generate_response_stream.return_value = mock_stream()
         
-        mock_llm.generate_response_stream.return_value = mock_stream()
-        
-        # Create agent with streaming enabled
-        with patch('src.agents.enhanced_coach_agent.AnthropicService', return_value=mock_llm):
-            agent = EnhancedCoachAgent(mock_llm)
+            # Create agent with streaming enabled
+            with patch('src.agents.enhanced_coach_agent.AnthropicService', return_value=mock_llm):
+                from src.agents.enhanced_coach_agent import EnhancedCoachAgent
+                agent = EnhancedCoachAgent(mock_llm)
             agent.streaming_enabled = True
             
             # Collect streamed response
