@@ -170,6 +170,9 @@
   },
   "active": "7118fbc22704ce5c",
   "lastOpenFiles": [
+    "docs/prototype/DeepThoughts/DeepThoughts_20250810_1312.md",
+    "tests/test_cache_manager_simple.py.tmp.14886.1754824293362",
+    "tests/test_cache_manager.py.tmp.14886.1754824280290",
     "docs/prototype/DeepThoughts/DeepThoughts_20250810_1140.md",
     "docs/prototype/DeepThoughts/DeepThoughts_20250810_1139.md",
     "docs/prototype/DeepThoughts/DeepThoughts_20250810_1138.md",
@@ -183,8 +186,6 @@
     "tests/test_fast_path_optimization.py.tmp.14886.1754816968469",
     "docs/status.md.tmp.14886.1754816550949",
     "docs/session_10/Log_10_14_Increment_6_Cost_Optimization.md",
-    "src/performance/__pycache__/cost_optimizer.cpython-313.pyc",
-    "tests/__pycache__/test_cost_optimization.cpython-313-pytest-8.1.2.pyc",
     "docs/session_10/Log_10_14_Increment_5_Fast_Path_Optimization.md",
     "docs/session_10/Log_10_14_Increment_4_Streaming_Response.md",
     "docs/session_10/Log_10_14_Increment_3_Parallel_Execution.md",
@@ -204,7 +205,6 @@
     "docs/session_10/Log_10_9_Unified_Stage3_Orchestration.md",
     "docs/status.md",
     "docs/Session_9/session_9_development_tooling.md",
-    "docs/session_10/Web search agent.md",
-    "docs/session_10/Log_10_8_Orchestrator_Phase3_WebSearch.md"
+    "docs/session_10/Web search agent.md"
   ]
 }
